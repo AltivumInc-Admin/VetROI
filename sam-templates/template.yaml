@@ -85,10 +85,6 @@ Resources:
           - Id: DeleteOldFiles
             Status: Enabled
             ExpirationInDays: 90
-      NotificationConfiguration:
-        LambdaConfigurations:
-          - Event: s3:ObjectCreated:*
-            Function: !GetAtt DD214ParserFunction.Arn
       Tags:
         - Key: Application
           Value: VetROI
@@ -214,12 +210,6 @@ Resources:
               Action:
                 - events:PutEvents
               Resource: !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/default'
-      Events:
-        S3Event:
-          Type: S3
-          Properties:
-            Bucket: !Ref DD214UploadBucket
-            Events: s3:ObjectCreated:*
 
   ONetRefreshFunction:
     Type: AWS::Serverless::Function
@@ -243,6 +233,16 @@ Resources:
               Action:
                 - secretsmanager:GetSecretValue
               Resource: !Ref ONetApiSecret
+
+  # Lambda permission for S3 to invoke DD214Parser
+  DD214ParserS3Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt DD214ParserFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub 'arn:aws:s3:::vetroi-dd214-uploads-${AWS::AccountId}'
 
   # O*NET Cache Bucket
   ONetCacheBucket:
