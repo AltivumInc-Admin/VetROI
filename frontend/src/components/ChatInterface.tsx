@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { VeteranRequest } from '../types'
+import { MessageContent } from './MessageContent'
+import '../styles/ChatMarkdown.css'
 
 interface Message {
   id: string
@@ -119,7 +121,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         {messages.map((message) => (
           <div key={message.id} className={`message ${message.role}-message`}>
             <div className="message-content">
-              {message.content}
+              <MessageContent content={message.content} role={message.role} />
             </div>
             <div className="message-timestamp">
               {message.timestamp.toLocaleTimeString()}

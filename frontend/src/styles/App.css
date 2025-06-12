@@ -327,10 +327,24 @@
   border-radius: 8px;
   white-space: pre-wrap;
   word-wrap: break-word;
-  user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  cursor: text;
+}
+
+/* High visibility text selection */
+.message-content::selection,
+.message-content *::selection {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+.message-content::-moz-selection,
+.message-content *::-moz-selection {
+  background-color: #3b82f6 !important;
+  color: white !important;
 }
 
 .user-message .message-content {
