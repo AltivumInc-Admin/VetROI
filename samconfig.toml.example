@@ -1,0 +1,10 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "vetroi-prod"
+resolve_s3 = true
+s3_prefix = "vetroi-prod"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "BedrockModelId=\"anthropic.claude-3-sonnet-20240229\" ONetApiUrl=\"https://services.onetcenter.org/ws\""

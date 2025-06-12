@@ -1,0 +1,4 @@
+boto3>=1.34.0
+aws-lambda-powertools[tracer,logger,metrics]>=2.31.0
+requests>=2.31.0
+pydantic>=2.5.0

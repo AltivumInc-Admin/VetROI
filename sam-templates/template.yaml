@@ -1,0 +1,311 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: VetROI™ - AWS Lambda Hackathon Application by Altivum Inc.
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.12
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        POWERTOOLS_SERVICE_NAME: VetROI
+        POWERTOOLS_METRICS_NAMESPACE: VetROI
+        LOG_LEVEL: INFO
+    Tracing: Active
+    Layers:
+      - !Ref SharedLibrariesLayer
+
+Parameters:
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-3-sonnet-20240229
+    Description: Bedrock model ID for recommendations
+  ONetApiUrl:
+    Type: String
+    Default: https://services.onetcenter.org/ws
+    Description: O*NET Web Services base URL
+
+Resources:
+  # Shared Lambda Layer
+  SharedLibrariesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: VetROI-SharedLibs
+      Description: Common dependencies for VetROI™ Lambda functions
+      ContentUri: ../lambda/shared/
+      CompatibleRuntimes:
+        - python3.12
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: python3.12
+
+  # DynamoDB Table
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_Sessions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # S3 Bucket for DD-214 uploads
+  DD214UploadBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'vetroi-dd214-uploads-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: alias/aws/s3
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldFiles
+            Status: Enabled
+            ExpirationInDays: 90
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt DD214ParserFunction.Arn
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # Secrets Manager for O*NET credentials
+  ONetApiSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: VetROI/ONet/ApiCredentials
+      Description: O*NET Web Services API credentials
+      SecretString: |
+        {
+          "username": "REPLACE_WITH_USERNAME",
+          "password": "REPLACE_WITH_PASSWORD"
+        }
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # API Gateway
+  VetROIApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: VetROI-API
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      TracingEnabled: true
+      Auth:
+        ApiKeyRequired: false
+      Models:
+        VeteranRequest:
+          type: object
+          required:
+            - branch
+            - code
+            - homeState
+            - relocate
+            - education
+          properties:
+            branch:
+              type: string
+              enum: [army, navy, marine_corps, air_force, space_force, coast_guard]
+            code:
+              type: string
+            homeState:
+              type: string
+            relocate:
+              type: boolean
+            relocateState:
+              type: string
+            education:
+              type: string
+              enum: [high_school, associate, bachelor, master, doctorate]
+
+  # Lambda Functions
+  RecommendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VetROI_Recommend
+      CodeUri: ../lambda/recommend/
+      Handler: src.handler.lambda_handler
+      MemorySize: 1024
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          ONET_API_URL: !Ref ONetApiUrl
+          ONET_SECRET_NAME: !Ref ONetApiSecret
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/${BedrockModelId}'
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref ONetApiSecret
+            - Effect: Allow
+              Action:
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+              Resource: '*'
+      Events:
+        RecommendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref VetROIApi
+            Path: /recommend
+            Method: POST
+
+  DD214ParserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VetROI_DD214_Parser
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.handler.lambda_handler
+      MemorySize: 2048
+      Timeout: 60
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref DD214UploadBucket
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - textract:AnalyzeDocument
+                - comprehend:DetectEntities
+                - comprehend:DetectKeyPhrases
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - events:PutEvents
+              Resource: !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/default'
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref DD214UploadBucket
+            Events: s3:ObjectCreated:*
+
+  ONetRefreshFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VetROI_ONET_Refresh
+      CodeUri: ../lambda/onet_refresh/
+      Handler: src.handler.lambda_handler
+      MemorySize: 1024
+      Timeout: 900
+      Environment:
+        Variables:
+          ONET_API_URL: !Ref ONetApiUrl
+          ONET_SECRET_NAME: !Ref ONetApiSecret
+          CACHE_BUCKET: !Ref ONetCacheBucket
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref ONetCacheBucket
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref ONetApiSecret
+
+  # O*NET Cache Bucket
+  ONetCacheBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'vetroi-onet-cache-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # CloudWatch Log Groups
+  RecommendLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${RecommendFunction}'
+      RetentionInDays: 30
+
+  DD214ParserLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${DD214ParserFunction}'
+      RetentionInDays: 30
+
+  ONetRefreshLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${ONetRefreshFunction}'
+      RetentionInDays: 30
+
+  # Step Function for nightly O*NET refresh
+  ONetRefreshStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Name: VetROI-ONetRefresh
+      Type: STANDARD
+      DefinitionUri: ../sam-templates/statemachine/onet_refresh.asl.json
+      DefinitionSubstitutions:
+        ONetRefreshFunctionArn: !GetAtt ONetRefreshFunction.Arn
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ONetRefreshFunction
+      Events:
+        NightlySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 2 * * ? *)  # 2 AM UTC daily
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${VetROIApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
+  SessionsTableName:
+    Description: DynamoDB table name
+    Value: !Ref SessionsTable
+  DD214BucketName:
+    Description: S3 bucket for DD-214 uploads
+    Value: !Ref DD214UploadBucket

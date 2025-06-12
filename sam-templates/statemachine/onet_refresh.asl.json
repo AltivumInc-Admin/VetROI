@@ -1,0 +1,56 @@
+{
+  "Comment": "Nightly O*NET data refresh state machine",
+  "StartAt": "RefreshONetData",
+  "States": {
+    "RefreshONetData": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${ONetRefreshFunctionArn}",
+        "Payload": {
+          "action": "refresh_all"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2
+        }
+      ],
+      "Next": "CheckRefreshStatus"
+    },
+    "CheckRefreshStatus": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Variable": "$.Payload.status",
+          "StringEquals": "success",
+          "Next": "NotifySuccess"
+        }
+      ],
+      "Default": "NotifyFailure"
+    },
+    "NotifySuccess": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:vetroi-notifications",
+        "Subject": "O*NET Refresh Successful",
+        "Message.$": "$.Payload.message"
+      },
+      "End": true
+    },
+    "NotifyFailure": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:vetroi-notifications",
+        "Subject": "O*NET Refresh Failed",
+        "Message.$": "$.Payload.error"
+      },
+      "End": true
+    }
+  }
+}
