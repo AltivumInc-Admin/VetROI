@@ -76,7 +76,7 @@ function generateEducationLinks(career: CareerContext, veteran: VeteranContext):
   const links: ActionLink[] = []
   
   // State-specific schools
-  const stateSchools = getStateSchools(veteran.state, career.soc)
+  // const stateSchools = getStateSchools(veteran.state, career.soc)
   
   // Online programs
   if (career.soc.startsWith('29-')) { // Healthcare
@@ -113,8 +113,8 @@ function generateEducationLinks(career: CareerContext, veteran: VeteranContext):
   return links
 }
 
-function generateCertificationLinks(career: CareerContext, veteran: VeteranContext): ActionLink[] {
-  const links: ActionLink[] = []
+function generateCertificationLinks(career: CareerContext, _veteran: VeteranContext): ActionLink[] {
+  // const links: ActionLink[] = []
   
   // Career-specific certifications
   const certMap: { [key: string]: ActionLink[] } = {
@@ -258,34 +258,35 @@ function generateResourceLinks(career: CareerContext, veteran: VeteranContext): 
   return links
 }
 
-function getStateSchools(state: string, soc: string): ActionLink[] {
-  // This would be enhanced with your S3 data
-  const statePrograms: { [key: string]: { [key: string]: ActionLink } } = {
-    'TX': {
-      '29-': {
-        title: 'UT Health San Antonio',
-        description: 'Accelerated BSN for veterans with medical experience',
-        url: 'https://www.uthscsa.edu/academics/nursing',
-        icon: '🎓',
-        category: 'education',
-        priority: 95
-      }
-    },
-    'CA': {
-      '29-': {
-        title: 'UCLA School of Nursing',
-        description: 'MECN program for career changers',
-        url: 'https://www.nursing.ucla.edu',
-        icon: '🎓',
-        category: 'education',
-        priority: 95
-      }
-    }
-  }
-  
-  const prefix = soc.substring(0, 3)
-  return statePrograms[state]?.[prefix] ? [statePrograms[state][prefix]] : []
-}
+// TODO: Implement state-specific school recommendations
+// function _getStateSchools(state: string, soc: string): ActionLink[] {
+//   // This would be enhanced with your S3 data
+//   const statePrograms: { [key: string]: { [key: string]: ActionLink } } = {
+//     'TX': {
+//       '29-': {
+//         title: 'UT Health San Antonio',
+//         description: 'Accelerated BSN for veterans with medical experience',
+//         url: 'https://www.uthscsa.edu/academics/nursing',
+//         icon: '🎓',
+//         category: 'education',
+//         priority: 95
+//       }
+//     },
+//     'CA': {
+//       '29-': {
+//         title: 'UCLA School of Nursing',
+//         description: 'MECN program for career changers',
+//         url: 'https://www.nursing.ucla.edu',
+//         icon: '🎓',
+//         category: 'education',
+//         priority: 95
+//       }
+//     }
+//   }
+//   
+//   const prefix = soc.substring(0, 3)
+//   return statePrograms[state]?.[prefix] ? [statePrograms[state][prefix]] : []
+// }
 
 // Additional helper functions
 export function generateQuickActions(stage: string): ActionLink[] {

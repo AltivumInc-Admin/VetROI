@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface EducationPath {
@@ -262,7 +262,7 @@ export const ROICalculator: React.FC<ROICalculatorProps> = ({
 }
 
 // Helper functions
-function generateEducationPaths(career: any, profile: any, state: any): EducationPath[] {
+function generateEducationPaths(career: any, _profile: any, _state: any): EducationPath[] {
   // This would be enhanced with real data from your S3 bucket
   const paths: EducationPath[] = []
   
