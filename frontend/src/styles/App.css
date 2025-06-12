@@ -286,6 +286,10 @@
   padding: 1.5rem;
   overflow-y: auto;
   background-color: #fafafa;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 .message {
@@ -308,6 +312,10 @@
   border-radius: 8px;
   white-space: pre-wrap;
   word-wrap: break-word;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 .user-message .message-content {
