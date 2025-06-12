@@ -1,0 +1,374 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: VetROI™ - Production-Grade Infrastructure by Altivum Inc.
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.12
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        POWERTOOLS_SERVICE_NAME: VetROI
+        POWERTOOLS_METRICS_NAMESPACE: VetROI
+        LOG_LEVEL: INFO
+    Tracing: Active
+    Layers:
+      - !Ref SharedLibrariesLayer
+
+Parameters:
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, staging, prod]
+    Description: Deployment environment
+  
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-3-sonnet-20240229
+    Description: Bedrock model ID for recommendations
+  
+  ONetApiUrl:
+    Type: String
+    Default: https://services.onetcenter.org/ws
+    Description: O*NET Web Services base URL
+  
+  DomainName:
+    Type: String
+    Default: api.vetroi.com
+    Description: Custom domain for API (optional)
+
+Conditions:
+  IsProd: !Equals [!Ref Environment, prod]
+  HasCustomDomain: !Not [!Equals [!Ref DomainName, ""]]
+
+Resources:
+  # KMS Key for encryption
+  VetROIKMSKey:
+    Type: AWS::KMS::Key
+    Properties:
+      Description: VetROI™ encryption key
+      KeyPolicy:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: Enable IAM User Permissions
+            Effect: Allow
+            Principal:
+              AWS: !Sub 'arn:aws:iam::${AWS::AccountId}:root'
+            Action: 'kms:*'
+            Resource: '*'
+          - Sid: Allow services to use the key
+            Effect: Allow
+            Principal:
+              Service:
+                - logs.amazonaws.com
+                - s3.amazonaws.com
+                - dynamodb.amazonaws.com
+            Action:
+              - 'kms:Decrypt'
+              - 'kms:GenerateDataKey'
+            Resource: '*'
+
+  # Shared Lambda Layer
+  SharedLibrariesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub 'VetROI-SharedLibs-${Environment}'
+      Description: Common dependencies for VetROI™ Lambda functions
+      ContentUri: ../lambda/shared/
+      CompatibleRuntimes:
+        - python3.12
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: python3.12
+
+  # DynamoDB Table with encryption
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'VetROI_Sessions_${Environment}'
+      BillingMode: !If [IsProd, PROVISIONED, PAY_PER_REQUEST]
+      ProvisionedThroughput:
+        !If
+          - IsProd
+          - ReadCapacityUnits: 10
+            WriteCapacityUnits: 10
+          - !Ref AWS::NoValue
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: UserIndex
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+            - AttributeName: timestamp
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            !If
+              - IsProd
+              - ReadCapacityUnits: 5
+                WriteCapacityUnits: 5
+              - !Ref AWS::NoValue
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: !If [IsProd, true, false]
+      SSESpecification:
+        SSEEnabled: true
+        SSEType: KMS
+        KMSMasterKeyId: !Ref VetROIKMSKey
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  # S3 Buckets with encryption
+  DD214UploadBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'vetroi-dd214-uploads-${Environment}-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: !Ref VetROIKMSKey
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldFiles
+            Status: Enabled
+            ExpirationInDays: !If [IsProd, 365, 90]
+          - Id: MoveToGlacier
+            Status: !If [IsProd, Enabled, Disabled]
+            Transitions:
+              - TransitionInDays: 30
+                StorageClass: GLACIER
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  # Secrets Manager
+  ONetApiSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub 'VetROI/${Environment}/ONet/ApiCredentials'
+      Description: O*NET Web Services API credentials
+      KmsKeyId: !Ref VetROIKMSKey
+      SecretString: |
+        {
+          "username": "REPLACE_WITH_USERNAME",
+          "password": "REPLACE_WITH_PASSWORD"
+        }
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  # API Gateway with WAF
+  VetROIApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub 'VetROI-API-${Environment}'
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,PUT,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: !If [IsProd, "'https://vetroi.com'", "'*'"]
+      TracingEnabled: true
+      Auth:
+        ApiKeyRequired: !If [IsProd, true, false]
+        UsagePlan:
+          CreateUsagePlan: !If [IsProd, PER_API, NONE]
+          Quota:
+            Limit: 10000
+            Period: DAY
+          Throttle:
+            BurstLimit: 100
+            RateLimit: 50
+      Models:
+        VeteranRequest:
+          type: object
+          required:
+            - branch
+            - code
+            - homeState
+            - relocate
+            - education
+          properties:
+            branch:
+              type: string
+              enum: [army, navy, marine_corps, air_force, space_force, coast_guard]
+            code:
+              type: string
+            homeState:
+              type: string
+            relocate:
+              type: boolean
+            relocateState:
+              type: string
+            education:
+              type: string
+              enum: [high_school, associate, bachelor, master, doctorate]
+
+  # WAF for API Protection (Prod only)
+  ApiWAF:
+    Type: AWS::WAFv2::WebACL
+    Condition: IsProd
+    Properties:
+      Name: !Sub 'VetROI-WAF-${Environment}'
+      Scope: REGIONAL
+      DefaultAction:
+        Allow: {}
+      Rules:
+        - Name: RateLimitRule
+          Priority: 1
+          Statement:
+            RateBasedStatement:
+              Limit: 2000
+              AggregateKeyType: IP
+          Action:
+            Block: {}
+          VisibilityConfig:
+            SampledRequestsEnabled: true
+            CloudWatchMetricsEnabled: true
+            MetricName: RateLimitRule
+
+  # Lambda Functions with reserved concurrency
+  RecommendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'VetROI_Recommend_${Environment}'
+      CodeUri: ../lambda/recommend/
+      Handler: src.handler.lambda_handler
+      MemorySize: 1024
+      ReservedConcurrentExecutions: !If [IsProd, 100, 10]
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          ONET_API_URL: !Ref ONetApiUrl
+          ONET_SECRET_NAME: !Ref ONetApiSecret
+          ENVIRONMENT: !Ref Environment
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/${BedrockModelId}'
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref ONetApiSecret
+            - Effect: Allow
+              Action:
+                - kms:Decrypt
+              Resource: !GetAtt VetROIKMSKey.Arn
+      Events:
+        RecommendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref VetROIApi
+            Path: /recommend
+            Method: POST
+
+  # CloudWatch Alarms
+  RecommendFunctionErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: IsProd
+    Properties:
+      AlarmName: !Sub 'VetROI-${Environment}-RecommendFunction-Errors'
+      AlarmDescription: Alert on Lambda function errors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref RecommendFunction
+      AlarmActions:
+        - !Ref AlertTopic
+
+  # SNS Topic for Alerts
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Condition: IsProd
+    Properties:
+      TopicName: !Sub 'VetROI-Alerts-${Environment}'
+      DisplayName: VetROI™ Production Alerts
+      KmsMasterKeyId: !Ref VetROIKMSKey
+      Subscription:
+        - Endpoint: alerts@altivum.io
+          Protocol: email
+
+  # Custom Domain (if provided)
+  ApiDomainName:
+    Type: AWS::ApiGateway::DomainName
+    Condition: HasCustomDomain
+    Properties:
+      DomainName: !Ref DomainName
+      RegionalCertificateArn: !Ref Certificate
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Condition: HasCustomDomain
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          ValidationDomain: !Ref DomainName
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${VetROIApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-ApiUrl'
+  
+  CustomDomainUrl:
+    Condition: HasCustomDomain
+    Description: Custom domain URL
+    Value: !Sub 'https://${DomainName}'
+  
+  SessionsTableName:
+    Description: DynamoDB table name
+    Value: !Ref SessionsTable
+    Export:
+      Name: !Sub '${AWS::StackName}-SessionsTable'
+  
+  DD214BucketName:
+    Description: S3 bucket for DD-214 uploads
+    Value: !Ref DD214UploadBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-DD214Bucket'
