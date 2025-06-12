@@ -136,8 +136,19 @@ def lambda_handler(event, context):
             # Get O*NET data if available
             if onet_client and body.get('code'):
                 try:
-                    onet_context = enhance_ai_response_with_onet(body, onet_client)
-                    print(f"Enhanced prompt with O*NET data for MOS {body.get('code')}")
+                    # Import enhanced S3 integration
+                    from onet_s3_integration import integrate_with_lambda
+                    
+                    # Get military crosswalk data
+                    enhancement = integrate_with_lambda(body, onet_client)
+                    onet_context = enhancement.get('ai_context', '')
+                    
+                    # Store crosswalk data for frontend if needed
+                    if enhancement.get('type') == 'crosswalk':
+                        # Could store in DynamoDB for session persistence
+                        crosswalk_careers = enhancement.get('crosswalk_data', {}).get('careers', [])[:10]
+                        print(f"Found {len(crosswalk_careers)} career matches for MOS {body.get('code')}")
+                    
                 except Exception as e:
                     print(f"Failed to get O*NET data: {e}")
             

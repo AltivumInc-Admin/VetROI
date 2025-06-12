@@ -32,6 +32,7 @@
   - Responsive design with WCAG AAA compliance (12.8:1 contrast)
   - Custom VetROI™ branding and favicon
   - Full text selection support in chat interface
+  - O*NET attribution and data source acknowledgment
 
 #### Production Backend
 - **API Endpoint**: https://jg5fae61lj.execute-api.us-east-2.amazonaws.com/prod/recommend
@@ -42,6 +43,7 @@
   - Conversational AI responses
   - Context-aware career guidance
   - Graceful error handling with fallback responses
+  - O*NET API client ready (credentials pending)
 
 #### Infrastructure Components
 ```
@@ -50,7 +52,9 @@ AWS Services Deployed:
 ├── API Gateway: HTTP API with CORS enabled
 ├── DynamoDB: VetROI_Sessions table (ready for integration)
 ├── IAM Roles: VetROI-Lambda-ExecutionRole with Bedrock access
-├── S3 Buckets: vetroi-lambda-artifacts-205930636302
+├── S3 Buckets: 
+│   ├── vetroi-lambda-artifacts-205930636302 (Lambda deployment)
+│   └── altroi-data (O*NET career data lake)
 ├── Amplify App: d34razwlkdgpdv (VetROI™)
 ├── CloudFront: Custom domain distribution
 └── ACM: SSL certificate for vetroi.altivum.ai
@@ -65,201 +69,415 @@ Cloudflare DNS Records:
 
 ---
 
-## Technical Implementation
+## Data Architecture & Pipeline
 
-### AI Conversation Flow
-```python
-# Veteran submits profile → AI contextualizes response
-prompt_template = """You are VetROI™, an AI assistant specializing in helping military veterans transition to civilian careers.
+### 🎯 O*NET Data Lake (COMPLETED)
 
-VETERAN PROFILE:
-- Branch of Service: {branch}
-- Military Occupational Specialty (MOS/Rate/AFSC): {code}
-- Current Location: {state}
-- Education Level: {education}
-- Willing to Relocate: {relocate}
+We've built a comprehensive career intelligence data pipeline that transforms VetROI™ from a simple chatbot into a data-driven career advisory platform.
 
-YOUR ROLE:
-1. Acknowledge their military service respectfully
-2. Ask about their specific career interests or transition concerns
-3. Provide guidance that connects their military skills to civilian opportunities
-4. Be conversational, supportive, and practical
-5. Focus on actionable next steps
-"""
-```
-
-### Serverless Architecture Benefits
-- **Zero Infrastructure Management**: 100% serverless stack
-- **Infinite Scalability**: Handles 1 to 1M users automatically
-- **Cost Efficiency**: ~$0.0006 per conversation
-- **Global Performance**: CloudFront edge caching
-- **Enterprise Security**: AWS managed security at every layer
-
----
-
-## Phase 2: Enhanced Intelligence (IN PROGRESS)
-
-### 1. O*NET API Integration 📊
-**Status**: Next Priority  
-**Impact**: Real-time labor market data
-
-- Live salary data by location
-- Military-civilian skill translation
-- Industry growth projections
-- Required certifications mapping
-
-### 2. DynamoDB Conversation Memory 💾
-**Status**: Table created, integration pending  
-**Impact**: Personalized follow-ups
-
-- Conversation history persistence
-- Progress tracking
-- Multi-session coaching
-- Analytics dashboard
-
-### 3. DD-214 Document Intelligence 📄
-**Status**: Architecture designed  
-**Impact**: Automated profile extraction
-
-- Amazon Textract for OCR
-- Amazon Comprehend for entity extraction
-- Automatic MOS and skills identification
-- Security clearance detection
-
----
-
-## Production Metrics & Monitoring
-
-### Current Performance
-- **API Response Time**: ~2 seconds (with AI)
-- **Availability**: 99.9%+ (AWS SLA)
-- **AI Quality**: Nova Lite providing contextual, helpful responses
-- **Cost per Session**: <$0.001
-
-### Monitoring Strategy
+#### Data Pipeline Components
 ```yaml
-CloudWatch Dashboards:
-  - Real-time API latency
-  - Nova Lite token usage
-  - User engagement funnel
-  - Error rates by endpoint
+Step Functions Workflow:
+├── ReadMasterSOCList: Processes 1,139 O*NET occupations
+├── ProcessSOCChunk: Parallel processing with 10x concurrency
+├── FetchONETData: Career details, salary, outlook, skills
+├── FetchMilitaryData: Military-civilian crosswalk
+├── StoreInS3: Enriched data cached in S3
+└── MonitoringAlerts: SNS notifications for updates
+```
 
-Alarms:
-  - Response time > 3s
-  - Error rate > 1%
-  - Bedrock throttling
-  - SSL certificate expiry
+#### S3 Data Structure
+```
+s3://altroi-data/
+├── soc-details/
+│   ├── 11-1011.00.json  # Chief Executives
+│   ├── 29-1141.00.json  # Registered Nurses
+│   └── ... (1,139 total occupations)
+├── master-soc-list/
+│   └── onet_soc_codes.csv
+└── military-crosswalk/
+    └── crosswalk-cache.json
+```
+
+#### Data Schema Per Occupation
+```json
+{
+  "soc": "29-1141.00",
+  "title": "Registered Nurses",
+  "last_updated": "2025-06-11T16:34:51.046562+00:00",
+  "data": {
+    "report_raw": {
+      "career": {
+        "what_they_do": "...",
+        "on_the_job": { "task": [...] },
+        "career_video": true
+      },
+      "knowledge": { /* Required knowledge areas */ },
+      "skills": { /* Essential skills */ },
+      "abilities": { /* Key abilities */ },
+      "personality": { /* Work styles and interests */ },
+      "technology": { /* Tools and software */ },
+      "education": {
+        "job_zone": 4,
+        "education_usually_needed": ["bachelor's degree"],
+        "apprenticeships": { /* Available programs */ }
+      },
+      "job_outlook": {
+        "outlook": { "category": "Bright" },
+        "salary": {
+          "annual_median": 93600,
+          "annual_10th_percentile": 66030,
+          "annual_90th_percentile": 135320,
+          "hourly_median": 45
+        }
+      },
+      "check_out_my_state": {
+        /* State-specific employment data */
+        "above_average": { "state": [...] },
+        "average": { "state": [...] },
+        "below_average": { "state": [...] }
+      }
+    },
+    "military_service_details": [
+      /* All military codes that map to this occupation */
+      {
+        "branch": "army",
+        "code": "68C",
+        "title": "Practical Nursing Specialist",
+        "active": true
+      }
+    ]
+  }
+}
+```
+
+#### Military Crosswalk API
+```
+GET /crosswalks/military?keyword=18D
+→ Returns 25 civilian career matches with bright outlook indicators
 ```
 
 ---
 
-## Revenue & Growth Strategy
+## 🚧 Phase 2: Data Intelligence Implementation (IN PROGRESS)
 
-### Monetization Roadmap
-1. **Freemium Launch** (Current)
-   - Free AI consultations
-   - Build user base
-   - Collect feedback
+### 1. Two-Stage Career Discovery Engine 🔍
+**Timeline**: 3-4 days  
+**Status**: Architecture designed, ready for implementation
 
-2. **Premium Features** (Q3 2025)
-   - Unlimited conversations
-   - Resume builder
-   - Interview prep
-   - Direct recruiter connections
-
-3. **Enterprise Partnerships** (Q4 2025)
-   - Military base integration
-   - Corporate veteran hiring programs
-   - White-label solutions
-   - API licensing
-
-### Market Opportunity
-- **200,000** veterans transition annually
-- **$15B** spent on veteran career services
-- **67%** of veterans struggle with career translation
-- **89%** would use AI-powered guidance (survey data)
-
----
-
-## Development Workflow
-
-### Local Development
-```bash
-# Frontend
-cd frontend
-npm install
-npm run dev  # http://localhost:3000
-
-# Backend Lambda testing
-./deploy-bedrock.sh  # Deploys to AWS
+#### Stage 1: MOS → Career Options
+```python
+# User inputs military code
+veteran_input: "18D" (Special Forces Medical Sergeant)
+            ↓
+# O*NET Crosswalk API returns matches
+crosswalk_results: [
+  {"code": "29-1141.00", "title": "Registered Nurses", "bright_outlook": true},
+  {"code": "29-2042.00", "title": "Emergency Medical Technicians", "bright_outlook": true},
+  {"code": "11-9111.00", "title": "Medical and Health Services Managers"},
+  # ... up to 25 matches
+]
+            ↓
+# AI presents top 5 with context
 ```
 
-### Production Deployment
-```bash
-# Frontend (automatic via Amplify)
-git push origin main
-
-# Backend Lambda update
-./deploy-bedrock.sh
-
-# Infrastructure changes
-sam deploy --template sam-templates/template-production.yaml
+#### Stage 2: Career → Deep Intelligence
+```python
+# User selects career
+selected: "29-1141.00"
+         ↓
+# Fetch from S3 data lake
+career_intelligence: {
+  "salary_by_state": { /* 50 states + territories */ },
+  "education_paths": [ /* Specific programs */ ],
+  "military_matches": [ /* Which MOS codes qualify */ ],
+  "growth_outlook": "6% (faster than average)",
+  "automation_risk": "Low"
+}
+         ↓
+# AI provides hyper-personalized guidance
 ```
 
-### Environment Configuration
+### 2. ROI Calculation Engine 💰
+**Timeline**: 2-3 days  
+**Status**: Algorithm designed
+
+#### Core Components
+```typescript
+interface ROICalculation {
+  // Investment Analysis
+  educationCost: number
+  educationDuration: number // months
+  opportunityCost: number // lost income during education
+  
+  // GI Bill Benefits
+  tuitionCoverage: number // Post-9/11 GI Bill
+  monthlyHousingAllowance: number // BAH by zip code
+  bookStipend: number
+  yellowRibbonMatch?: number
+  
+  // Return Projections
+  currentMilitaryPay: number
+  entryLevelCivilianPay: number
+  fiveYearProjectedPay: number
+  tenYearProjectedPay: number
+  
+  // ROI Metrics
+  breakEvenMonth: number
+  fiveYearROI: number // percentage
+  tenYearROI: number // percentage
+  lifetimeEarningsDelta: number
+  
+  // Risk Factors
+  jobGrowthRate: number
+  automationProbability: number
+  locationQuotient: number // demand in chosen state
+  
+  // Final Score
+  vetROIScore: number // 0-100
+}
+```
+
+#### Scoring Algorithm
+```python
+def calculate_vetroi_score(roi_data):
+    # Weighted factors
+    weights = {
+        'break_even_speed': 0.25,      # How fast you recoup investment
+        'five_year_roi': 0.30,          # Medium-term financial gain
+        'job_security': 0.20,           # Growth rate + automation risk
+        'education_efficiency': 0.15,    # GI Bill coverage percentage
+        'location_match': 0.10          # Job availability in desired state
+    }
+    
+    # Normalize each factor to 0-100
+    scores = {
+        'break_even_speed': max(0, 100 - (break_even_months * 2)),
+        'five_year_roi': min(100, five_year_roi / 5),
+        'job_security': (growth_rate * 5) + (100 - automation_risk),
+        'education_efficiency': gi_bill_coverage_percent,
+        'location_match': location_quotient * 50
+    }
+    
+    # Calculate weighted score
+    vetroi_score = sum(scores[k] * weights[k] for k in weights)
+    
+    return round(vetroi_score)
+```
+
+### 3. Progressive Intelligence UI/UX 🎨
+**Timeline**: 2-3 days  
+**Status**: Components designed
+
+#### Three-Stage Interface
+```
+1. Discovery Stage
+   - Veteran inputs profile
+   - AI greets and asks interests
+   - Shows top 5 career matches from crosswalk
+   
+2. Exploration Stage  
+   - User selects career
+   - Deep data dive from S3
+   - Salary comparisons, requirements, outlook
+   
+3. Action Stage
+   - ROI calculation with score
+   - Direct links to schools/certifications
+   - One-click applications
+```
+
+#### Key UI Components
+- **CareerCard**: Clickable cards with bright outlook badges
+- **ROICalculator**: Interactive calculator with GI Bill integration  
+- **ActionLinks**: Direct pathways to education/jobs
+- **ComplexityToggle**: Show/hide data pipeline details
+
+### 4. Session Persistence & Analytics 📊
+**Timeline**: 1-2 days  
+**Status**: DynamoDB table exists
+
+#### Session Schema
+```python
+{
+    'session_id': str,          # UUID
+    'timestamp': int,           # Unix timestamp
+    'veteran_profile': {
+        'branch': str,
+        'code': str,           # MOS/Rate/AFSC
+        'state': str,
+        'education': str,
+        'relocate': bool
+    },
+    'conversation_history': [
+        {
+            'role': str,        # user/assistant
+            'content': str,
+            'timestamp': int,
+            'metadata': dict    # Career selections, ROI calculations
+        }
+    ],
+    'careers_explored': [
+        {
+            'soc': str,
+            'title': str,
+            'roi_score': int,
+            'explored_at': int
+        }
+    ],
+    'actions_taken': [
+        {
+            'type': str,        # school_apply, cert_info, job_search
+            'target': str,      # URL or resource
+            'timestamp': int
+        }
+    ],
+    'ttl': int                 # 90 days retention
+}
+```
+
+### 5. Enhanced Lambda Architecture 🏗️
+**Timeline**: 1 day  
+**Status**: Ready to implement
+
+#### Lambda Layer Structure
+```
+vetroi-data-layer/
+├── python/
+│   ├── onet_client.py
+│   ├── onet_s3_integration.py
+│   ├── roi_calculator.py
+│   ├── gi_bill_calculator.py
+│   └── session_manager.py
+```
+
+#### Environment Variables
 ```bash
-# Lambda Environment
-BEDROCK_MODEL_ID=amazon.nova-lite-v1:0
+# O*NET Configuration
+ONET_USERNAME=<from_secrets_manager>
+ONET_PASSWORD=<from_secrets_manager>
+
+# S3 Configuration  
+DATA_BUCKET=altroi-data
+SOC_PREFIX=soc-details/
+
+# DynamoDB
 TABLE_NAME=VetROI_Sessions
-REGION=us-east-1  # Bedrock region
 
-# Frontend Environment
-VITE_API_URL=https://jg5fae61lj.execute-api.us-east-2.amazonaws.com/prod
+# Feature Flags
+ENABLE_ROI_CALC=true
+ENABLE_SESSION_PERSISTENCE=true
 ```
 
 ---
 
-## Security & Compliance
+## 🎯 Phase 3: Production Enhancement (PLANNED)
 
-### Current Security Posture
-- **Data Encryption**: TLS 1.3 in transit, AES-256 at rest
-- **No PII Storage**: Conversations are ephemeral (until DynamoDB integration)
-- **CORS**: Restricted to production domains
-- **IAM**: Least privilege access policies
-- **SSL**: Amplify-managed certificates
+### 1. Real-Time Data Sync
+- **EventBridge**: Daily O*NET data refresh
+- **Change Detection**: Track salary/outlook changes
+- **Notification**: Alert users to new opportunities
 
-### Compliance Roadmap
-- [ ] SOC 2 Type II (planned)
-- [ ] HIPAA compliance (for mental health features)
-- [ ] VA data standards alignment
-- [ ] GDPR compliance for international veterans
+### 2. Machine Learning Enhancement
+- **SageMaker**: Train on successful transitions
+- **Personalization**: Learn from user choices
+- **Recommendation Engine**: Improve match quality
+
+### 3. Enterprise Features
+- **Bulk Processing**: Unit/base-wide analysis
+- **White Label**: Custom branding for partners
+- **API Access**: Integration with TAP programs
+
+### 4. Advanced Analytics
+- **QuickSight Dashboards**: Aggregate insights
+- **Athena Queries**: S3 data lake analysis
+- **Predictive Models**: Success probability scores
+
+---
+
+## Implementation Roadmap
+
+### Week 1: Data Pipeline Integration (Current)
+- [x] O*NET API client implementation
+- [x] S3 data lake structure design
+- [ ] Lambda integration with S3 data
+- [ ] Military crosswalk implementation
+- [ ] Two-stage query optimization
+
+### Week 2: Intelligence Layer
+- [ ] ROI calculation engine
+- [ ] GI Bill benefits calculator
+- [ ] Education provider matching
+- [ ] State-specific adjustments
+- [ ] Risk factor analysis
+
+### Week 3: UI/UX Enhancement
+- [ ] Progressive disclosure interface
+- [ ] Career exploration components
+- [ ] ROI visualization
+- [ ] Action link generation
+- [ ] Mobile optimization
+
+### Week 4: Production Hardening
+- [ ] Session persistence
+- [ ] Analytics pipeline
+- [ ] Performance optimization
+- [ ] Security audit
+- [ ] Load testing
 
 ---
 
 ## Success Metrics
 
 ### Technical KPIs
-- ✅ API response time < 2 seconds
-- ✅ 99.9%+ uptime
-- ✅ Zero infrastructure management
-- ✅ WCAG AAA accessibility
+- ✅ 1,139 occupations indexed
+- ✅ <100ms S3 data retrieval
+- ✅ 99.9%+ availability
+- ⬜ <3s end-to-end response time
+- ⬜ 90% cache hit rate
 
-### Business KPIs (Tracking)
-- Daily active veterans
-- Conversation completion rate
-- Career match satisfaction
-- Time to first application
-- Veteran NPS score
+### Business KPIs
+- ⬜ Average ROI score presented
+- ⬜ Careers explored per session
+- ⬜ Action links clicked
+- ⬜ Return user rate
+- ⬜ Successful transitions tracked
+
+### Data Quality Metrics
+- ✅ 100% SOC coverage
+- ✅ Military crosswalk accuracy
+- ⬜ Salary data freshness (<30 days)
+- ⬜ Education provider accuracy
+- ⬜ State-specific data coverage
 
 ---
 
 ## Competitive Advantages
 
-1. **AI-First Approach**: Real conversational guidance vs static job boards
-2. **Military-Native**: Built by veterans, for veterans
-3. **Serverless Scale**: No infrastructure limits on growth
-4. **Open Source + Commercial**: Community-driven development with enterprise features
-5. **AWS Partnership**: Potential for AWS marketplace and co-marketing
+1. **Comprehensive Data Lake**: 1,139 occupations with deep intelligence
+2. **Military-Specific Crosswalk**: Direct MOS to civilian mapping
+3. **ROI Calculation**: Concrete financial projections, not just recommendations
+4. **GI Bill Integration**: Accurate benefit calculations by state
+5. **Real-Time Intelligence**: Live O*NET data, not stale databases
+6. **Serverless Scale**: No infrastructure limits
+7. **AI + Data**: Nova Lite enhanced with real DOL data
+
+---
+
+## Cost Projections (Updated)
+
+| Service | Monthly Volume | Estimated Cost |
+|---------|---------------|----------------|
+| Lambda | 100,000 invocations | $2.00 |
+| API Gateway | 100,000 requests | $3.50 |
+| DynamoDB | 5GB, On-Demand | $6.50 |
+| S3 Storage | 10GB career data | $0.23 |
+| S3 Requests | 500,000 GET | $0.20 |
+| Bedrock | 100,000 API calls | $50.00 |
+| Step Functions | 30 executions | $0.75 |
+| **Total** | | **~$63/month** |
+
+*Note: Scales linearly. At 1M users: ~$630/month*
 
 ---
 
@@ -267,7 +485,7 @@ VITE_API_URL=https://jg5fae61lj.execute-api.us-east-2.amazonaws.com/prod
 
 **Founder & Technical Lead**: Christian Perez (christian.perez@altivum.io)  
 **Company**: Altivum Inc.  
-**Mission**: Empowering veterans through AI-driven career transformation
+**Mission**: Empowering veterans through data-driven career transformation
 
 **Repository**: https://github.com/AltivumInc-Admin/VetROI  
 **Production URL**: https://vetroi.altivum.ai  
