@@ -169,17 +169,19 @@
   padding: 1rem;
   background-color: #e9ecef;
   border-radius: 8px;
-  color: #333;
+  color: #212529;
+  font-weight: 400;
 }
 
 /* Career Card Styles */
 .career-card {
   margin-bottom: 1.5rem;
   padding: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: #ffffff;
   border-radius: 8px;
   border-left: 4px solid #2a5298;
   text-align: left;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .career-header {
@@ -201,19 +203,32 @@
 
 .career-summary {
   margin-bottom: 1rem;
-  color: #555;
+  color: #333;
+  font-weight: 400;
 }
 
 .career-details > div {
   margin-bottom: 0.75rem;
-}
-
-.career-details strong {
   color: #333;
 }
 
+.career-details strong {
+  color: #212529;
+  font-weight: 600;
+}
+
 .salary {
-  color: #28a745;
+  color: #0d6832;
+  font-weight: 500;
+}
+
+.match-reason {
+  color: #333;
+}
+
+.next-step {
+  color: #333;
+  font-style: italic;
 }
 
 .session-info {
