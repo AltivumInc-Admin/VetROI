@@ -1,12 +1,18 @@
 import { useState } from 'react'
 import VeteranForm from './components/VeteranForm'
-import RecommendationChat from './components/RecommendationChat'
-import { VeteranRequest, RecommendationResponse } from './types'
+import { ChatInterface } from './components/ChatInterface'
+import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
 import './styles/App.css'
 
+interface ChatSession {
+  sessionId: string
+  veteranProfile: VeteranRequest
+  initialMessage: string
+}
+
 function App() {
-  const [recommendations, setRecommendations] = useState<RecommendationResponse | null>(null)
+  const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -16,12 +22,23 @@ function App() {
     
     try {
       const response = await getRecommendations(formData)
-      setRecommendations(response)
+      
+      // Set up chat session with the initial AI response
+      setChatSession({
+        sessionId: response.sessionId,
+        veteranProfile: formData,
+        initialMessage: response.message || "Thank you for your service! I'm here to help you transition to a rewarding civilian career. What type of work interests you most?"
+      })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleNewConversation = () => {
+    setChatSession(null)
+    setError(null)
   }
 
   return (
@@ -33,12 +50,14 @@ function App() {
       
       <main className="app-main">
         <div className="container">
-          {!recommendations ? (
+          {!chatSession ? (
             <VeteranForm onSubmit={handleSubmit} loading={loading} />
           ) : (
-            <RecommendationChat 
-              recommendations={recommendations}
-              onNewRequest={() => setRecommendations(null)}
+            <ChatInterface 
+              veteranProfile={chatSession.veteranProfile}
+              initialMessage={chatSession.initialMessage}
+              sessionId={chatSession.sessionId}
+              onNewRequest={handleNewConversation}
             />
           )}
           

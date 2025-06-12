@@ -23,8 +23,11 @@ export interface Career {
 
 export interface RecommendationResponse {
   sessionId: string
-  recommendations: Career[]
+  recommendations?: Career[]
+  message?: string
   timestamp: string
+  isInitial?: boolean
+  error?: boolean
 }
 
 export const US_STATES = [
