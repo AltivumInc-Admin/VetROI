@@ -43,6 +43,21 @@
   color: white;
 }
 
+.onet-attribution {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #555;
+}
+
+.onet-attribution a {
+  color: #9db4d9;
+  text-decoration: none;
+}
+
+.onet-attribution a:hover {
+  text-decoration: underline;
+}
+
 /* Form Styles */
 .veteran-form {
   background: white;
