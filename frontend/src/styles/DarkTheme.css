@@ -380,8 +380,8 @@ label {
 }
 
 .onet-attribution span {
-  font-size: 0.6rem;
-  opacity: 0.7;
+  font-size: 0.75rem; /* Increased from 0.6rem */
+  opacity: 0.8; /* Slightly more prominent */
 }
 
 .onet-attribution:hover img {

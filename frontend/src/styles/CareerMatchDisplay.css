@@ -37,11 +37,87 @@
   text-underline-offset: 4px;
 }
 
+.career-cards-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.career-column {
+  min-height: 400px;
+}
+
+.career-column h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+}
+
 .career-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* Empty state for Careers of Interest */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: 2rem;
+  background: rgba(13, 17, 33, 0.5);
+  border: 1px dashed rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.empty-state .quote {
+  font-size: 1.125rem;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+.empty-state .instruction {
+  font-size: 0.875rem;
+  color: rgba(0, 212, 255, 0.7);
+  margin: 0;
+}
+
+/* SOC label with tooltip */
+.soc-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.2);
+  color: #00d4ff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.info-icon:hover {
+  background: rgba(0, 212, 255, 0.3);
+  transform: scale(1.1);
 }
 
 /* Smooth scroll animation */
@@ -54,6 +130,55 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Card wrapper for fade animations */
+.career-card-wrapper {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile tabs */
+.mobile-tabs {
+  display: none;
+  margin-bottom: 1.5rem;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 1rem;
+  background: rgba(13, 17, 33, 0.5);
+  padding: 0.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.tab-button.active {
+  background: rgba(0, 212, 255, 0.2);
+  color: #00d4ff;
 }
 
 /* Responsive adjustments */
@@ -70,8 +195,24 @@
     font-size: 1rem;
   }
 
-  .career-cards-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  /* Switch to tabs on mobile */
+  .career-cards-container {
+    display: block;
+  }
+
+  .mobile-tabs {
+    display: block;
+  }
+
+  .career-column {
+    display: none;
+  }
+
+  .career-column.active {
+    display: block;
+  }
+
+  .career-column h3 {
+    display: none; /* Hide column headers on mobile - tabs replace them */
   }
 }

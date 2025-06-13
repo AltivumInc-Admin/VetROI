@@ -47,11 +47,6 @@ export const CareerMatchCard: React.FC<CareerMatchCardProps> = ({
             Green Career
           </span>
         )}
-        {!brightOutlook && !green && (
-          <span className="tag standard">
-            Standard Growth
-          </span>
-        )}
       </div>
     </div>
   )
