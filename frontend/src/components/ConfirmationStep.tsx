@@ -34,32 +34,27 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   // Extract MOS title from API response
   const extractMOSTitle = () => {
-    // Check various possible locations in the API response
+    // Check if raw O*NET data exists
+    if (apiResponse.raw_onet_data?.data?.match?.[0]?.title) {
+      // Extract just the title part, remove the branch/rank info in parentheses
+      const fullTitle = apiResponse.raw_onet_data.data.match[0].title
+      const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
+      if (titleMatch) {
+        return titleMatch[1].trim()
+      }
+      return fullTitle
+    }
+    
+    // Fallback: check various possible locations in the API response
     if (apiResponse.mosTitle) {
       return apiResponse.mosTitle
     }
     
     // Check if it's in recommendations
     if (apiResponse.recommendations?.length > 0) {
-      // Sometimes the MOS title might be in the first recommendation's context
       const firstRec = apiResponse.recommendations[0]
       if (firstRec.mosTitle) {
         return firstRec.mosTitle
-      }
-    }
-    
-    // Check if it's embedded in the AI message
-    // Look for patterns like "as a Combat Medic" or "68W (Combat Medic)"
-    const messagePatterns = [
-      /as an? ([^,.]+?)(?:\s*\(|,|\.|$)/i,
-      /\b\w+\s*\(([^)]+)\)/,
-      /military experience as an? ([^,.]+)/i
-    ]
-    
-    for (const pattern of messagePatterns) {
-      const match = apiResponse.message?.match(pattern)
-      if (match && match[1]) {
-        return match[1].trim()
       }
     }
     
