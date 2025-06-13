@@ -4,6 +4,7 @@ import { ChatInterface } from './components/ChatInterface'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
 import './styles/App.css'
+import './styles/DarkTheme.css'
 
 interface ChatSession {
   sessionId: string
@@ -42,10 +43,10 @@ function App() {
   }
 
   return (
-    <div className="app">
+    <div className="App">
       <header className="app-header">
         <h1>VetROI™</h1>
-        <p>Military to Civilian Career Transition Assistant</p>
+        <p className="tagline">Career Intelligence Platform</p>
       </header>
       
       <main className="app-main">
