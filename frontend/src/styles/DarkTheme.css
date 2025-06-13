@@ -1,6 +1,9 @@
 /* VetROI™ Dark Theme Foundation */
 /* Phase 1: Sophisticated Dark Interface */
 
+/* Import Montserrat for branding */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap');
+
 :root {
   /* Color System */
   --vr-bg-primary: #0a0e1a;      /* Deep space black */
@@ -54,14 +57,17 @@ body {
 /* Header - Sophisticated Dark with Gradient */
 .app-header {
   background: linear-gradient(180deg, 
-    rgba(0, 212, 255, 0.1) 0%, 
-    rgba(0, 212, 255, 0.05) 50%, 
-    transparent 100%);
+    rgba(0, 212, 255, 0.15) 0%, 
+    rgba(0, 212, 255, 0.08) 30%,
+    rgba(0, 212, 255, 0.04) 60%,
+    rgba(10, 14, 26, 0.5) 90%,
+    var(--vr-bg-primary) 100%);
   backdrop-filter: var(--vr-glass-blur);
   border-bottom: none;
-  padding: 3rem 0 2rem;
+  padding: 3rem 0 4rem;
   position: relative;
   overflow: hidden;
+  margin-bottom: -2rem;
 }
 
 /* Subtle animated gradient overlay */
@@ -85,12 +91,13 @@ body {
 }
 
 .app-header h1 {
+  font-family: 'Montserrat', sans-serif;
   background: linear-gradient(135deg, var(--vr-cyan) 0%, var(--vr-purple) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 700;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
   font-size: 3.5rem;
   margin-bottom: 0.5rem;
   text-align: center;
@@ -144,9 +151,15 @@ body {
 }
 
 /* Override white backgrounds */
-.app-main,
+.app-main {
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+}
+
 .container {
   background: transparent !important;
+  padding-top: 0;
 }
 
 /* Form Elements */
