@@ -4,6 +4,7 @@ import { VeteranRequest, Branch, Education, US_STATES } from '../types'
 interface VeteranFormProps {
   onSubmit: (data: VeteranRequest) => void
   loading?: boolean
+  initialData?: VeteranRequest | null
 }
 
 const BRANCHES: { value: Branch; label: string }[] = [
@@ -23,14 +24,16 @@ const EDUCATION_LEVELS: { value: Education; label: string }[] = [
   { value: 'doctorate', label: 'Doctorate' },
 ]
 
-export default function VeteranForm({ onSubmit, loading }: VeteranFormProps) {
-  const [formData, setFormData] = useState<VeteranRequest>({
-    branch: 'army',
-    code: '',
-    homeState: 'TX',
-    relocate: false,
-    education: 'bachelor',
-  })
+export default function VeteranForm({ onSubmit, loading, initialData }: VeteranFormProps) {
+  const [formData, setFormData] = useState<VeteranRequest>(
+    initialData || {
+      branch: 'army',
+      code: '',
+      homeState: 'TX',
+      relocate: false,
+      education: 'bachelor',
+    }
+  )
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

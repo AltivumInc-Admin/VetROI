@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import VeteranForm from './components/VeteranForm'
 import { ChatInterface } from './components/ChatInterface'
+import { ConfirmationStep } from './components/ConfirmationStep'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
 import './styles/App.css'
@@ -16,20 +17,41 @@ function App() {
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [needsConfirmation, setNeedsConfirmation] = useState(false)
+  const [profileData, setProfileData] = useState<VeteranRequest | null>(null)
+  const confirmationRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = async (formData: VeteranRequest) => {
+    setError(null)
+    setProfileData(formData)
+    setNeedsConfirmation(true)
+  }
+
+  // Smooth scroll to confirmation when it appears
+  useEffect(() => {
+    if (needsConfirmation && confirmationRef.current) {
+      setTimeout(() => {
+        confirmationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 100)
+    }
+  }, [needsConfirmation])
+
+  const handleConfirm = async () => {
+    if (!profileData) return
+    
     setLoading(true)
     setError(null)
     
     try {
-      const response = await getRecommendations(formData)
+      const response = await getRecommendations(profileData)
       
       // Set up chat session with the initial AI response
       setChatSession({
         sessionId: response.sessionId,
-        veteranProfile: formData,
+        veteranProfile: profileData,
         initialMessage: response.message || "Thank you for your service! I'm here to help you transition to a rewarding civilian career. What type of work interests you most?"
       })
+      setNeedsConfirmation(false)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -37,9 +59,16 @@ function App() {
     }
   }
 
+  const handleAdjust = () => {
+    setNeedsConfirmation(false)
+    // Profile data remains in form
+  }
+
   const handleNewConversation = () => {
     setChatSession(null)
     setError(null)
+    setNeedsConfirmation(false)
+    setProfileData(null)
   }
 
   return (
@@ -51,9 +80,25 @@ function App() {
       
       <main className="app-main">
         <div className="container">
-          {!chatSession ? (
-            <VeteranForm onSubmit={handleSubmit} loading={loading} />
-          ) : (
+          {!chatSession && !needsConfirmation && (
+            <VeteranForm 
+              onSubmit={handleSubmit} 
+              loading={loading}
+              initialData={profileData}
+            />
+          )}
+          
+          {needsConfirmation && profileData && (
+            <div ref={confirmationRef}>
+              <ConfirmationStep
+                profile={profileData}
+                onConfirm={handleConfirm}
+                onAdjust={handleAdjust}
+              />
+            </div>
+          )}
+          
+          {chatSession && (
             <ChatInterface 
               veteranProfile={chatSession.veteranProfile}
               initialMessage={chatSession.initialMessage}
