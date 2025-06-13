@@ -71,29 +71,24 @@ function App() {
       </main>
       
       <footer className="app-footer">
-        <p>© 2025 Altivum Inc. • Built for AWS Lambda Hackathon 2025</p>
-        <p style={{ fontSize: '0.75rem', opacity: 0.7 }}>VetROI™ is a trademark of Altivum Inc.</p>
+        <div className="footer-content">
+          <span>© 2025 Altivum Inc.</span>
+          <span>VetROI™ is a trademark of Altivum Inc.</span>
+          <span>Built for AWS Lambda Hackathon 2025</span>
+        </div>
         
         <div className="onet-attribution">
-          <a href="https://services.onetcenter.org/" 
-             title="This site incorporates information from O*NET Web Services. Click to learn more."
-             target="_blank"
-             rel="noopener noreferrer">
-            <img src="/onet-in-it.svg" 
-                 style={{ width: '130px', height: '60px', border: 'none' }} 
-                 alt="O*NET in-it" />
-          </a>
-          <p style={{ fontSize: '0.75rem', marginTop: '0.5rem' }}>
+          <img src="/onet-in-it.svg" 
+               alt="O*NET in-it" />
+          <span>
             This site incorporates information from{' '}
             <a href="https://services.onetcenter.org/" 
                target="_blank" 
-               rel="noopener noreferrer"
-               style={{ color: '#6c757d', textDecoration: 'underline' }}>
+               rel="noopener noreferrer">
               O*NET Web Services
             </a>{' '}
-            by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA). 
-            O*NET® is a trademark of USDOL/ETA.
-          </p>
+            by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA).
+          </span>
         </div>
       </footer>
     </div>
