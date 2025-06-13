@@ -11,7 +11,8 @@ cd lambda/recommend
 echo "📦 Creating deployment package..."
 rm -rf package deployment.zip
 mkdir package
-cp -r src/* package/
+cp lambda_function.py package/
+cp -r src package/
 cd package
 
 # Create minimal deployment with updated handler and onet_client
