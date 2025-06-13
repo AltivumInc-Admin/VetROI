@@ -391,11 +391,20 @@
   border: 1px solid #e9ecef;
 }
 
-/* Force dark text color for all content */
-.assistant-message .message-content *,
-.assistant-message .message-markdown,
-.assistant-message .message-markdown * {
+/* Force dark text color for all content EXCEPT code blocks */
+.assistant-message .message-content *:not(code):not(pre),
+.assistant-message .message-markdown:not(.message-code-block),
+.assistant-message .message-markdown *:not(code):not(pre) {
   color: #1f2937 !important;
+}
+
+/* Ensure code blocks have light text */
+.assistant-message .message-code-block,
+.assistant-message .message-code-block *,
+.assistant-message pre,
+.assistant-message pre code {
+  color: #f9fafb !important;
+  background: #1f2937 !important;
 }
 
 .message-timestamp {

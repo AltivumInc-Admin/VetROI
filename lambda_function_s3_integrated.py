@@ -84,23 +84,17 @@ class S3CareerDataClient:
         Returns:
             List of matching careers with SOC codes
         """
-        # For now, use simplified mapping
-        # In production, this would call O*NET crosswalk API
-        military_mappings = {
-            '18D': ['29-1141.00', '29-2042.00', '11-9111.00', '29-2043.00', '21-1094.00'],
-            '11B': ['33-3051.00', '33-3051.04', '33-9032.00', '11-1021.00', '13-1151.00'],
-            '25B': ['15-1232.00', '15-1231.00', '15-1244.00', '15-1252.00', '15-1299.00'],
-            '68W': ['29-2042.00', '29-2043.00', '29-1141.00', '31-9092.00', '29-2061.00'],
-            '42A': ['11-3121.00', '13-1071.00', '13-1141.00', '43-4161.00', '43-6011.00'],
-            '88M': ['53-3032.00', '53-3033.00', '53-1047.00', '11-3071.00', '43-5071.00']
-        }
+        # TODO: Implement real O*NET Military Crosswalk API
+        # This should call: https://services.onetcenter.org/ws/mnm/careers
+        # with the military code to get REAL mappings
         
-        # Get mapped SOCs or search all healthcare for medical MOS
-        soc_codes = military_mappings.get(military_code.upper(), [])
+        # TEMPORARY: Return empty until API is connected
+        soc_codes = []
         
-        if not soc_codes and military_code.upper().startswith('68'):
-            # Medical MOS - return healthcare careers
-            soc_codes = ['29-1141.00', '29-2042.00', '29-2061.00', '31-9092.00', '29-1171.00']
+        # For now, return a message that we need API integration
+        if not soc_codes:
+            print(f"No O*NET API integration yet for MOS {military_code}")
+            return []
         
         # Fetch details for each SOC
         careers = []

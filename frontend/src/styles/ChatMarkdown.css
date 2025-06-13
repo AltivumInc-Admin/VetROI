@@ -122,8 +122,8 @@
 }
 
 .message-code-block {
-  background: #1f2937;
-  color: #f9fafb;
+  background: #1f2937 !important;
+  color: #f9fafb !important;
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -134,6 +134,8 @@
   font-family: 'SF Mono', Monaco, monospace;
   font-size: 0.875rem;
   line-height: 1.5;
+  color: #f9fafb !important;
+  background: transparent !important;
 }
 
 .message-quote {
