@@ -374,8 +374,8 @@ label {
 }
 
 .onet-attribution img {
-  height: 16px;
-  opacity: 0.5;
+  height: 22px; /* Increased from 16px */
+  opacity: 0.6;
   transition: opacity 0.2s ease;
 }
 

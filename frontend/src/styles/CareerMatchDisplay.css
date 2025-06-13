@@ -63,6 +63,17 @@
   gap: 1.5rem;
 }
 
+/* Two-column layout for Available Careers only */
+.available-careers .career-cards-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 2rem;
+}
+
+/* Keep single column for Careers of Interest */
+.careers-of-interest .career-cards-grid {
+  grid-template-columns: 1fr;
+}
+
 /* Empty state for Careers of Interest */
 .empty-state {
   display: flex;
@@ -182,6 +193,13 @@
 }
 
 /* Responsive adjustments */
+@media (max-width: 1024px) {
+  /* Switch to single column at medium screens */
+  .available-careers .career-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .career-match-container {
     padding: 1rem;
@@ -215,4 +233,58 @@
   .career-column h3 {
     display: none; /* Hide column headers on mobile - tabs replace them */
   }
+}
+
+/* Detailed Analysis Button */
+.analysis-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+.detailed-analysis-button {
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  color: white;
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.detailed-analysis-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3),
+              0 0 48px rgba(0, 212, 255, 0.2);
+}
+
+.detailed-analysis-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.3), rgba(0, 153, 204, 0.3));
+}
+
+.detailed-analysis-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.detailed-analysis-button:active::before {
+  width: 300px;
+  height: 300px;
 }

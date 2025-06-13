@@ -65,7 +65,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
     onSOCClick(code)
   }
 
-  const socTooltipContent = "A Standard Occupational Classification (SOC) code is a numerical code that categorizes workers into occupational groups based on their job duties, not job titles. It's a federal standard used by various agencies to collect, analyze, and disseminate data about the workforce."
+  const socTooltipContent = "A Standard Occupational Classification (SOC) code is a numerical code used by the U.S. Department of Labor, Employment and Training Administration as well as other government agencies that categorizes workers into occupational groups based on their job duties, not job titles. It's a federal standard to collect, analyze, and disseminate data about the workforce."
   
   return (
     <div className="career-match-container">
@@ -76,8 +76,17 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
           <span className="highlight">{mosTitle}</span>.
           <br /><br />
           Your military experience provides you with several options in the civilian sector. 
-          Scroll through these options below and click on the SOC codes that spark your interest. 
-          We'll explore these in greater detail soon.
+          Scroll through these options below and click on the{' '}
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+            SOC codes
+            <Tooltip content={socTooltipContent}>
+              <span className="info-icon">ⓘ</span>
+            </Tooltip>
+          </span>{' '}
+          that spark your interest. We'll explore these in greater detail soon.
+          <br /><br />
+          Add careers to your "Careers of Interest" column by clicking on the SOC code at the top of each card. 
+          When you're ready to learn more about these fields, click on the 'Detailed Analysis' button.
         </p>
       </div>
 
@@ -145,6 +154,17 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
             </div>
           )}
         </div>
+      </div>
+
+      {/* Detailed Analysis Button */}
+      <div className="analysis-button-container">
+        <button 
+          className="detailed-analysis-button"
+          disabled={selectedCareers.length === 0}
+          onClick={() => console.log('Detailed analysis clicked', selectedCareers)}
+        >
+          Detailed Analysis
+        </button>
       </div>
     </div>
   )
