@@ -25,6 +25,9 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
   matches,
   onSOCClick
 }) => {
+  // MOS code will be used for deeper analysis in Phase 4
+  console.log(`Displaying career matches for MOS: ${mosCode}`)
+  
   return (
     <div className="career-match-container">
       <div className="career-match-header">

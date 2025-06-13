@@ -25,6 +25,7 @@ function App() {
   const [apiResponse, setApiResponse] = useState<any>(null)
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
   const [selectedSOCs, setSelectedSOCs] = useState<string[]>([])
+  console.log('Selected SOCs:', selectedSOCs) // Will be used in Phase 4
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
 
