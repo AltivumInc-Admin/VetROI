@@ -22,7 +22,7 @@
 }
 
 .data-panel-tab.open {
-  transform: translateY(-50%) translateX(25vw);
+  transform: translateY(-50%) translateX(40vw);
 }
 
 .tab-text {
@@ -44,11 +44,11 @@
 
 .data-panel {
   position: fixed;
-  right: -25vw;
+  right: -40vw;
   top: 0;
   bottom: 0;
-  width: 25vw;
-  background: rgba(10, 14, 26, 0.95);
+  width: 40vw;
+  background: rgba(10, 14, 26, 0.98);
   backdrop-filter: blur(20px);
   border-left: 1px solid rgba(0, 212, 255, 0.2);
   transition: right 0.3s ease;
@@ -113,11 +113,11 @@
   padding: 1rem;
   color: var(--vr-cyan);
   font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   line-height: 1.5;
   overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
+  word-break: normal;
 }
 
 /* Syntax highlighting for JSON */
@@ -128,11 +128,15 @@
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .data-panel {
-    width: 80vw;
-    right: -80vw;
+    width: 90vw;
+    right: -90vw;
   }
   
   .data-panel-tab.open {
-    transform: translateY(-50%) translateX(80vw);
+    transform: translateY(-50%) translateX(90vw);
+  }
+  
+  .json-display {
+    font-size: 0.7rem;
   }
 }

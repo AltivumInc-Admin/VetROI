@@ -61,38 +61,40 @@
 }
 
 .profile-summary {
-  color: var(--vr-text-primary);
-  font-size: 1.125rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
   text-align: center;
 }
 
-.profile-details {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.detail-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0;
-}
-
-.detail-label {
-  color: var(--vr-text-secondary);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.detail-value {
+.profile-summary p {
   color: var(--vr-text-primary);
-  font-weight: 500;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  margin: 0 0 1rem 0;
 }
+
+.profile-summary p:last-child {
+  margin-bottom: 0;
+}
+
+.highlight {
+  color: white;
+  font-weight: 600;
+  position: relative;
+  display: inline-block;
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--vr-cyan), transparent);
+  opacity: 0.6;
+}
+
+/* Removed profile-details as we're not using the tabular format anymore */
 
 .confirmation-actions {
   display: grid;

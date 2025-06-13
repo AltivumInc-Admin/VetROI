@@ -15,6 +15,23 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
   onConfirm,
   onAdjust
 }) => {
+  // Helper functions
+  const formatEducation = (education: string): string => {
+    const educationMap: Record<string, string> = {
+      'high_school': 'High School Diploma',
+      'associate': 'Associate Degree',
+      'bachelor': "Bachelor's Degree",
+      'master': "Master's Degree",
+      'doctorate': 'Doctorate'
+    }
+    return educationMap[education] || education
+  }
+
+  const getStateName = (stateCode?: string): string | null => {
+    if (!stateCode) return null
+    return US_STATES.find(s => s.code === stateCode)?.name || stateCode
+  }
+
   // Extract MOS title from API response
   const extractMOSTitle = () => {
     // Look for MOS title in the API response
@@ -36,32 +53,33 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
   // Get full state name from code
   const state = US_STATES.find(s => s.code === profile.homeState)?.name || profile.homeState
   
-  const relocateText = profile.relocate 
-    ? 'and are open to relocating for the right opportunity' 
-    : `and prefer to stay in ${state}`
-  
   // Format branch name properly
   const branchDisplay = profile.branch.split('_').map(word => 
     word.charAt(0).toUpperCase() + word.slice(1)
   ).join(' ')
-  
-  const summary = `You served in the ${branchDisplay} as a ${mosDisplay}. You're currently in ${state} ${relocateText}.`
 
   return (
     <div className="confirmation-container">
       <div className="confirmation-card">
         <div className="confirmation-header">
-          <h2>Let me make sure I have this right.</h2>
+          <h2>Let me make sure I have this right:</h2>
         </div>
         
         <div className="confirmation-content">
-          <p className="profile-summary">{summary}</p>
-          
-          <div className="profile-details">
-            <div className="detail-item">
-              <span className="detail-label">Education Level</span>
-              <span className="detail-value">{profile.education}</span>
-            </div>
+          <div className="profile-summary">
+            <p>
+              You served in the <span className="highlight">{branchDisplay}</span> as a{' '}
+              <span className="highlight">{mosDisplay}</span>
+            </p>
+            <p>
+              You have a <span className="highlight">{formatEducation(profile.education)}</span>
+            </p>
+            <p>
+              You're seeking employment in <span className="highlight">{state}</span>{' '}
+              {profile.relocate 
+                ? `and prefer to seek employment in ${getStateName(profile.relocateState) || 'another state'}`
+                : `and prefer to stay in ${state}`}
+            </p>
           </div>
         </div>
         
