@@ -43,13 +43,14 @@ class ONetClient:
     
     @tracer.capture_method
     @lru_cache(maxsize=128)
-    def get_career_data(self, military_code: str, state: str) -> Dict[str, Any]:
+    def get_career_data(self, military_code: str, state: str, branch: str = 'all') -> Dict[str, Any]:
         """
         Get career data from O*NET for a military occupation code
         
         Args:
             military_code: Military occupation code (MOS/AFSC/Rate)
             state: US state code for salary data
+            branch: Military branch (army, navy, marine_corps, air_force, coast_guard, space_force)
             
         Returns:
             Dictionary containing O*NET career data
@@ -60,8 +61,8 @@ class ONetClient:
             if cached_data:
                 return cached_data
             
-            # Crosswalk military code to O*NET SOC
-            crosswalk_data = self._military_to_onet(military_code)
+            # Crosswalk military code to O*NET SOC with branch filter
+            crosswalk_data = self._military_to_onet(military_code, branch)
             
             if not crosswalk_data:
                 logger.warning(f"No O*NET mapping found for military code: {military_code}")
@@ -87,12 +88,21 @@ class ONetClient:
             return self._get_fallback_careers(state)
     
     @tracer.capture_method
-    def _military_to_onet(self, military_code: str) -> Optional[list]:
-        """Crosswalk military code to O*NET SOC codes"""
+    def _military_to_onet(self, military_code: str, branch: str = 'all') -> Optional[list]:
+        """Crosswalk military code to O*NET SOC codes with branch filtering"""
         try:
-            # This would typically call the O*NET military crosswalk endpoint
-            # For now, returning mock data
-            # Real implementation would use: /mnm/careers/{code}
+            # Call O*NET military crosswalk endpoint with branch parameter
+            # Real implementation: /mnm/careers?keyword={code}&branch={branch}
+            url = f"{self.base_url}/mnm/careers"
+            params = {
+                'keyword': military_code,
+                'branch': branch
+            }
+            
+            # For now, returning mock data until O*NET credentials are configured
+            # response = self.session.get(url, params=params)
+            # response.raise_for_status()
+            # data = response.json()
             
             # Mock crosswalk for common military codes
             mock_crosswalk = {

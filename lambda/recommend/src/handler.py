@@ -43,11 +43,12 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         onet_client = ONetClient()
         bedrock_client = BedrockClient()
         
-        # Get O*NET data for the military code
-        logger.info(f"Fetching O*NET data for code: {veteran_request.code}")
+        # Get O*NET data for the military code with branch filter
+        logger.info(f"Fetching O*NET data for code: {veteran_request.code}, branch: {veteran_request.branch}")
         onet_data = onet_client.get_career_data(
             veteran_request.code,
-            veteran_request.homeState if not veteran_request.relocate else veteran_request.relocateState
+            veteran_request.homeState if not veteran_request.relocate else veteran_request.relocateState,
+            veteran_request.branch
         )
         
         # Generate recommendations using Bedrock
