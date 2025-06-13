@@ -1,5 +1,5 @@
 import React from 'react'
-import './CareerMatchCard.css'
+import '../styles/CareerMatchCard.css'
 
 interface CareerMatchCardProps {
   code: string

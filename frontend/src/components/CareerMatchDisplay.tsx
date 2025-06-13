@@ -1,6 +1,6 @@
 import React from 'react'
 import { CareerMatchCard } from './CareerMatchCard'
-import './CareerMatchDisplay.css'
+import '../styles/CareerMatchDisplay.css'
 
 interface CareerMatch {
   href: string
