@@ -100,6 +100,11 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
             Let me adjust
           </button>
         </div>
+        
+        <div className="data-hint">
+          <span className="hint-icon">→</span>
+          <span className="hint-text">View live O*NET data</span>
+        </div>
       </div>
     </div>
   )

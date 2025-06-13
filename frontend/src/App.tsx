@@ -34,7 +34,7 @@ function App() {
       const response = await getRecommendations(formData)
       setApiResponse(response)
       setNeedsConfirmation(true)
-      setIsDataPanelOpen(true) // Show data panel
+      setIsDataPanelOpen(false) // Start with panel closed
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {

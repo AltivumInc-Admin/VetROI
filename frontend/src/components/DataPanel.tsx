@@ -11,7 +11,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({ data, isOpen, onToggle }) 
   return (
     <>
       <div className={`data-panel-tab ${isOpen ? 'open' : ''}`} onClick={onToggle}>
-        <span className="tab-text">API Data</span>
+        <span className="tab-text">O*NET DATA</span>
         <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
       </div>
       
