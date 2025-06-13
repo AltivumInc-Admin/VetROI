@@ -27,16 +27,28 @@
 }
 
 /* Global Reset for Dark Theme */
+html {
+  background: var(--vr-bg-primary) !important;
+}
+
 body {
-  background: var(--vr-bg-primary);
-  color: var(--vr-text-primary);
+  background: var(--vr-bg-primary) !important;
+  color: var(--vr-text-primary) !important;
   transition: background-color 0.3s ease;
 }
 
 /* Main App Container */
 .App {
-  background: var(--vr-bg-primary);
+  background: var(--vr-bg-primary) !important;
   min-height: 100vh;
+}
+
+/* Override light theme from index.css */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--vr-text-primary) !important;
+    background-color: var(--vr-bg-primary) !important;
+  }
 }
 
 /* Header - Sophisticated Dark */
@@ -64,9 +76,9 @@ body {
 
 /* Glassmorphic Form Container */
 .veteran-form {
-  background: var(--vr-surface);
+  background: var(--vr-surface) !important;
   backdrop-filter: var(--vr-glass-blur);
-  border: var(--vr-glass-border);
+  border: var(--vr-glass-border) !important;
   border-radius: 16px;
   box-shadow: var(--vr-glass-shadow);
   padding: 2.5rem;
@@ -74,15 +86,27 @@ body {
   margin: 2rem auto;
 }
 
+/* Override white backgrounds */
+.app-main,
+.container {
+  background: transparent !important;
+}
+
 /* Form Elements */
 .form-group label {
-  color: var(--vr-text-primary);
+  color: var(--vr-text-primary) !important;
   font-weight: 500;
   margin-bottom: 0.75rem;
   display: block;
   font-size: 0.875rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Override any conflicting styles */
+.form-label,
+label {
+  color: var(--vr-text-primary) !important;
 }
 
 .form-control {
