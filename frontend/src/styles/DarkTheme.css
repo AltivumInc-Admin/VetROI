@@ -51,12 +51,37 @@ body {
   }
 }
 
-/* Header - Sophisticated Dark */
+/* Header - Sophisticated Dark with Gradient */
 .app-header {
-  background: transparent;
+  background: linear-gradient(180deg, 
+    rgba(0, 212, 255, 0.1) 0%, 
+    rgba(0, 212, 255, 0.05) 50%, 
+    transparent 100%);
   backdrop-filter: var(--vr-glass-blur);
-  border-bottom: var(--vr-glass-border);
-  padding: 2rem 0;
+  border-bottom: none;
+  padding: 3rem 0 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle animated gradient overlay */
+.app-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 212, 255, 0.1), 
+    transparent);
+  animation: shimmer 10s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(50%); }
 }
 
 .app-header h1 {
@@ -66,12 +91,22 @@ body {
   background-clip: text;
   font-weight: 700;
   letter-spacing: -0.5px;
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
 .tagline {
-  color: var(--vr-text-secondary);
-  font-size: 1.125rem;
+  color: var(--vr-text-primary);
+  font-size: 1.25rem;
   margin-top: 0.5rem;
+  text-align: center;
+  opacity: 0.9;
+  font-weight: 300;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 /* Glassmorphic Form Container */
@@ -84,6 +119,28 @@ body {
   padding: 2.5rem;
   max-width: 600px;
   margin: 2rem auto;
+}
+
+/* Form Title - Make it POP */
+.veteran-form h2 {
+  color: white !important;
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  position: relative;
+  text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+}
+
+.veteran-form h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--vr-cyan), transparent);
 }
 
 /* Override white backgrounds */
@@ -268,6 +325,47 @@ label {
   background: transparent;
   color: var(--vr-text-muted);
   border-top: var(--vr-glass-border);
+}
+
+/* App Footer - Match the theme */
+.app-footer {
+  background: #000000 !important;
+  color: var(--vr-text-secondary) !important;
+  padding: 3rem 0;
+  margin-top: 4rem;
+  border-top: 1px solid rgba(0, 212, 255, 0.2);
+  text-align: center;
+}
+
+.app-footer p {
+  color: var(--vr-text-secondary) !important;
+  margin: 0.5rem 0;
+}
+
+.app-footer a {
+  color: var(--vr-cyan) !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.app-footer a:hover {
+  color: white !important;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+}
+
+.onet-attribution {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.onet-attribution img {
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.onet-attribution:hover img {
+  opacity: 1;
 }
 
 /* Scrollbar Styling */
