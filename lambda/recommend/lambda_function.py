@@ -17,8 +17,14 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     Lambda handler that makes REAL O*NET API calls - NO HARDCODING
     """
     
-    # Handle CORS preflight requests
-    if event.get('httpMethod') == 'OPTIONS':
+    # Handle CORS preflight requests - check multiple possible event structures
+    http_method = (
+        event.get('httpMethod') or 
+        event.get('requestContext', {}).get('http', {}).get('method') or
+        event.get('requestContext', {}).get('httpMethod')
+    )
+    
+    if http_method == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
@@ -27,7 +33,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept',
                 'Access-Control-Max-Age': '86400'
             },
-            'body': json.dumps({'message': 'CORS preflight successful'})
+            'body': ''
         }
     
     try:
