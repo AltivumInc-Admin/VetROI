@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import VeteranForm from './components/VeteranForm'
 import { ChatInterface } from './components/ChatInterface'
 import { ConfirmationStep } from './components/ConfirmationStep'
+import { DataPanel } from './components/DataPanel'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
 import './styles/App.css'
@@ -19,12 +20,26 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [needsConfirmation, setNeedsConfirmation] = useState(false)
   const [profileData, setProfileData] = useState<VeteranRequest | null>(null)
+  const [apiResponse, setApiResponse] = useState<any>(null)
+  const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
   const confirmationRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = async (formData: VeteranRequest) => {
+    setLoading(true)
     setError(null)
     setProfileData(formData)
-    setNeedsConfirmation(true)
+    
+    try {
+      // Make API call immediately to get MOS translation
+      const response = await getRecommendations(formData)
+      setApiResponse(response)
+      setNeedsConfirmation(true)
+      setIsDataPanelOpen(true) // Show data panel
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Smooth scroll to confirmation when it appears
@@ -37,30 +52,21 @@ function App() {
   }, [needsConfirmation])
 
   const handleConfirm = async () => {
-    if (!profileData) return
+    if (!profileData || !apiResponse) return
     
-    setLoading(true)
-    setError(null)
-    
-    try {
-      const response = await getRecommendations(profileData)
-      
-      // Set up chat session with the initial AI response
-      setChatSession({
-        sessionId: response.sessionId,
-        veteranProfile: profileData,
-        initialMessage: response.message || "Thank you for your service! I'm here to help you transition to a rewarding civilian career. What type of work interests you most?"
-      })
-      setNeedsConfirmation(false)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
-      setLoading(false)
-    }
+    // Use the existing API response
+    setChatSession({
+      sessionId: apiResponse.sessionId,
+      veteranProfile: profileData,
+      initialMessage: apiResponse.message || "Thank you for your service! I'm here to help you transition to a rewarding civilian career. What type of work interests you most?"
+    })
+    setNeedsConfirmation(false)
   }
 
   const handleAdjust = () => {
     setNeedsConfirmation(false)
+    setApiResponse(null)
+    setIsDataPanelOpen(false)
     // Profile data remains in form
   }
 
@@ -69,6 +75,8 @@ function App() {
     setError(null)
     setNeedsConfirmation(false)
     setProfileData(null)
+    setApiResponse(null)
+    setIsDataPanelOpen(false)
   }
 
   return (
@@ -88,10 +96,11 @@ function App() {
             />
           )}
           
-          {needsConfirmation && profileData && (
+          {needsConfirmation && profileData && apiResponse && (
             <div ref={confirmationRef}>
               <ConfirmationStep
                 profile={profileData}
+                apiResponse={apiResponse}
                 onConfirm={handleConfirm}
                 onAdjust={handleAdjust}
               />
@@ -136,6 +145,14 @@ function App() {
           </span>
         </div>
       </footer>
+      
+      {apiResponse && (
+        <DataPanel 
+          data={apiResponse}
+          isOpen={isDataPanelOpen}
+          onToggle={() => setIsDataPanelOpen(!isDataPanelOpen)}
+        />
+      )}
     </div>
   )
 }

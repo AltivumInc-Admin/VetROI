@@ -1,0 +1,138 @@
+/* Data Panel - Collapsible API Response Display */
+
+.data-panel-tab {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  padding: 1rem 0.5rem;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.data-panel-tab:hover {
+  background: rgba(0, 212, 255, 0.15);
+  padding-left: 1rem;
+}
+
+.data-panel-tab.open {
+  transform: translateY(-50%) translateX(25vw);
+}
+
+.tab-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: var(--vr-cyan);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tab-icon {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--vr-cyan);
+  font-size: 1.2rem;
+}
+
+.data-panel {
+  position: fixed;
+  right: -25vw;
+  top: 0;
+  bottom: 0;
+  width: 25vw;
+  background: rgba(10, 14, 26, 0.95);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid rgba(0, 212, 255, 0.2);
+  transition: right 0.3s ease;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.data-panel.open {
+  right: 0;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.data-panel-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.data-panel-header h3 {
+  margin: 0;
+  color: var(--vr-cyan);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--vr-text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.data-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.json-display {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  color: var(--vr-cyan);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Syntax highlighting for JSON */
+.json-display {
+  color: #a0a0a0;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .data-panel {
+    width: 80vw;
+    right: -80vw;
+  }
+  
+  .data-panel-tab.open {
+    transform: translateY(-50%) translateX(80vw);
+  }
+}
