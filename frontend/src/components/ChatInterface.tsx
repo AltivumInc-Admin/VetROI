@@ -33,6 +33,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
   ])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [socData, setSocData] = useState<any>(null)
+  const [socLoading, setSocLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -43,8 +45,47 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
     scrollToBottom()
   }, [messages])
 
+  const fetchSOCData = async (socCodes: string) => {
+    setSocLoading(true)
+    setSocData(null)
+    
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || 'https://jg5fae61lj.execute-api.us-east-2.amazonaws.com/prod'}/recommend`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            sessionId,
+            socCodes: socCodes,
+            requestType: 'soc_lookup'
+          })
+        }
+      )
+
+      const data = await response.json()
+      setSocData(data)
+    } catch (error) {
+      console.error('Error fetching SOC data:', error)
+      setSocData({ error: 'Failed to fetch SOC data' })
+    } finally {
+      setSocLoading(false)
+    }
+  }
+
   const sendMessage = async () => {
     if (!inputValue.trim() || isLoading) return
+
+    // Check if input is SOC code(s)
+    const socPattern = /^\d{2}-\d{4}\.\d{2}(?:\s*,\s*\d{2}-\d{4}\.\d{2})*$/
+    if (socPattern.test(inputValue.trim())) {
+      // Handle SOC code lookup
+      await fetchSOCData(inputValue.trim())
+      setInputValue('')
+      return
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -140,24 +181,50 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="chat-input-container">
-        <textarea
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="Ask about career opportunities, skills translation, certifications, or anything else..."
-          className="chat-input"
-          rows={2}
-          disabled={isLoading}
-        />
-        <button
-          onClick={sendMessage}
-          disabled={!inputValue.trim() || isLoading}
-          className="send-button"
-        >
-          {isLoading ? 'Sending...' : 'Send'}
-        </button>
+      <div className="soc-input-section">
+        <label className="soc-input-label">
+          Given your results, enter SOC codes of interest. If more than 1 separate with a comma.
+        </label>
+        <div className="chat-input-container">
+          <textarea
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder=""
+            className="chat-input"
+            rows={2}
+            disabled={isLoading}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={!inputValue.trim() || isLoading}
+            className="send-button"
+          >
+            {isLoading ? 'Sending...' : 'Send'}
+          </button>
+        </div>
       </div>
+
+      {/* SOC Data Display Box */}
+      {(socData || socLoading) && (
+        <div className="soc-data-display">
+          <h3 className="soc-data-title">S3 Career Data</h3>
+          {socLoading ? (
+            <div className="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span className="loading-text">Fetching SOC data from S3...</span>
+            </div>
+          ) : (
+            <div className="soc-json-content">
+              <pre className="message-code-block">
+                <code>{JSON.stringify(socData, null, 2)}</code>
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="chat-footer">
         <p>© 2025 Altivum Inc. VetROI™ is a trademark of Altivum Inc.</p>

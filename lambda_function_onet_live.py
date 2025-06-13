@@ -90,8 +90,52 @@ def lambda_handler(event, context):
     except:
         body = {}
     
+    # Check if this is a SOC code lookup request
+    if body.get('requestType') == 'soc_lookup' and body.get('socCodes'):
+        soc_codes = body.get('socCodes', '').split(',')
+        soc_codes = [code.strip() for code in soc_codes if code.strip()]
+        
+        # Initialize S3 client
+        s3 = boto3.client('s3')
+        results = {}
+        
+        for soc_code in soc_codes:
+            try:
+                # Fetch from S3
+                response = s3.get_object(
+                    Bucket='altroi-data',
+                    Key=f'soc-details/{soc_code}.json'
+                )
+                data = json.loads(response['Body'].read())
+                results[soc_code] = {
+                    "success": True,
+                    "data": data
+                }
+            except Exception as e:
+                results[soc_code] = {
+                    "success": False,
+                    "error": str(e)
+                }
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                'Access-Control-Allow-Credentials': 'true'
+            },
+            'body': json.dumps({
+                "socCodes": soc_codes,
+                "results": results,
+                "timestamp": datetime.utcnow().isoformat(),
+                "dataSource": "S3_altroi-data"
+            })
+        }
+    
     # Check if this is an initial profile submission
-    if all(key in body for key in ['branch', 'code', 'homeState']):
+    elif all(key in body for key in ['branch', 'code', 'homeState']):
         military_code = body.get('code', '')
         
         # Get LIVE O*NET data
