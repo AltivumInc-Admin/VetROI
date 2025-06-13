@@ -334,16 +334,43 @@
   cursor: text;
 }
 
-/* High visibility text selection */
-.message-content::selection,
-.message-content *::selection {
-  background-color: #3b82f6 !important;
+/* High visibility text selection - Global and specific */
+* ::selection,
+*::selection,
+::selection {
+  background-color: #2563eb !important;
+  color: white !important;
+  text-shadow: none !important;
+}
+
+* ::-moz-selection,
+*::-moz-selection,
+::-moz-selection {
+  background-color: #2563eb !important;
+  color: white !important;
+  text-shadow: none !important;
+}
+
+/* Specific to chat messages */
+.chat-messages ::selection,
+.message ::selection,
+.message-content ::selection,
+.message-content *::selection,
+.message-markdown ::selection,
+.message-markdown *::selection,
+.message-text ::selection {
+  background-color: #2563eb !important;
   color: white !important;
 }
 
-.message-content::-moz-selection,
-.message-content *::-moz-selection {
-  background-color: #3b82f6 !important;
+.chat-messages ::-moz-selection,
+.message ::-moz-selection,
+.message-content ::-moz-selection,
+.message-content *::-moz-selection,
+.message-markdown ::-moz-selection,
+.message-markdown *::-moz-selection,
+.message-text ::-moz-selection {
+  background-color: #2563eb !important;
   color: white !important;
 }
 

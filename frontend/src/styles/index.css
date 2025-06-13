@@ -1,3 +1,14 @@
+/* CRITICAL: Force text selection colors globally */
+::selection {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
+::-moz-selection {
+  background-color: #2563eb !important;
+  color: white !important;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

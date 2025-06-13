@@ -3,16 +3,38 @@
 /* Text Selection - Make it highly visible */
 .message-content ::selection,
 .message-markdown ::selection,
-.message-text ::selection {
-  background-color: #3b82f6 !important;
+.message-text ::selection,
+.message-markdown p::selection,
+.message-markdown li::selection,
+.message-markdown h1::selection,
+.message-markdown h2::selection,
+.message-markdown h3::selection,
+.message-markdown h4::selection,
+.message-markdown h5::selection,
+.message-markdown strong::selection,
+.message-markdown em::selection,
+.message-markdown code::selection {
+  background-color: #2563eb !important;
   color: white !important;
+  text-shadow: none !important;
 }
 
 .message-content ::-moz-selection,
 .message-markdown ::-moz-selection,
-.message-text ::-moz-selection {
-  background-color: #3b82f6 !important;
+.message-text ::-moz-selection,
+.message-markdown p::-moz-selection,
+.message-markdown li::-moz-selection,
+.message-markdown h1::-moz-selection,
+.message-markdown h2::-moz-selection,
+.message-markdown h3::-moz-selection,
+.message-markdown h4::-moz-selection,
+.message-markdown h5::-moz-selection,
+.message-markdown strong::-moz-selection,
+.message-markdown em::-moz-selection,
+.message-markdown code::-moz-selection {
+  background-color: #2563eb !important;
   color: white !important;
+  text-shadow: none !important;
 }
 
 /* Enable text selection on all message content */
