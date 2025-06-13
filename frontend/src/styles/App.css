@@ -274,6 +274,7 @@
   flex-direction: column;
   height: 70vh;
   max-height: 800px;
+  color: #1f2937 !important;
 }
 
 .chat-header {
@@ -353,6 +354,11 @@
 
 /* Specific to chat messages */
 .chat-messages ::selection,
+/* Override any inherited light colors */
+.chat-messages {
+  color: #1f2937 !important;
+}
+
 .message ::selection,
 .message-content ::selection,
 .message-content *::selection,
@@ -381,8 +387,15 @@
 
 .assistant-message .message-content {
   background-color: white;
-  color: #333;
+  color: #1f2937 !important;
   border: 1px solid #e9ecef;
+}
+
+/* Force dark text color for all content */
+.assistant-message .message-content *,
+.assistant-message .message-markdown,
+.assistant-message .message-markdown * {
+  color: #1f2937 !important;
 }
 
 .message-timestamp {

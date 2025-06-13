@@ -54,7 +54,14 @@
 /* Markdown Elements */
 .message-markdown {
   line-height: 1.6;
-  color: #1f2937;
+  color: #1f2937 !important;
+}
+
+/* Ensure all markdown content is dark */
+.message-markdown p,
+.message-markdown li,
+.message-markdown span {
+  color: #1f2937 !important;
 }
 
 .message-heading-1 {
