@@ -34,16 +34,35 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   // Extract MOS title from API response
   const extractMOSTitle = () => {
-    // Look for MOS title in the API response
-    // This could be in recommendations or in a crosswalk field
+    // Check various possible locations in the API response
     if (apiResponse.mosTitle) {
       return apiResponse.mosTitle
     }
-    // Check if it's in the message
-    const messageMatch = apiResponse.message?.match(/as a ([^.]+)\./)
-    if (messageMatch) {
-      return messageMatch[1]
+    
+    // Check if it's in recommendations
+    if (apiResponse.recommendations?.length > 0) {
+      // Sometimes the MOS title might be in the first recommendation's context
+      const firstRec = apiResponse.recommendations[0]
+      if (firstRec.mosTitle) {
+        return firstRec.mosTitle
+      }
     }
+    
+    // Check if it's embedded in the AI message
+    // Look for patterns like "as a Combat Medic" or "68W (Combat Medic)"
+    const messagePatterns = [
+      /as an? ([^,.]+?)(?:\s*\(|,|\.|$)/i,
+      /\b\w+\s*\(([^)]+)\)/,
+      /military experience as an? ([^,.]+)/i
+    ]
+    
+    for (const pattern of messagePatterns) {
+      const match = apiResponse.message?.match(pattern)
+      if (match && match[1]) {
+        return match[1].trim()
+      }
+    }
+    
     return null
   }
 
@@ -77,7 +96,7 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
             <p>
               You're seeking employment in <span className="highlight">{state}</span>{' '}
               {profile.relocate 
-                ? `and prefer to seek employment in ${getStateName(profile.relocateState) || 'another state'}`
+                ? <>and prefer to seek employment in <span className="highlight">{getStateName(profile.relocateState) || 'another state'}</span></>
                 : `and prefer to stay in ${state}`}
             </p>
           </div>
@@ -99,11 +118,6 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
             <span className="rotate-icon">↻</span>
             Let me adjust
           </button>
-        </div>
-        
-        <div className="data-hint">
-          <span className="hint-icon">→</span>
-          <span className="hint-text">View live O*NET data</span>
         </div>
       </div>
     </div>
