@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import VeteranForm from './components/VeteranForm'
 import { ChatInterface } from './components/ChatInterface'
 import { ConfirmationStep } from './components/ConfirmationStep'
+import { CareerMatchDisplay } from './components/CareerMatchDisplay'
 import { DataPanel } from './components/DataPanel'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
@@ -19,10 +20,13 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [needsConfirmation, setNeedsConfirmation] = useState(false)
+  const [showCareerMatches, setShowCareerMatches] = useState(false)
   const [profileData, setProfileData] = useState<VeteranRequest | null>(null)
   const [apiResponse, setApiResponse] = useState<any>(null)
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
+  const [selectedSOCs, setSelectedSOCs] = useState<string[]>([])
   const confirmationRef = useRef<HTMLDivElement>(null)
+  const careerMatchesRef = useRef<HTMLDivElement>(null)
 
   const handleSubmit = async (formData: VeteranRequest) => {
     setLoading(true)
@@ -54,19 +58,22 @@ function App() {
   const handleConfirm = async () => {
     if (!profileData || !apiResponse) return
     
-    // Use the existing API response
-    setChatSession({
-      sessionId: apiResponse.sessionId,
-      veteranProfile: profileData,
-      initialMessage: apiResponse.message || "Thank you for your service! I'm here to help you transition to a rewarding civilian career. What type of work interests you most?"
-    })
+    // Show career matches instead of going directly to chat
     setNeedsConfirmation(false)
+    setShowCareerMatches(true)
+    
+    // Scroll to career matches
+    setTimeout(() => {
+      careerMatchesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
   }
 
   const handleAdjust = () => {
     setNeedsConfirmation(false)
+    setShowCareerMatches(false)
     setApiResponse(null)
     setIsDataPanelOpen(false)
+    setSelectedSOCs([])
     // Profile data remains in form
   }
 
@@ -74,9 +81,21 @@ function App() {
     setChatSession(null)
     setError(null)
     setNeedsConfirmation(false)
+    setShowCareerMatches(false)
     setProfileData(null)
     setApiResponse(null)
     setIsDataPanelOpen(false)
+    setSelectedSOCs([])
+  }
+
+  const handleSOCClick = (code: string) => {
+    console.log('SOC clicked:', code)
+    setSelectedSOCs(prev => {
+      if (prev.includes(code)) {
+        return prev.filter(c => c !== code)
+      }
+      return [...prev, code]
+    })
   }
 
   return (
@@ -88,7 +107,7 @@ function App() {
       
       <main className="app-main">
         <div className="container">
-          {!chatSession && !needsConfirmation && (
+          {!chatSession && !needsConfirmation && !showCareerMatches && (
             <VeteranForm 
               onSubmit={handleSubmit} 
               loading={loading}
@@ -103,6 +122,17 @@ function App() {
                 apiResponse={apiResponse}
                 onConfirm={handleConfirm}
                 onAdjust={handleAdjust}
+              />
+            </div>
+          )}
+          
+          {showCareerMatches && profileData && apiResponse && (
+            <div ref={careerMatchesRef}>
+              <CareerMatchDisplay
+                mosTitle={apiResponse.raw_onet_data?.data?.match?.[0]?.title || profileData.code}
+                mosCode={profileData.code}
+                matches={apiResponse.raw_onet_data?.data?.match?.[0]?.occupations?.occupation || []}
+                onSOCClick={handleSOCClick}
               />
             </div>
           )}
