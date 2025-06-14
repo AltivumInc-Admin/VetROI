@@ -8,11 +8,13 @@
 
 .analysis-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
   margin-bottom: 3rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+  text-align: center;
 }
 
 .back-button {
@@ -41,6 +43,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   margin: 0;
+  width: 100%;
 }
 
 .analysis-content {

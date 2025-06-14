@@ -40,10 +40,10 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
   return (
     <div className="detailed-analysis-container">
       <header className="analysis-header">
+        <h2>Detailed Career Analysis</h2>
         <button className="back-button" onClick={onBack}>
           ← Back to Career Selection
         </button>
-        <h2>Detailed Career Analysis</h2>
       </header>
       
       <main className="analysis-content">
