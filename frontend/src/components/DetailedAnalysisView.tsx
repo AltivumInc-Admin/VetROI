@@ -7,12 +7,14 @@ interface DetailedAnalysisViewProps {
   selectedSOCs: string[]
   onBack: () => void
   userState?: string
+  relocationState?: string
 }
 
 export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
   selectedSOCs,
   onBack,
-  userState = 'CA'
+  userState = 'CA',
+  relocationState
 }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -70,6 +72,7 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
                 key={socData.soc} 
                 socData={socData} 
                 userState={userState}
+                relocationState={relocationState}
               />
             ))}
           </div>

@@ -7,11 +7,13 @@ import '../styles/CareerDetailCard.css'
 interface CareerDetailCardProps {
   socData: any
   userState?: string
+  relocationState?: string
 }
 
 export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({ 
   socData, 
-  userState = 'CA' 
+  userState = 'CA',
+  relocationState 
 }) => {
   const [isExpanded, setIsExpanded] = useState(true)
   
@@ -25,16 +27,17 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
   const checkOutMyState = socData.check_out_my_state
 
   // Extract location data for user's state
-  const getLocationQuotient = () => {
+  const getLocationQuotient = (stateCode: string) => {
     const allStates = [
       ...(checkOutMyState?.above_average?.state || []),
       ...(checkOutMyState?.average?.state || []),
       ...(checkOutMyState?.below_average?.state || [])
     ]
-    return allStates.find(state => state.postal_code === userState)
+    return allStates.find(state => state.postal_code === stateCode)
   }
 
-  const locationData = getLocationQuotient()
+  const locationData = getLocationQuotient(userState)
+  const relocationLocationData = relocationState ? getLocationQuotient(relocationState) : null
 
   return (
     <div className="career-detail-wrapper">
@@ -99,15 +102,18 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
 
       {/* Location Analysis */}
       <section className="location-section">
-        <h3>Job Market in Your State</h3>
-        {locationData ? (
+        <h3>Job Market Analysis</h3>
+        {locationData || relocationLocationData ? (
           <LocationQuotient 
-            state={locationData.name}
-            stateCode={locationData.postal_code}
-            quotient={locationData.location_quotient}
+            state={locationData?.name}
+            stateCode={locationData?.postal_code || userState}
+            quotient={locationData?.location_quotient || 0}
+            relocationState={relocationLocationData?.name}
+            relocationStateCode={relocationLocationData?.postal_code || relocationState}
+            relocationQuotient={relocationLocationData?.location_quotient}
           />
         ) : (
-          <p className="no-data">No specific data available for {userState}</p>
+          <p className="no-data">No specific data available for {userState}{relocationState ? ` or ${relocationState}` : ''}</p>
         )}
       </section>
 

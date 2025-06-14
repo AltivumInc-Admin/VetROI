@@ -185,6 +185,7 @@ function App() {
               selectedSOCs={selectedSOCs}
               onBack={handleBackToCareerSelection}
               userState={profileData?.homeState || 'CA'}
+              relocationState={profileData?.relocate ? profileData?.relocateState : undefined}
             />
           )}
           
