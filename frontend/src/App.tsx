@@ -126,6 +126,21 @@ function App() {
     setDataPanelMode('api')
   }
 
+  const handleRestart = () => {
+    // Reset all state to initial values
+    setChatSession(null)
+    setLoading(false)
+    setError(null)
+    setNeedsConfirmation(false)
+    setShowCareerMatches(false)
+    setShowDetailedAnalysis(false)
+    setProfileData(null)
+    setApiResponse(null)
+    setIsDataPanelOpen(false)
+    setSelectedSOCs([])
+    setDataPanelMode('api')
+  }
+
   return (
     <div className="App">
       <header className="app-header">
@@ -220,6 +235,21 @@ function App() {
           mode={dataPanelMode}
           selectedSOCs={selectedSOCs}
         />
+      )}
+      
+      {/* Restart Button - Show after initial form submission */}
+      {(chatSession || needsConfirmation || showCareerMatches || showDetailedAnalysis) && (
+        <button 
+          className="restart-button"
+          onClick={handleRestart}
+          title="Start over with a new profile"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 4v6h6"></path>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Start Over
+        </button>
       )}
     </div>
   )
