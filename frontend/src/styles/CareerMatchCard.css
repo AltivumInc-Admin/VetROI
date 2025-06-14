@@ -64,7 +64,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem;
+  padding: 0.125rem 0.5rem; /* Minimal top/bottom padding, keep horizontal for text breathing room */
 }
 
 /* Career title */
