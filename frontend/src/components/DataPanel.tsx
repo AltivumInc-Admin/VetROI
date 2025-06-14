@@ -21,7 +21,19 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   selectedSOCs = []
 }) => {
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
-  const [socData] = useState<SOCData>({}) // Will be populated in Phase 4
+  const [socData, setSocData] = useState<SOCData>({})
+  
+  // Listen for S3 data updates
+  React.useEffect(() => {
+    const handleS3Data = (event: CustomEvent) => {
+      setSocData(event.detail)
+    }
+    
+    window.addEventListener('s3DataFetched', handleS3Data as EventListener)
+    return () => {
+      window.removeEventListener('s3DataFetched', handleS3Data as EventListener)
+    }
+  }, [])
 
   const toggleSOC = (soc: string) => {
     setExpandedSOCs(prev => 

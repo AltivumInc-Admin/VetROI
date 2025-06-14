@@ -3,6 +3,7 @@ import VeteranForm from './components/VeteranForm'
 import { ChatInterface } from './components/ChatInterface'
 import { ConfirmationStep } from './components/ConfirmationStep'
 import { CareerMatchDisplay } from './components/CareerMatchDisplay'
+import { DetailedAnalysisView } from './components/DetailedAnalysisView'
 import { DataPanel } from './components/DataPanel'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
@@ -21,6 +22,7 @@ function App() {
   const [error, setError] = useState<string | null>(null)
   const [needsConfirmation, setNeedsConfirmation] = useState(false)
   const [showCareerMatches, setShowCareerMatches] = useState(false)
+  const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false)
   const [profileData, setProfileData] = useState<VeteranRequest | null>(null)
   const [apiResponse, setApiResponse] = useState<any>(null)
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
@@ -84,10 +86,12 @@ function App() {
     setError(null)
     setNeedsConfirmation(false)
     setShowCareerMatches(false)
+    setShowDetailedAnalysis(false)
     setProfileData(null)
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
+    setDataPanelMode('api')
   }
 
   const handleSOCClick = (code: string) => {
@@ -104,15 +108,32 @@ function App() {
   useEffect(() => {
     const handleDetailedAnalysis = (event: CustomEvent) => {
       console.log('Detailed Analysis requested:', event.detail)
+      setShowCareerMatches(false)
+      setShowDetailedAnalysis(true)
       setDataPanelMode('s3')
       setIsDataPanelOpen(true)
+      
+      // Fetch S3 data for selected SOCs
+      import('./api').then(({ fetchMultipleSOCData }) => {
+        fetchMultipleSOCData(selectedSOCs).then(data => {
+          console.log('Fetched S3 data:', data)
+          // Update DataPanel with fetched data
+          window.dispatchEvent(new CustomEvent('s3DataFetched', { detail: data }))
+        })
+      })
     }
 
     window.addEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)
     return () => {
       window.removeEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)
     }
-  }, [])
+  }, [selectedSOCs])
+  
+  const handleBackToCareerSelection = () => {
+    setShowDetailedAnalysis(false)
+    setShowCareerMatches(true)
+    setDataPanelMode('api')
+  }
 
   return (
     <div className="App">
@@ -123,7 +144,7 @@ function App() {
       
       <main className="app-main">
         <div className="container">
-          {!chatSession && !needsConfirmation && !showCareerMatches && (
+          {!chatSession && !needsConfirmation && !showCareerMatches && !showDetailedAnalysis && (
             <VeteranForm 
               onSubmit={handleSubmit} 
               loading={loading}
@@ -151,6 +172,13 @@ function App() {
                 onSOCClick={handleSOCClick}
               />
             </div>
+          )}
+          
+          {showDetailedAnalysis && (
+            <DetailedAnalysisView
+              selectedSOCs={selectedSOCs}
+              onBack={handleBackToCareerSelection}
+            />
           )}
           
           {chatSession && (

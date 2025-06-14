@@ -22,7 +22,7 @@ export const CareerMatchCard: React.FC<CareerMatchCardProps> = ({
 
   return (
     <div className="career-match-card">
-      <div className="soc-code-container">
+      <div className="card-header">
         <button 
           className="soc-code-button"
           onClick={handleClick}
@@ -30,24 +30,25 @@ export const CareerMatchCard: React.FC<CareerMatchCardProps> = ({
         >
           {code}
         </button>
-      </div>
-      
-      <h3 className="career-title">{title}</h3>
-      
-      <div className="career-tags">
         {brightOutlook && (
-          <span className="tag bright-outlook">
-            <span className="tag-icon">⭐</span>
-            Bright Outlook
+          <span className="star-indicator" title="Bright Outlook">
+            ⭐
           </span>
         )}
-        {green && (
+      </div>
+      
+      <div className="card-content">
+        <h3 className="career-title">{title}</h3>
+      </div>
+      
+      {green && (
+        <div className="green-indicator">
           <span className="tag green">
             <span className="tag-icon">🌱</span>
             Green Career
           </span>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }

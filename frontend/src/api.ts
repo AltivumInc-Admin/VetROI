@@ -30,3 +30,31 @@ export async function uploadDD214(file: File): Promise<string> {
   
   return data.fileId
 }
+
+// S3 bucket configuration
+const S3_BASE_URL = 'https://altroi-data.s3.amazonaws.com'
+
+export async function fetchSOCData(socCode: string): Promise<any> {
+  try {
+    const response = await axios.get(`${S3_BASE_URL}/soc-details/${socCode}.json`)
+    return response.data
+  } catch (error) {
+    console.error(`Failed to fetch data for SOC ${socCode}:`, error)
+    return null
+  }
+}
+
+export async function fetchMultipleSOCData(socCodes: string[]): Promise<Record<string, any>> {
+  const promises = socCodes.map(code => 
+    fetchSOCData(code).then(data => ({ code, data }))
+  )
+  
+  const results = await Promise.all(promises)
+  
+  return results.reduce((acc, { code, data }) => {
+    if (data) {
+      acc[code] = data
+    }
+    return acc
+  }, {} as Record<string, any>)
+}
