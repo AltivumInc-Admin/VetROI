@@ -15,7 +15,7 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true)
   
-  if (!socData || !socData.career) {
+  if (!socData) {
     return <div className="career-detail-card loading">Loading career data...</div>
   }
 
@@ -61,13 +61,13 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
       {/* Career Overview */}
       <section className="career-overview">
         <h3>What They Do</h3>
-        <p className="description">{career.what_they_do}</p>
+        <p className="description">{career?.what_they_do || 'No description available'}</p>
         
         <h4>Daily Tasks</h4>
         <ul className="tasks-list">
-          {career.on_the_job?.task?.slice(0, 5).map((task: string, index: number) => (
+          {career?.on_the_job?.task?.slice(0, 5).map((task: string, index: number) => (
             <li key={index}>{task}</li>
-          ))}
+          )) || <li>No tasks information available</li>}
         </ul>
       </section>
 
@@ -75,17 +75,24 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
       <section className="education-section">
         <h3>Education Requirements</h3>
         <div className="education-badges">
-          {education.education_usually_needed?.category?.map((cat: string, index: number) => (
-            <EducationBadge key={index} level={cat} jobZone={education.job_zone} />
-          ))}
+          {education?.job_zone && (
+            <EducationBadge level={`Job Zone ${education.job_zone}`} jobZone={education.job_zone} />
+          )}
         </div>
       </section>
 
       {/* Salary Visualization */}
       <section className="salary-section">
         <h3>Salary Range</h3>
-        {jobOutlook.salary && (
-          <SalaryGraph salaryData={jobOutlook.salary} />
+        {jobOutlook?.salary && (
+          <SalaryGraph salaryData={{
+            annual_10th_percentile: jobOutlook.salary.annual_10th_percentile,
+            annual_median: jobOutlook.salary.annual_median_over || jobOutlook.salary.annual_median || 0,
+            annual_90th_percentile: jobOutlook.salary.annual_90th_percentile_over || jobOutlook.salary.annual_90th_percentile || 0,
+            hourly_10th_percentile: jobOutlook.salary.hourly_10th_percentile,
+            hourly_median: jobOutlook.salary.hourly_median_over || jobOutlook.salary.hourly_median || 0,
+            hourly_90th_percentile: jobOutlook.salary.hourly_90th_percentile_over || jobOutlook.salary.hourly_90th_percentile || 0
+          }} />
         )}
       </section>
 
