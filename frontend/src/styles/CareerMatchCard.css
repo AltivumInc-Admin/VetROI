@@ -81,7 +81,8 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  text-decoration: none;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
 /* Green indicator at bottom */
