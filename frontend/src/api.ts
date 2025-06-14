@@ -31,33 +31,15 @@ export async function uploadDD214(file: File): Promise<string> {
   return data.fileId
 }
 
-// O*NET API configuration
-const ONET_BASE_URL = 'https://services.onetcenter.org'
-const ONET_USERNAME = 'altivum_inc'
-const ONET_PASSWORD = 'u96gfvu4kei'
+// Career data is fetched through our Lambda proxy to handle authentication
 
 export async function fetchSOCData(socCode: string): Promise<any> {
   try {
-    const response = await axios.get(
-      `${ONET_BASE_URL}/ws/mnm/careers/${socCode}/report`,
-      {
-        auth: {
-          username: ONET_USERNAME,
-          password: ONET_PASSWORD
-        },
-        headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'VetROI Career Platform'
-        }
-      }
-    )
+    // Call our Lambda endpoint instead of O*NET directly (same pattern as getRecommendations)
+    const response = await api.get(`/career/${socCode}`)
     
-    // Add the SOC code to the response for easy access
-    return {
-      soc: socCode,
-      title: response.data.career?.title || 'Unknown Career',
-      ...response.data
-    }
+    // The Lambda already adds the SOC code and title
+    return response.data
   } catch (error) {
     console.error(`Failed to fetch data for SOC ${socCode}:`, error)
     return null
