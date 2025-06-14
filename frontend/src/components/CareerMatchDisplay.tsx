@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { CareerMatchCard } from './CareerMatchCard'
-import { Tooltip } from './Tooltip'
 import '../styles/CareerMatchDisplay.css'
 
 interface CareerMatch {
