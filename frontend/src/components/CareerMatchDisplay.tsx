@@ -29,6 +29,9 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
   const [availableCareers, setAvailableCareers] = useState<CareerMatch[]>([])
   const [activeTab, setActiveTab] = useState<'available' | 'interest'>('available')
   const [showInfoBox, setShowInfoBox] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  
+  const CARDS_PER_PAGE = 9
   
   // MOS code will be used for deeper analysis in Phase 4
   console.log(`Displaying career matches for MOS: ${mosCode}`)
@@ -66,6 +69,17 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
   }
 
   const socTooltipContent = "A Standard Occupational Classification (SOC) code is a numerical code used by the U.S. Department of Labor, Employment and Training Administration as well as other government agencies that categorizes workers into occupational groups based on their job duties, not job titles. It's a federal standard to collect, analyze, and disseminate data about the workforce."
+  
+  // Pagination calculations
+  const totalPages = Math.ceil(availableCareers.length / CARDS_PER_PAGE)
+  const startIndex = currentPage * CARDS_PER_PAGE
+  const endIndex = startIndex + CARDS_PER_PAGE
+  const currentPageCareers = availableCareers.slice(startIndex, endIndex)
+  
+  // Reset page when careers change
+  React.useEffect(() => {
+    setCurrentPage(0)
+  }, [availableCareers.length])
   
   return (
     <div className="career-match-container">
@@ -131,7 +145,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
         <div className={`career-column available-careers ${activeTab === 'available' ? 'active' : ''}`}>
           <h3>Available Careers</h3>
           <div className="career-cards-grid">
-            {availableCareers.map((match) => (
+            {currentPageCareers.map((match) => (
               <div key={match.code} className="career-card-wrapper" style={{ opacity: 1, transition: 'opacity 0.3s ease' }}>
                 <CareerMatchCard
                   code={match.code}
@@ -143,6 +157,35 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
               </div>
             ))}
           </div>
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="pagination-controls">
+              <button 
+                className="pagination-button prev"
+                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                disabled={currentPage === 0}
+              >
+                ← Previous
+              </button>
+              <div className="page-indicators">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    className={`page-dot ${currentPage === i ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(i)}
+                    aria-label={`Go to page ${i + 1}`}
+                  />
+                ))}
+              </div>
+              <button 
+                className="pagination-button next"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages - 1, prev + 1))}
+                disabled={currentPage === totalPages - 1}
+              >
+                Next →
+              </button>
+            </div>
+          )}
         </div>
         
         <div className={`career-column careers-of-interest ${activeTab === 'interest' ? 'active' : ''}`}>

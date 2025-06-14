@@ -66,7 +66,9 @@
 /* Three-column layout for Available Careers */
 .available-careers .career-cards-grid {
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem 2rem;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1.5rem;
+  min-height: 570px; /* 3 rows × 180px cards + gaps */
 }
 
 /* Keep single column for Careers of Interest */
@@ -420,4 +422,67 @@
     padding: 0.875rem 1.5rem;
     font-size: 0.875rem;
   }
+}
+
+/* Pagination Controls */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.pagination-button {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: rgba(0, 212, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.pagination-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-indicators {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.page-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 212, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.page-dot:hover {
+  background: rgba(0, 212, 255, 0.5);
+  transform: scale(1.2);
+}
+
+.page-dot.active {
+  background: #00d4ff;
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
