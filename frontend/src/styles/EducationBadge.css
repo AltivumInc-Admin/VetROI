@@ -30,10 +30,69 @@
   color: #ffffff;
 }
 
+.job-zone-wrapper {
+  position: relative;
+}
+
 .job-zone {
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.6);
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: help;
+}
+
+.job-zone .info-icon {
+  font-size: 0.7rem;
+  color: #00d4ff;
+  opacity: 0.7;
+}
+
+.job-zone:hover .info-icon {
+  opacity: 1;
+}
+
+.job-zone-tooltip {
+  position: absolute;
+  bottom: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(13, 17, 33, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  width: 250px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: fadeInUp 0.2s ease-out;
+}
+
+.job-zone-tooltip strong {
+  display: block;
+  color: #00d4ff;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.job-zone-tooltip p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* Education Level Specific Styles */

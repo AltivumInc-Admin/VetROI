@@ -37,7 +37,8 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
   const locationData = getLocationQuotient()
 
   return (
-    <div className={`career-detail-card ${isExpanded ? 'expanded' : ''}`}>
+    <div className="career-detail-wrapper">
+      <div className={`career-detail-card ${isExpanded ? 'expanded' : ''}`}>
       {/* Header Section */}
       <div className="card-header">
         <div className="title-section">
@@ -138,7 +139,9 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
         </section>
       )}
 
-      {/* Expand/Collapse Button */}
+      </div>
+      
+      {/* Expand/Collapse Button - Outside the card div */}
       <button 
         className="expand-button"
         onClick={() => setIsExpanded(!isExpanded)}
