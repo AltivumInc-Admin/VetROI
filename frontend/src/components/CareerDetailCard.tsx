@@ -15,22 +15,21 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true)
   
-  if (!socData || !socData.data) {
+  if (!socData || !socData.career) {
     return <div className="career-detail-card loading">Loading career data...</div>
   }
 
-  const career = socData.data.report_raw.career
-  const education = socData.data.report_raw.education
-  const jobOutlook = socData.data.report_raw.job_outlook
-  const checkOutMyState = socData.data.report_raw.check_out_my_state
-  const militaryMatches = socData.data.military_service_details?.length || 0
+  const career = socData.career
+  const education = socData.education
+  const jobOutlook = socData.job_outlook
+  const checkOutMyState = socData.check_out_my_state
 
   // Extract location data for user's state
   const getLocationQuotient = () => {
     const allStates = [
-      ...(checkOutMyState.above_average?.state || []),
-      ...(checkOutMyState.average?.state || []),
-      ...(checkOutMyState.below_average?.state || [])
+      ...(checkOutMyState?.above_average?.state || []),
+      ...(checkOutMyState?.average?.state || []),
+      ...(checkOutMyState?.below_average?.state || [])
     ]
     return allStates.find(state => state.postal_code === userState)
   }
@@ -116,13 +115,18 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
         </div>
       </section>
 
-      {/* Military Connection */}
-      {militaryMatches > 0 && (
-        <section className="military-section">
-          <h3>Military Experience Match</h3>
-          <div className="military-match">
-            <span className="match-icon">🎖️</span>
-            <p>Your military experience aligns with this career through <strong>{militaryMatches}</strong> military specialties</p>
+      {/* Related Careers Section */}
+      {socData.explore_more?.careers?.career && (
+        <section className="related-careers-section">
+          <h3>Related Career Paths</h3>
+          <div className="related-careers">
+            {socData.explore_more.careers.career.slice(0, 3).map((career: any) => (
+              <div key={career.code} className="related-career">
+                <span className="career-code">{career.code}</span>
+                <span className="career-title">{career.title}</span>
+                {career.tags?.bright_outlook && <span className="outlook-icon">⭐</span>}
+              </div>
+            ))}
           </div>
         </section>
       )}
