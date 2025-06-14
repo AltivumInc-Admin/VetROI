@@ -65,13 +65,9 @@
   gap: 1.5rem;
 }
 
-/* Three-column layout for Available Careers */
+/* Rolodex replaces grid for Available Careers */
 .available-careers .career-cards-grid {
-  grid-template-columns: repeat(3, minmax(0, 280px));
-  grid-template-rows: repeat(3, 180px);
-  gap: 1.5rem;
-  justify-content: center; /* Center the grid if container is wider */
-  min-height: 570px; /* 3 rows × 180px cards + gaps */
+  display: none; /* Grid no longer used for rolodex */
 }
 
 /* Keep single column for Careers of Interest */
@@ -427,49 +423,140 @@
   }
 }
 
-/* Pagination Controls */
-.pagination-controls {
+/* Rolodex Styles */
+.rolodex-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   gap: 2rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  padding: 2rem 0;
 }
 
-.pagination-button {
-  background: rgba(0, 212, 255, 0.1);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  color: #00d4ff;
-  padding: 0.625rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 500;
+.rolodex-viewport {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rolodex-card {
+  position: absolute;
+  width: 350px;
+  height: 250px;
+  transition: all 0.4s ease;
+  transform-style: preserve-3d;
+}
+
+.rolodex-card.current {
+  z-index: 10;
+  transform: translateZ(0) rotateY(0deg);
+}
+
+.rolodex-card.current .career-match-card {
+  width: 100%;
+  height: 100%;
+  font-size: 1.2em;
+}
+
+.rolodex-card.current .career-title {
+  font-size: 1.25rem;
+  line-height: 1.5;
+}
+
+.rolodex-card.current .soc-code {
+  font-size: 1rem;
+}
+
+/* Card edges for depth effect */
+.rolodex-card-edge {
+  position: absolute;
+  width: 40px;
+  height: 200px;
+  background: linear-gradient(90deg, 
+    rgba(13, 17, 33, 0.9) 0%, 
+    rgba(13, 17, 33, 0.7) 50%,
+    rgba(13, 17, 33, 0.5) 100%
+  );
+  border: 1px solid rgba(0, 212, 255, 0.1);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.875rem;
-}
-
-.pagination-button:hover:not(:disabled) {
-  background: rgba(0, 212, 255, 0.2);
-  border-color: rgba(0, 212, 255, 0.5);
-  transform: translateY(-1px);
-}
-
-.pagination-button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.page-indicators {
   display: flex;
-  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  color: rgba(0, 212, 255, 0.5);
+  font-size: 1.5rem;
+}
+
+.rolodex-card-edge.prev {
+  left: -20px;
+  transform: perspective(200px) rotateY(25deg);
+  border-radius: 8px 0 0 8px;
+}
+
+.rolodex-card-edge.next {
+  right: -20px;
+  transform: perspective(200px) rotateY(-25deg);
+  border-radius: 0 8px 8px 0;
+}
+
+.rolodex-card-edge:hover {
+  background: linear-gradient(90deg, 
+    rgba(13, 17, 33, 1) 0%, 
+    rgba(0, 212, 255, 0.1) 100%
+  );
+  color: #00d4ff;
+}
+
+/* Rolodex Controls */
+.rolodex-controls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.rolodex-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.1);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rolodex-button:hover {
+  background: rgba(0, 212, 255, 0.2);
+  border-color: #00d4ff;
+  transform: scale(1.1);
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+}
+
+.rolodex-counter {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Rolodex Dots */
+.rolodex-dots {
+  display: flex;
+  gap: 0.5rem;
   align-items: center;
 }
 
-.page-dot {
-  width: 10px;
-  height: 10px;
+.rolodex-dots .dot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   border: none;
   background: rgba(0, 212, 255, 0.3);
@@ -478,14 +565,20 @@
   padding: 0;
 }
 
-.page-dot:hover {
+.rolodex-dots .dot:hover {
   background: rgba(0, 212, 255, 0.5);
-  transform: scale(1.2);
+  transform: scale(1.3);
 }
 
-.page-dot.active {
+.rolodex-dots .dot.active {
   background: #00d4ff;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.dots-overflow {
+  color: rgba(0, 212, 255, 0.5);
+  font-size: 0.875rem;
+  margin-left: 0.25rem;
 }
