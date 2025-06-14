@@ -29,7 +29,7 @@ export default function VeteranForm({ onSubmit, loading, initialData }: VeteranF
     initialData || {
       branch: 'army',
       code: '',
-      homeState: 'TX',
+      homeState: 'TN',
       relocate: false,
       education: 'bachelor',
     }

@@ -111,7 +111,7 @@ function App() {
       setShowCareerMatches(false)
       setShowDetailedAnalysis(true)
       setDataPanelMode('s3')
-      setIsDataPanelOpen(true)
+      // Don't auto-open the panel - let user toggle it manually
     }
 
     window.addEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)

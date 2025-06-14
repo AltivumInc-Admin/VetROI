@@ -38,9 +38,7 @@
   font-weight: 500;
   font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
   padding: 0.25rem 0.5rem;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  text-decoration-color: rgba(0, 212, 255, 0.3);
+  text-decoration: none;
   transition: all 0.2s ease;
   opacity: 0.7;
 }
@@ -48,7 +46,6 @@
 .career-match-card:hover .soc-code {
   color: #00d4ff;
   opacity: 1;
-  text-decoration-color: rgba(0, 212, 255, 0.6);
 }
 
 /* Star Indicator */
@@ -70,7 +67,7 @@
 
 /* Career title */
 .career-title {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
   margin: 0;

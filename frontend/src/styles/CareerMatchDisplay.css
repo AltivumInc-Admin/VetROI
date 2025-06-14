@@ -63,9 +63,9 @@
   gap: 1.5rem;
 }
 
-/* Two-column layout for Available Careers only */
+/* Three-column layout for Available Careers */
 .available-careers .career-cards-grid {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem 2rem;
 }
 
@@ -194,9 +194,9 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  /* Switch to single column at medium screens */
+  /* Switch to two columns at medium screens */
   .available-careers .career-cards-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -232,6 +232,11 @@
 
   .career-column h3 {
     display: none; /* Hide column headers on mobile - tabs replace them */
+  }
+  
+  /* Single column on mobile */
+  .available-careers .career-cards-grid {
+    grid-template-columns: 1fr;
   }
 }
 

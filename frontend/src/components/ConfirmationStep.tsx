@@ -91,7 +91,7 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
             <p>
               You're seeking employment in <span className="highlight">{state}</span>{' '}
               {profile.relocate 
-                ? <>and prefer to seek employment in <span className="highlight">{getStateName(profile.relocateState) || 'another state'}</span></>
+                ? <>but are open to employment in <span className="highlight">{getStateName(profile.relocateState) || 'another state'}</span></>
                 : `and prefer to stay in ${state}`}
             </p>
           </div>
