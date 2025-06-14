@@ -112,22 +112,13 @@ function App() {
       setShowDetailedAnalysis(true)
       setDataPanelMode('s3')
       setIsDataPanelOpen(true)
-      
-      // Fetch S3 data for selected SOCs
-      import('./api').then(({ fetchMultipleSOCData }) => {
-        fetchMultipleSOCData(selectedSOCs).then(data => {
-          console.log('Fetched S3 data:', data)
-          // Update DataPanel with fetched data
-          window.dispatchEvent(new CustomEvent('s3DataFetched', { detail: data }))
-        })
-      })
     }
 
     window.addEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)
     return () => {
       window.removeEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)
     }
-  }, [selectedSOCs])
+  }, [])
   
   const handleBackToCareerSelection = () => {
     setShowDetailedAnalysis(false)

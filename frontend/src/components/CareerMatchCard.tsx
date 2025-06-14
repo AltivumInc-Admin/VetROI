@@ -21,15 +21,11 @@ export const CareerMatchCard: React.FC<CareerMatchCardProps> = ({
   }
 
   return (
-    <div className="career-match-card">
+    <div className="career-match-card" onClick={handleClick}>
       <div className="card-header">
-        <button 
-          className="soc-code-button"
-          onClick={handleClick}
-          type="button"
-        >
+        <span className="soc-code">
           {code}
-        </button>
+        </span>
         {brightOutlook && (
           <span className="star-indicator" title="Bright Outlook">
             ⭐

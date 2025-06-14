@@ -50,10 +50,23 @@
   justify-content: center;
 }
 
-.loading-message {
+.loading-message,
+.error-message,
+.info-message {
   font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.7);
   text-align: center;
+}
+
+.loading-message {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.error-message {
+  color: #ff4444;
+}
+
+.info-message {
+  color: #00d4ff;
 }
 
 @keyframes fadeInUp {

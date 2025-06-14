@@ -6,7 +6,7 @@
   border-radius: 12px;
   padding: 1rem;
   transition: all 0.3s ease;
-  cursor: default;
+  cursor: pointer;
   position: relative;
   overflow: hidden;
   height: 180px; /* Fixed height for consistency */
@@ -21,6 +21,7 @@
   box-shadow: 
     0 8px 32px rgba(0, 212, 255, 0.15),
     0 0 80px rgba(0, 212, 255, 0.05);
+  background: rgba(13, 17, 33, 0.85);
 }
 
 /* Card Header with SOC and Star */
@@ -31,31 +32,23 @@
   margin-bottom: 0.5rem;
 }
 
-.soc-code-button {
-  background: none;
-  border: none;
+.soc-code {
   color: rgba(0, 212, 255, 0.6);
   font-size: 0.75rem;
   font-weight: 500;
   font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
-  cursor: pointer;
   padding: 0.25rem 0.5rem;
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: rgba(0, 212, 255, 0.3);
   transition: all 0.2s ease;
   opacity: 0.7;
 }
 
-.soc-code-button:hover {
+.career-match-card:hover .soc-code {
   color: #00d4ff;
   opacity: 1;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.soc-code-button:focus {
-  outline: 2px solid rgba(0, 212, 255, 0.3);
-  outline-offset: 2px;
-  border-radius: 4px;
+  text-decoration-color: rgba(0, 212, 255, 0.6);
 }
 
 /* Star Indicator */
@@ -88,6 +81,7 @@
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  text-decoration: none;
 }
 
 /* Green indicator at bottom */
