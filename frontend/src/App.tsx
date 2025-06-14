@@ -25,6 +25,7 @@ function App() {
   const [apiResponse, setApiResponse] = useState<any>(null)
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
   const [selectedSOCs, setSelectedSOCs] = useState<string[]>([])
+  const [dataPanelMode, setDataPanelMode] = useState<'api' | 's3'>('api')
   console.log('Selected SOCs:', selectedSOCs) // Will be used in Phase 4
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
@@ -98,6 +99,20 @@ function App() {
       return [...prev, code]
     })
   }
+
+  // Listen for detailed analysis event
+  useEffect(() => {
+    const handleDetailedAnalysis = (event: CustomEvent) => {
+      console.log('Detailed Analysis requested:', event.detail)
+      setDataPanelMode('s3')
+      setIsDataPanelOpen(true)
+    }
+
+    window.addEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)
+    return () => {
+      window.removeEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)
+    }
+  }, [])
 
   return (
     <div className="App">
@@ -182,6 +197,8 @@ function App() {
           data={apiResponse}
           isOpen={isDataPanelOpen}
           onToggle={() => setIsDataPanelOpen(!isDataPanelOpen)}
+          mode={dataPanelMode}
+          selectedSOCs={selectedSOCs}
         />
       )}
     </div>

@@ -29,6 +29,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
   const [selectedCareers, setSelectedCareers] = useState<CareerMatch[]>([])
   const [availableCareers, setAvailableCareers] = useState<CareerMatch[]>([])
   const [activeTab, setActiveTab] = useState<'available' | 'interest'>('available')
+  const [showInfoBox, setShowInfoBox] = useState(false)
   
   // MOS code will be used for deeper analysis in Phase 4
   console.log(`Displaying career matches for MOS: ${mosCode}`)
@@ -76,14 +77,8 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
           <span className="highlight">{mosTitle}</span>.
           <br /><br />
           Your military experience provides you with several options in the civilian sector. 
-          Scroll through these options below and click on the{' '}
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-            SOC codes
-            <Tooltip content={socTooltipContent}>
-              <span className="info-icon">ⓘ</span>
-            </Tooltip>
-          </span>{' '}
-          that spark your interest. We'll explore these in greater detail soon.
+          Scroll through these options below and click on the SOC codes that spark your interest. 
+          We'll explore these in greater detail soon.
           <br /><br />
           Add careers to your "Careers of Interest" column by clicking on the SOC code at the top of each card. 
           When you're ready to learn more about these fields, click on the 'Detailed Analysis' button.
@@ -108,14 +103,34 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
         </div>
       </div>
 
+      {/* Info Box */}
+      <div className="info-box-container">
+        <div className="info-icon-wrapper" onClick={() => setShowInfoBox(!showInfoBox)}>
+          <span className="info-icon-large">ⓘ</span>
+        </div>
+        {showInfoBox && (
+          <div className="info-box">
+            <div className="info-content">
+              <p><strong>SOC Code:</strong> {socTooltipContent}</p>
+              <div className="info-badges">
+                <span className="tag bright-outlook">
+                  <span className="tag-icon">⭐</span>
+                  Bright Outlook
+                </span>
+                <p className="badge-description">
+                  Bright Outlook occupations are expected to grow rapidly in the next several years, 
+                  will have large numbers of job openings, or are new and emerging occupations. 
+                  We will expand on the details for each career in the Detailed Analysis page.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className="career-cards-container">
         <div className={`career-column available-careers ${activeTab === 'available' ? 'active' : ''}`}>
-          <h3>
-            Available Careers{' '}
-            <Tooltip content={socTooltipContent}>
-              <span className="info-icon">ⓘ</span>
-            </Tooltip>
-          </h3>
+          <h3>Available Careers</h3>
           <div className="career-cards-grid">
             {availableCareers.map((match) => (
               <div key={match.code} className="career-card-wrapper" style={{ opacity: 1, transition: 'opacity 0.3s ease' }}>
@@ -156,14 +171,25 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
         </div>
       </div>
 
-      {/* Detailed Analysis Button */}
-      <div className="analysis-button-container">
+      {/* Floating Detailed Analysis Button */}
+      <div className="analysis-button-floating">
         <button 
           className="detailed-analysis-button"
           disabled={selectedCareers.length === 0}
-          onClick={() => console.log('Detailed analysis clicked', selectedCareers)}
+          onClick={() => {
+            if (selectedCareers.length > 0) {
+              // This will be connected to App.tsx
+              const event = new CustomEvent('detailedAnalysis', { 
+                detail: { selectedSOCs: selectedCareers.map(c => c.code) } 
+              })
+              window.dispatchEvent(event)
+            }
+          }}
         >
           Detailed Analysis
+          {selectedCareers.length > 0 && (
+            <span className="selected-count">({selectedCareers.length})</span>
+          )}
         </button>
       </div>
     </div>

@@ -4,11 +4,15 @@
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(0, 212, 255, 0.2);
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1.5rem;
   transition: all 0.3s ease;
   cursor: default;
   position: relative;
   overflow: hidden;
+  height: 180px; /* Fixed height for consistency */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Hover effect */
@@ -54,11 +58,17 @@
 
 /* Career title */
 .career-title {
-  font-size: 1.25rem;
+  font-size: 1.1rem; /* Reduced from 1.25rem */
   font-weight: 600;
   color: #ffffff;
-  margin: 0 0 1.5rem 0;
-  line-height: 1.4;
+  margin: 0;
+  line-height: 1.3;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* Tags container */
@@ -66,6 +76,8 @@
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+  justify-content: center; /* Center the badges */
+  margin-top: 0.5rem;
 }
 
 /* Tag styles */
