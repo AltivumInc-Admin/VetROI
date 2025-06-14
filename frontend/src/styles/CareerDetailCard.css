@@ -1,0 +1,278 @@
+.career-detail-card {
+  background: rgba(13, 17, 33, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.career-detail-card.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.career-detail-card:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
+}
+
+/* Header Section */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.title-section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.2;
+}
+
+.soc-code {
+  font-size: 0.875rem;
+  color: rgba(0, 212, 255, 0.7);
+  font-family: 'SF Mono', monospace;
+}
+
+.badges {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.badge.bright-outlook {
+  background: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.badge.green {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.3);
+  animation: greenGlow 2s ease-in-out infinite;
+}
+
+/* Career Overview */
+.career-overview {
+  margin-bottom: 2rem;
+}
+
+.career-overview h3 {
+  font-size: 1.25rem;
+  color: #00d4ff;
+  margin-bottom: 1rem;
+}
+
+.career-overview h4 {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 1.5rem 0 0.75rem 0;
+}
+
+.description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 1.5rem;
+}
+
+.tasks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tasks-list li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.tasks-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0.5rem;
+  color: #00d4ff;
+  font-size: 1.2rem;
+}
+
+/* Section Styles */
+section {
+  margin-bottom: 2rem;
+}
+
+section h3 {
+  font-size: 1.25rem;
+  color: #00d4ff;
+  margin-bottom: 1rem;
+}
+
+/* Education Section */
+.education-badges {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Salary Section */
+.salary-section {
+  background: rgba(0, 212, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+/* Location Section */
+.location-section {
+  background: rgba(0, 212, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.no-data {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* Growth Section */
+.growth-indicator {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.growth-indicator.average {
+  border-color: rgba(255, 193, 7, 0.3);
+  background: rgba(255, 193, 7, 0.05);
+}
+
+.growth-indicator.rapid,
+.growth-indicator.bright {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.growth-icon {
+  font-size: 2.5rem;
+}
+
+.growth-details h4 {
+  margin: 0 0 0.5rem 0;
+  color: #ffffff;
+  font-size: 1.125rem;
+}
+
+.growth-details p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+/* Military Section */
+.military-section {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(0, 212, 255, 0.1));
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+.military-match {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.match-icon {
+  font-size: 2rem;
+}
+
+.military-match p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+.military-match strong {
+  color: #00d4ff;
+}
+
+/* Expand/Collapse Button */
+.expand-button {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.expand-button:hover {
+  background: rgba(0, 212, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Collapsed State */
+.career-detail-card:not(.expanded) {
+  max-height: 300px;
+  overflow: hidden;
+}
+
+.career-detail-card:not(.expanded)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent, rgba(13, 17, 33, 0.9));
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes greenGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+  }
+}

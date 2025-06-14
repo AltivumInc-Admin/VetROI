@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { fetchMultipleSOCData } from '../api'
+import { CareerDetailCard } from './CareerDetailCard'
 import '../styles/DetailedAnalysisView.css'
 
 interface DetailedAnalysisViewProps {
   selectedSOCs: string[]
   onBack: () => void
+  userState?: string
 }
 
 export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
   selectedSOCs,
-  onBack
+  onBack,
+  userState = 'CA'
 }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [careerData, setCareerData] = useState<Record<string, any>>({})  
   
   useEffect(() => {
     // Trigger S3 data fetch when component mounts
@@ -21,6 +25,7 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
     fetchMultipleSOCData(selectedSOCs)
       .then(data => {
         console.log('DetailedAnalysisView: Fetched S3 data:', data)
+        setCareerData(data)
         setLoading(false)
         // Dispatch event for DataPanel
         window.dispatchEvent(new CustomEvent('s3DataFetched', { detail: data }))
@@ -43,17 +48,31 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
       
       <main className="analysis-content">
         {loading && (
-          <p className="loading-message">
-            Loading detailed analysis for {selectedSOCs.length} career{selectedSOCs.length > 1 ? 's' : ''}...
-          </p>
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p className="loading-message">
+              Loading detailed analysis for {selectedSOCs.length} career{selectedSOCs.length > 1 ? 's' : ''}...
+            </p>
+          </div>
         )}
         {error && (
-          <p className="error-message">{error}</p>
+          <div className="error-state">
+            <p className="error-message">{error}</p>
+            <button className="retry-button" onClick={() => window.location.reload()}>
+              Try Again
+            </button>
+          </div>
         )}
         {!loading && !error && (
-          <p className="info-message">
-            Career data loaded. Check the panel on the right for detailed information.
-          </p>
+          <div className="career-cards">
+            {Object.values(careerData).map((socData: any) => (
+              <CareerDetailCard 
+                key={socData.soc} 
+                socData={socData} 
+                userState={userState}
+              />
+            ))}
+          </div>
         )}
       </main>
     </div>

@@ -169,6 +169,7 @@ function App() {
             <DetailedAnalysisView
               selectedSOCs={selectedSOCs}
               onBack={handleBackToCareerSelection}
+              userState={profileData?.homeState || 'CA'}
             />
           )}
           

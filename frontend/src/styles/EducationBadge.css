@@ -1,0 +1,88 @@
+.education-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 24px;
+  border: 1px solid transparent;
+  background: rgba(138, 43, 226, 0.1);
+  transition: all 0.3s ease;
+}
+
+.education-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(138, 43, 226, 0.2);
+}
+
+.badge-icon {
+  font-size: 1.5rem;
+}
+
+.badge-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.badge-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.job-zone {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+/* Education Level Specific Styles */
+.education-badge.high-school {
+  background: rgba(156, 163, 175, 0.1);
+  border-color: rgba(156, 163, 175, 0.3);
+}
+
+.education-badge.associate {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.education-badge.bachelor {
+  background: rgba(138, 43, 226, 0.1);
+  border-color: rgba(138, 43, 226, 0.3);
+}
+
+.education-badge.master {
+  background: rgba(236, 72, 153, 0.1);
+  border-color: rgba(236, 72, 153, 0.3);
+}
+
+.education-badge.doctoral {
+  background: rgba(217, 70, 239, 0.1);
+  border-color: rgba(217, 70, 239, 0.3);
+}
+
+.education-badge.certificate {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.education-badge.default {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .education-badge {
+    padding: 0.5rem 1rem;
+  }
+
+  .badge-icon {
+    font-size: 1.25rem;
+  }
+
+  .badge-label {
+    font-size: 0.875rem;
+  }
+}
