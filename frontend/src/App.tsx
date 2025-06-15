@@ -5,6 +5,7 @@ import { ConfirmationStep } from './components/ConfirmationStep'
 import { CareerMatchDisplay } from './components/CareerMatchDisplay'
 import { DetailedAnalysisView } from './components/DetailedAnalysisView'
 import { DataPanel } from './components/DataPanel'
+import { DD214Upload } from './components/DD214Upload'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
 import './styles/App.css'
@@ -28,6 +29,8 @@ function App() {
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
   const [selectedSOCs, setSelectedSOCs] = useState<string[]>([])
   const [dataPanelMode, setDataPanelMode] = useState<'api' | 's3'>('api')
+  const [showDD214Upload, setShowDD214Upload] = useState(false)
+  const [dd214Processed, setDD214Processed] = useState(false)
   console.log('Selected SOCs:', selectedSOCs) // Will be used in Phase 4
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
@@ -62,11 +65,11 @@ function App() {
   const handleConfirm = async () => {
     if (!profileData || !apiResponse) return
     
-    // Show career matches instead of going directly to chat
+    // Show DD214 upload option
     setNeedsConfirmation(false)
-    setShowCareerMatches(true)
+    setShowDD214Upload(true)
     
-    // Scroll to career matches
+    // Scroll to DD214 upload
     setTimeout(() => {
       careerMatchesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }, 100)
@@ -75,6 +78,7 @@ function App() {
   const handleAdjust = () => {
     setNeedsConfirmation(false)
     setShowCareerMatches(false)
+    setShowDD214Upload(false)
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
@@ -87,6 +91,8 @@ function App() {
     setNeedsConfirmation(false)
     setShowCareerMatches(false)
     setShowDetailedAnalysis(false)
+    setShowDD214Upload(false)
+    setDD214Processed(false)
     setProfileData(null)
     setApiResponse(null)
     setIsDataPanelOpen(false)
@@ -134,11 +140,35 @@ function App() {
     setNeedsConfirmation(false)
     setShowCareerMatches(false)
     setShowDetailedAnalysis(false)
+    setShowDD214Upload(false)
+    setDD214Processed(false)
     setProfileData(null)
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
     setDataPanelMode('api')
+  }
+  
+  const handleDD214UploadComplete = (documentId: string) => {
+    console.log('DD214 processed:', documentId)
+    setDD214Processed(true)
+    setShowDD214Upload(false)
+    setShowCareerMatches(true)
+    
+    // Scroll to career matches
+    setTimeout(() => {
+      careerMatchesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }
+  
+  const skipDD214Upload = () => {
+    setShowDD214Upload(false)
+    setShowCareerMatches(true)
+    
+    // Scroll to career matches
+    setTimeout(() => {
+      careerMatchesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
   }
 
   return (
@@ -150,7 +180,7 @@ function App() {
       
       <main className="app-main">
         <div className="container">
-          {!chatSession && !needsConfirmation && !showCareerMatches && !showDetailedAnalysis && (
+          {!chatSession && !needsConfirmation && !showCareerMatches && !showDetailedAnalysis && !showDD214Upload && (
             <VeteranForm 
               onSubmit={handleSubmit} 
               loading={loading}
@@ -169,8 +199,47 @@ function App() {
             </div>
           )}
           
+          {showDD214Upload && profileData && (
+            <div ref={careerMatchesRef}>
+              <DD214Upload
+                veteranId={profileData.code} // Using MOS as temporary ID
+                onUploadComplete={handleDD214UploadComplete}
+              />
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <button 
+                  onClick={skipDD214Upload}
+                  style={{
+                    background: 'transparent',
+                    border: '1px solid rgba(0, 212, 255, 0.3)',
+                    color: '#00d4ff',
+                    padding: '0.5rem 1.5rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  Skip for now →
+                </button>
+              </div>
+            </div>
+          )}
+          
           {showCareerMatches && profileData && apiResponse && (
             <div ref={careerMatchesRef}>
+              {dd214Processed && (
+                <div style={{
+                  background: 'rgba(34, 197, 94, 0.1)',
+                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                  borderRadius: '8px',
+                  padding: '1rem',
+                  marginBottom: '2rem',
+                  textAlign: 'center'
+                }}>
+                  <p style={{ color: '#22c55e', margin: 0 }}>
+                    ✓ DD214 processed successfully - Your career matches are enhanced with your service record
+                  </p>
+                </div>
+              )}
               <CareerMatchDisplay
                 mosTitle={apiResponse.raw_onet_data?.data?.match?.[0]?.title || profileData.code}
                 mosCode={profileData.code}
@@ -239,7 +308,7 @@ function App() {
       )}
       
       {/* Restart Button - Show after initial form submission */}
-      {(chatSession || needsConfirmation || showCareerMatches || showDetailedAnalysis) && (
+      {(chatSession || needsConfirmation || showCareerMatches || showDetailedAnalysis || showDD214Upload) && (
         <button 
           className="restart-button"
           onClick={handleRestart}
