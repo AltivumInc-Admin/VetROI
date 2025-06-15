@@ -97,3 +97,15 @@ desktop.ini
 secrets.json
 *.pem
 *.key
+
+# Deployment artifacts
+*.zip
+deployment/
+package/
+
+# Temporary files
+response.json
+*.tmp
+
+# Development scripts
+deploy-*.sh
