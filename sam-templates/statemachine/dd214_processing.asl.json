@@ -1,0 +1,230 @@
+{
+  "Comment": "DD214 Processing Pipeline - Extract, Analyze, and Enhance Veteran Profiles",
+  "StartAt": "ValidateDocument",
+  "States": {
+    "ValidateDocument": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${DD214ProcessorFunction}",
+        "Payload": {
+          "stepType": "validate",
+          "documentId.$": "$.documentId",
+          "bucket.$": "$.bucket",
+          "key.$": "$.key"
+        }
+      },
+      "Next": "StartTextractJob",
+      "Retry": [{
+        "ErrorEquals": ["States.TaskFailed"],
+        "IntervalSeconds": 2,
+        "MaxAttempts": 3,
+        "BackoffRate": 2
+      }]
+    },
+    
+    "StartTextractJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::textract:startDocumentAnalysis",
+      "Parameters": {
+        "DocumentLocation": {
+          "S3Object": {
+            "Bucket.$": "$.bucket",
+            "Name.$": "$.key"
+          }
+        },
+        "FeatureTypes": ["FORMS", "TABLES"]
+      },
+      "Next": "WaitForTextract",
+      "ResultPath": "$.textractJob"
+    },
+    
+    "WaitForTextract": {
+      "Type": "Wait",
+      "Seconds": 30,
+      "Next": "GetTextractStatus"
+    },
+    
+    "GetTextractStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::textract:getDocumentAnalysis",
+      "Parameters": {
+        "JobId.$": "$.textractJob.JobId"
+      },
+      "Next": "CheckTextractComplete",
+      "ResultPath": "$.textractResult"
+    },
+    
+    "CheckTextractComplete": {
+      "Type": "Choice",
+      "Choices": [{
+        "Variable": "$.textractResult.JobStatus",
+        "StringEquals": "SUCCEEDED",
+        "Next": "ProcessTextractResults"
+      }, {
+        "Variable": "$.textractResult.JobStatus",
+        "StringEquals": "FAILED",
+        "Next": "TextractFailed"
+      }],
+      "Default": "WaitForTextract"
+    },
+    
+    "ProcessTextractResults": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${DD214ProcessorFunction}",
+        "Payload": {
+          "stepType": "textract_complete",
+          "documentId.$": "$.documentId",
+          "textractJobId.$": "$.textractJob.JobId"
+        }
+      },
+      "Next": "RunMacieScan",
+      "ResultPath": "$.extractedData"
+    },
+    
+    "RunMacieScan": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:macie2:createClassificationJob",
+      "Parameters": {
+        "S3JobDefinition": {
+          "BucketDefinitions": [{
+            "AccountId.$": "$.AWS_ACCOUNT_ID",
+            "Buckets": ["${DD214BucketName}"]
+          }]
+        },
+        "JobType": "ONE_TIME",
+        "Name.$": "States.Format('macie-scan-{}', $.documentId)"
+      },
+      "Next": "AnalyzeWithComprehend",
+      "ResultPath": "$.macieJob",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "AnalyzeWithComprehend"
+      }]
+    },
+    
+    "AnalyzeWithComprehend": {
+      "Type": "Parallel",
+      "Next": "EnhanceWithAI",
+      "ResultPath": "$.nlpResults",
+      "Branches": [
+        {
+          "StartAt": "DetectEntities",
+          "States": {
+            "DetectEntities": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:comprehend:detectEntities",
+              "Parameters": {
+                "Text.$": "$.extractedData.body.extractedData.textForAnalysis",
+                "LanguageCode": "en"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DetectKeyPhrases",
+          "States": {
+            "DetectKeyPhrases": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:comprehend:detectKeyPhrases",
+              "Parameters": {
+                "Text.$": "$.extractedData.body.extractedData.textForAnalysis",
+                "LanguageCode": "en"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DetectSentiment",
+          "States": {
+            "DetectSentiment": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:comprehend:detectSentiment",
+              "Parameters": {
+                "Text.$": "$.extractedData.body.extractedData.textForAnalysis",
+                "LanguageCode": "en"
+              },
+              "End": true
+            }
+          }
+        }
+      ]
+    },
+    
+    "EnhanceWithAI": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${DD214ProcessorFunction}",
+        "Payload": {
+          "stepType": "enhance_profile",
+          "documentId.$": "$.documentId",
+          "extractedData.$": "$.extractedData.body.extractedData",
+          "comprehendResults.$": "$.nlpResults"
+        }
+      },
+      "Next": "StoreEnhancedProfile",
+      "ResultPath": "$.enhancedProfile"
+    },
+    
+    "StoreEnhancedProfile": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:putItem",
+      "Parameters": {
+        "TableName": "${ProfileTableName}",
+        "Item": {
+          "documentId": {"S.$": "$.documentId"},
+          "veteranId": {"S.$": "$.enhancedProfile.body.veteranId"},
+          "profile": {"S.$": "States.JsonToString($.enhancedProfile.body.enhancedProfile)"},
+          "createdAt": {"S.$": "$$.State.EnteredTime"},
+          "ttl": {"N.$": "States.Format('{}', $$.Execution.StartTime + 7776000)"}
+        }
+      },
+      "Next": "NotifyCompletion"
+    },
+    
+    "NotifyCompletion": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${NotificationTopicArn}",
+        "Message": {
+          "documentId.$": "$.documentId",
+          "status": "SUCCESS",
+          "message": "DD214 processing complete",
+          "profileUrl.$": "$.enhancedProfile.body.profileUrl"
+        }
+      },
+      "Next": "Success"
+    },
+    
+    "TextractFailed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${NotificationTopicArn}",
+        "Message": {
+          "documentId.$": "$.documentId",
+          "status": "FAILED",
+          "error": "Textract processing failed",
+          "timestamp.$": "$$.State.EnteredTime"
+        }
+      },
+      "Next": "Failed"
+    },
+    
+    "Success": {
+      "Type": "Succeed"
+    },
+    
+    "Failed": {
+      "Type": "Fail",
+      "Error": "ProcessingFailed",
+      "Cause": "DD214 processing pipeline failed"
+    }
+  }
+}
