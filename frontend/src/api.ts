@@ -15,20 +15,31 @@ export async function getRecommendations(request: VeteranRequest): Promise<Recom
   return response.data
 }
 
-export async function uploadDD214(file: File): Promise<string> {
-  // Get pre-signed URL
-  const { data } = await api.put('/upload-dd214', {
-    filename: file.name
+export async function getDD214PresignedUrl(
+  fileName: string, 
+  fileType: string, 
+  veteranId: string
+): Promise<{ uploadUrl: string; documentId: string }> {
+  const { data } = await api.post('/dd214/presigned-url', {
+    fileName,
+    fileType,
+    veteranId
   })
   
-  // Upload file to S3
-  await axios.put(data.uploadUrl, file, {
+  return data
+}
+
+export async function uploadDD214ToS3(uploadUrl: string, file: File): Promise<void> {
+  await axios.put(uploadUrl, file, {
     headers: {
       'Content-Type': file.type
     }
   })
-  
-  return data.fileId
+}
+
+export async function getDD214Status(documentId: string): Promise<any> {
+  const { data } = await api.get(`/dd214/status/${documentId}`)
+  return data
 }
 
 // Career data is fetched through our Lambda proxy to handle authentication

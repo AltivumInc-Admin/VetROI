@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
 import '../styles/DD214Upload.css'
 
 interface DD214UploadProps {
@@ -61,30 +62,14 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
 
     try {
       // Get pre-signed URL
-      const presignedResponse = await fetch('/api/dd214/presigned-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fileName: file.name,
-          fileType: file.type,
-          veteranId
-        })
-      })
-
-      const { uploadUrl, documentId } = await presignedResponse.json()
+      const { uploadUrl, documentId } = await getDD214PresignedUrl(
+        file.name,
+        file.type,
+        veteranId
+      )
 
       // Upload to S3
-      const uploadResponse = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type
-        }
-      })
-
-      if (!uploadResponse.ok) {
-        throw new Error('Upload failed')
-      }
+      await uploadDD214ToS3(uploadUrl, file)
 
       // Update state
       setUploadState(prev => ({
@@ -109,8 +94,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   const pollProcessingStatus = async (documentId: string) => {
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/dd214/status/${documentId}`)
-        const status = await response.json()
+        const status = await getDD214Status(documentId)
 
         // Update processing steps
         const updatedSteps = uploadState.processingSteps?.map(step => {

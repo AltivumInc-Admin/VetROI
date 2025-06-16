@@ -27,18 +27,62 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     # Determine which step we're in
     step_type = event.get('stepType', 'initial')
     
-    if step_type == 'initial':
+    # Handle S3 trigger
+    if 'Records' in event and event['Records'][0].get('s3'):
         return handle_document_upload(event)
+    
+    # Handle Step Functions steps
+    if step_type == 'validate':
+        return handle_document_validation(event)
     elif step_type == 'textract_complete':
         return handle_textract_results(event)
-    elif step_type == 'comprehend_complete':
-        return handle_comprehend_results(event)
     elif step_type == 'enhance_profile':
         return handle_ai_enhancement(event)
-    elif step_type == 'final_store':
-        return handle_final_storage(event)
     else:
         raise ValueError(f"Unknown step type: {step_type}")
+
+def handle_document_validation(event: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validate document for processing
+    """
+    document_id = event['documentId']
+    bucket = event['bucket']
+    key = event['key']
+    
+    try:
+        # Validate file exists and is accessible
+        response = s3.head_object(Bucket=bucket, Key=key)
+        file_size = response['ContentLength']
+        content_type = response.get('ContentType', '')
+        
+        # Update status in DynamoDB
+        if TABLE_NAME:
+            table = dynamodb.Table(TABLE_NAME)
+            table.update_item(
+                Key={'documentId': document_id},
+                UpdateExpression='SET #status = :status, processingStartTime = :time, executionArn = :arn',
+                ExpressionAttributeNames={
+                    '#status': 'status'
+                },
+                ExpressionAttributeValues={
+                    ':status': 'processing',
+                    ':time': datetime.utcnow().isoformat(),
+                    ':arn': os.environ.get('AWS_STEP_FUNCTIONS_EXECUTION_ARN', '')
+                }
+            )
+        
+        return {
+            'documentId': document_id,
+            'bucket': bucket,
+            'key': key,
+            'fileSize': file_size,
+            'contentType': content_type,
+            'validationStatus': 'passed'
+        }
+        
+    except Exception as e:
+        print(f"Validation error: {str(e)}")
+        raise
 
 def handle_document_upload(event: Dict[str, Any]) -> Dict[str, Any]:
     """
