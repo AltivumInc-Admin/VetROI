@@ -19,7 +19,7 @@ class ONetClient:
     
     def __init__(self):
         self.base_url = os.environ.get('ONET_API_URL', 'https://services.onetcenter.org/ws')
-        self.secret_name = os.environ.get('ONET_SECRET_NAME', 'VetROI/ONet/ApiCredentials')
+        self.secret_name = os.environ.get('ONET_SECRET_NAME', 'ONET')
         self.session = requests.Session()
         self._setup_auth()
     
@@ -56,67 +56,79 @@ class ONetClient:
             Dictionary containing O*NET career data
         """
         try:
-            # First, try to get cached data from S3
-            cached_data = self._get_cached_data(military_code, state)
-            if cached_data:
-                return cached_data
-            
-            # Crosswalk military code to O*NET SOC with branch filter
+            # Get the full O*NET military crosswalk data
             crosswalk_data = self._military_to_onet(military_code, branch)
             
-            if not crosswalk_data:
+            if not crosswalk_data or crosswalk_data.get('total', 0) == 0:
                 logger.warning(f"No O*NET mapping found for military code: {military_code}")
-                return self._get_fallback_careers(state)
+                return {
+                    'keyword': military_code,
+                    'branch': branch,
+                    'total': 0,
+                    'career': [],
+                    'error': 'No matches found'
+                }
             
-            # Get detailed occupation data
-            career_data = []
-            for soc_code in crosswalk_data[:5]:  # Top 5 matches
-                occupation_data = self._get_occupation_details(soc_code, state)
-                if occupation_data:
-                    career_data.append(occupation_data)
-            
-            # Cache the results
-            self._cache_data(military_code, state, career_data)
-            
-            return {
-                'military_code': military_code,
-                'careers': career_data
-            }
+            # Return the full O*NET response data
+            # This includes military_matches and career array
+            return crosswalk_data
             
         except Exception as e:
             logger.error(f"Error fetching O*NET data: {e}")
-            return self._get_fallback_careers(state)
+            return {
+                'keyword': military_code,
+                'branch': branch,
+                'total': 0,
+                'career': [],
+                'error': str(e)
+            }
     
     @tracer.capture_method
-    def _military_to_onet(self, military_code: str, branch: str = 'all') -> Optional[list]:
+    def _military_to_onet(self, military_code: str, branch: str = 'all') -> Optional[Dict[str, Any]]:
         """Crosswalk military code to O*NET SOC codes with branch filtering"""
         try:
             # Call O*NET military crosswalk endpoint with branch parameter
-            # Real implementation: /mnm/careers?keyword={code}&branch={branch}
-            url = f"{self.base_url}/mnm/careers"
+            url = f"{self.base_url}/veterans/military"
             params = {
                 'keyword': military_code,
                 'branch': branch
             }
             
-            # For now, returning mock data until O*NET credentials are configured
-            # response = self.session.get(url, params=params)
-            # response.raise_for_status()
-            # data = response.json()
+            logger.info(f"Calling O*NET API: {url} with params: {params}")
             
-            # Mock crosswalk for common military codes
-            mock_crosswalk = {
-                "11B": ["11-1011.00", "33-3051.01", "13-1111.00"],  # Infantry
-                "68W": ["29-2041.00", "31-9092.00", "29-2042.00"],  # Combat Medic
-                "25B": ["15-1211.00", "15-1212.00", "15-1231.00"],  # IT Specialist
-                "92Y": ["43-5071.00", "11-3071.00", "13-1081.00"],  # Supply
-            }
+            # O*NET requires Accept header for JSON
+            headers = {'Accept': 'application/json'}
+            response = self.session.get(url, params=params, headers=headers)
+            logger.info(f"O*NET Response status: {response.status_code}")
             
-            return mock_crosswalk.get(military_code, [])
+            response.raise_for_status()
+            
+            # Log the raw response to debug
+            raw_response = response.text
+            logger.info(f"O*NET Raw response (first 500 chars): {raw_response[:500]}")
+            
+            if not raw_response:
+                raise ValueError("Empty response from O*NET API")
+                
+            data = response.json()
+            
+            logger.info(f"O*NET Response data: Total careers found: {data.get('total', 0)}")
+            
+            # Return the full O*NET response including military matches and career matches
+            return data
             
         except Exception as e:
             logger.error(f"Crosswalk error: {e}")
-            return None
+            logger.error(f"URL attempted: {url}")
+            logger.error(f"Params: {params}")
+            # Return minimal fallback structure
+            return {
+                'keyword': military_code,
+                'branch': branch,
+                'total': 0,
+                'career': [],
+                'error': str(e)
+            }
     
     @tracer.capture_method
     def _get_occupation_details(self, soc_code: str, state: str) -> Optional[Dict[str, Any]]:

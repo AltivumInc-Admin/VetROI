@@ -1,0 +1,31 @@
+{
+  "apiUrl": "https://yrugnz2sl7.execute-api.us-east-2.amazonaws.com/prod",
+  "region": "us-east-2",
+  "accountId": "205930636302",
+  "stackName": "vetroi-production",
+  "lambdaFunctions": {
+    "recommend": "VetROI_Recommend_prod",
+    "dd214Parser": "VetROI_DD214_Parser_prod",
+    "onetRefresh": "VetROI_ONET_Refresh_prod"
+  },
+  "s3Buckets": {
+    "dd214Uploads": "vetroi-dd214-uploads-prod-205930636302",
+    "onetCache": "vetroi-onet-cache-prod-205930636302",
+    "samDeployments": "vetroi-sam-deployments-205930636302"
+  },
+  "dynamoTable": "VetROI_Sessions_prod",
+  "secretsManager": {
+    "onetCredentials": "VetROI/prod/ONet/ApiCredentials"
+  },
+  "stepFunctions": {
+    "onetRefresh": "VetROI-ONetRefresh-prod"
+  },
+  "deploymentStatus": "CORE_COMPLETE_CERTIFICATE_PENDING",
+  "nextSteps": [
+    "1. Update O*NET credentials in Secrets Manager",
+    "2. Load O*NET data: aws lambda invoke --function-name VetROI_ONET_Refresh_prod --payload '{}' response.json",
+    "3. Build frontend: cd frontend && npm run build",
+    "4. Deploy frontend to Amplify or S3+CloudFront",
+    "5. Test the application end-to-end"
+  ]
+}

@@ -53,9 +53,8 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Generate session ID
         session_id = str(uuid.uuid4())
         
-        # Initialize clients
+        # Initialize O*NET client only (no Bedrock during data collection phase)
         onet_client = ONetClient()
-        bedrock_client = BedrockClient()
         
         # Get O*NET data for the military code with branch filter
         logger.info(f"Fetching O*NET data for code: {veteran_request.code}, branch: {veteran_request.branch}")
@@ -65,26 +64,20 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             veteran_request.branch
         )
         
-        # Generate recommendations using Bedrock
-        logger.info("Generating recommendations with Bedrock")
-        recommendations = bedrock_client.generate_recommendations(
-            veteran_request,
-            onet_data
-        )
-        
-        # Store session in DynamoDB
-        store_session(session_id, veteran_request, recommendations)
+        # Store the veteran profile and O*NET data in session
+        store_profile_session(session_id, veteran_request, onet_data)
         
         # Track metrics
-        metrics.add_metric(name="RecommendationsGenerated", unit=MetricUnit.Count, value=1)
+        metrics.add_metric(name="ProfilesCollected", unit=MetricUnit.Count, value=1)
         metrics.add_metadata(key="branch", value=veteran_request.branch)
         
-        # Prepare response
-        response = RecommendationResponse(
-            session_id=session_id,
-            recommendations=recommendations,
-            timestamp=datetime.utcnow()
-        )
+        # Return the O*NET data directly without AI processing
+        response_data = {
+            'session_id': session_id,
+            'profile': veteran_request.dict(),
+            'onet_careers': onet_data,  # Full O*NET military crosswalk response
+            'timestamp': datetime.utcnow().isoformat()
+        }
         
         return {
             'statusCode': 200,
@@ -92,7 +85,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': response.json()
+            'body': json.dumps(response_data)
         }
         
     except ValueError as e:
@@ -119,19 +112,19 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 
 
 @tracer.capture_method
-def store_session(session_id: str, request: VeteranRequest, recommendations: List[Career]) -> None:
-    """Store session data in DynamoDB"""
+def store_profile_session(session_id: str, request: VeteranRequest, onet_data: Dict[str, Any]) -> None:
+    """Store veteran profile and O*NET data in DynamoDB"""
     
     timestamp = int(time.time())
     
     item = {
         'session_id': session_id,
         'timestamp': timestamp,
-        'request': request.dict(),
-        'recommendations': [rec.dict() for rec in recommendations],
+        'veteran_profile': request.dict(),
+        'onet_careers': onet_data,
         'created_at': datetime.utcnow().isoformat(),
         'ttl': timestamp + (90 * 24 * 60 * 60)  # 90 days TTL
     }
     
     table.put_item(Item=item)
-    logger.info(f"Stored session: {session_id}")
+    logger.info(f"Stored profile session: {session_id}")

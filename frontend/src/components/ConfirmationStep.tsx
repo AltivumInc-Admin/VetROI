@@ -34,10 +34,10 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   // Extract MOS title from API response
   const extractMOSTitle = () => {
-    // Check if raw O*NET data exists
-    if (apiResponse.raw_onet_data?.data?.match?.[0]?.title) {
+    // Check if O*NET military matches exist
+    if (apiResponse.onet_careers?.military_matches?.match?.[0]?.title) {
       // Extract just the title part, remove the branch/rank info in parentheses
-      const fullTitle = apiResponse.raw_onet_data.data.match[0].title
+      const fullTitle = apiResponse.onet_careers.military_matches.match[0].title
       const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
       if (titleMatch) {
         return titleMatch[1].trim()
@@ -45,17 +45,14 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
       return fullTitle
     }
     
-    // Fallback: check various possible locations in the API response
-    if (apiResponse.mosTitle) {
-      return apiResponse.mosTitle
-    }
-    
-    // Check if it's in recommendations
-    if (apiResponse.recommendations?.length > 0) {
-      const firstRec = apiResponse.recommendations[0]
-      if (firstRec.mosTitle) {
-        return firstRec.mosTitle
+    // Fallback: check old structure for backward compatibility
+    if (apiResponse.raw_onet_data?.data?.match?.[0]?.title) {
+      const fullTitle = apiResponse.raw_onet_data.data.match[0].title
+      const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
+      if (titleMatch) {
+        return titleMatch[1].trim()
       }
+      return fullTitle
     }
     
     return null

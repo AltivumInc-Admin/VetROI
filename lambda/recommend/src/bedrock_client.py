@@ -48,6 +48,102 @@ class BedrockClient:
             # Return fallback recommendations
             return self._get_fallback_recommendations(request)
     
+    @tracer.capture_method
+    def generate_chat_response(self, veteran_profile: VeteranRequest, 
+                             onet_careers: Dict[str, Any], 
+                             user_message: str,
+                             conversation_history: List[Dict[str, Any]]) -> str:
+        """
+        Generate chat response for veteran career counseling
+        
+        Args:
+            veteran_profile: Veteran's profile data
+            onet_careers: O*NET career matches
+            user_message: User's current message
+            conversation_history: Previous conversation messages
+            
+        Returns:
+            AI-generated response string
+        """
+        try:
+            # Build comprehensive context
+            prompt = self._build_chat_prompt(
+                veteran_profile, 
+                onet_careers, 
+                user_message, 
+                conversation_history
+            )
+            
+            # Call Bedrock
+            response = self._invoke_bedrock(prompt)
+            
+            return response
+            
+        except Exception as e:
+            logger.error(f"Chat generation error: {e}")
+            return "I apologize, but I'm having trouble processing your request. Let me try to help you explore your career options based on your military experience."
+    
+    def _build_chat_prompt(self, veteran_profile: VeteranRequest, 
+                          onet_careers: Dict[str, Any], 
+                          user_message: str,
+                          conversation_history: List[Dict[str, Any]]) -> str:
+        """Build chat prompt with full context"""
+        
+        state_pref = veteran_profile.relocateState if veteran_profile.relocate else veteran_profile.homeState
+        
+        # Format O*NET careers for context
+        career_list = []
+        if onet_careers.get('career'):
+            for i, career in enumerate(onet_careers['career'][:10], 1):
+                tags = []
+                if career.get('tags', {}).get('bright_outlook'):
+                    tags.append("Bright Outlook")
+                if career.get('tags', {}).get('green'):
+                    tags.append("Green Job")
+                
+                career_list.append(
+                    f"{i}. {career['title']} (SOC: {career['code']}) - "
+                    f"{career.get('preparation_needed', 'N/A')} "
+                    f"{' - '.join(tags) if tags else ''}"
+                )
+        
+        # Build conversation history context
+        history_text = ""
+        if conversation_history:
+            recent_history = conversation_history[-6:]  # Last 3 exchanges
+            for msg in recent_history:
+                role = "Veteran" if msg['role'] == 'user' else "Sentra"
+                history_text += f"{role}: {msg['content']}\n"
+        
+        prompt = f"""System: You are Sentra, VetROI's expert AI career counselor specializing in military-to-civilian transitions.
+
+Veteran Profile:
+- Branch: {veteran_profile.branch.value}
+- Military Code: {veteran_profile.code}
+- Education: {veteran_profile.education.value.replace('_', ' ').title()}
+- Location: {state_pref}
+- Willing to Relocate: {'Yes to ' + veteran_profile.relocateState if veteran_profile.relocate else 'No'}
+
+O*NET Career Matches for this Military Code:
+{chr(10).join(career_list) if career_list else "No direct matches found - provide general guidance"}
+
+Previous Conversation:
+{history_text if history_text else "This is the start of our conversation"}
+
+Current Message: {user_message}
+
+Instructions:
+- Provide personalized, actionable career guidance
+- Reference specific careers from the O*NET matches when relevant
+- Be conversational, supportive, and professional
+- Focus on practical next steps and transition strategies
+- Keep responses concise but comprehensive (2-3 paragraphs)
+- Use the veteran's specific background to tailor advice
+
+Response:"""
+        
+        return prompt
+    
     def _build_prompt(self, request: VeteranRequest, onet_data: Dict[str, Any]) -> str:
         """Build the prompt for Bedrock"""
         
@@ -94,19 +190,31 @@ Limit to 120 words per career. Write in second person."""
     
     def _format_onet_data(self, onet_data: Dict[str, Any]) -> str:
         """Format O*NET data for the prompt"""
-        careers = onet_data.get('careers', [])
+        # Handle the O*NET military crosswalk response format
+        careers = onet_data.get('career', [])
+        military_matches = onet_data.get('military_matches', {}).get('match', [])
         
         if not careers:
             return "No direct O*NET matches found. Please provide general recommendations."
         
         formatted = []
-        for career in careers[:3]:  # Top 3 matches
+        
+        # Add military match info if available
+        if military_matches:
+            match = military_matches[0]
+            formatted.append(f"Military Match: {match.get('title', '')} ({match.get('code', '')})")
+        
+        # Format top career matches
+        for career in careers[:5]:  # Top 5 matches
+            tags = career.get('tags', {})
+            bright = "Bright Outlook" if tags.get('bright_outlook') else ""
+            green = "Green Job" if tags.get('green') else ""
+            
             formatted.append(f"""
-Career: {career.get('title', 'Unknown')} (SOC: {career.get('soc', 'N/A')})
-Description: {career.get('description', 'N/A')}
-Median Salary: ${career.get('median_salary', 0):,}
-Key Tasks: {', '.join(career.get('tasks', [])[:2])}
-Key Skills: {', '.join(career.get('skills', [])[:3])}
+Career: {career.get('title', 'Unknown')} (SOC: {career.get('code', 'N/A')})
+Match Type: {career.get('match_type', 'N/A')}
+Preparation: {career.get('preparation_needed', 'N/A')}
+Tags: {', '.join(filter(None, [bright, green]))}
 """)
         
         return "\n".join(formatted)

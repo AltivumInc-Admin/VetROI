@@ -21,11 +21,40 @@ export interface Career {
   nextStep: string
 }
 
+export interface ONetCareer {
+  code: string
+  title: string
+  match_type: string
+  preparation_needed: string
+  tags?: {
+    bright_outlook?: boolean
+    green?: boolean
+  }
+}
+
+export interface ONetResponse {
+  keyword: string
+  branch: string
+  total: number
+  career: ONetCareer[]
+  military_matches?: {
+    match: Array<{
+      code: string
+      title: string
+      branch: string
+    }>
+  }
+}
+
 export interface RecommendationResponse {
-  sessionId: string
+  session_id: string
+  profile: VeteranRequest
+  onet_careers: ONetResponse
+  timestamp: string
+  // Legacy fields for backward compatibility
+  sessionId?: string
   recommendations?: Career[]
   message?: string
-  timestamp: string
   isInitial?: boolean
   error?: boolean
 }
