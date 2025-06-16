@@ -71,3 +71,18 @@ export async function fetchMultipleSOCData(socCodes: string[]): Promise<Record<s
     return acc
   }, {} as Record<string, any>)
 }
+
+// Sentra AI Career Counselor
+export async function sentraConversation(params: {
+  sessionId: string
+  message: string
+  veteranContext: any
+  conversationId?: string
+}): Promise<{
+  conversationId: string
+  response: string
+  timestamp: string
+}> {
+  const { data } = await api.post('/sentra/conversation', params)
+  return data
+}

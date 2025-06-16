@@ -86,23 +86,75 @@
     
     "RunMacieScan": {
       "Type": "Task",
-      "Resource": "arn:aws:states:::aws-sdk:macie2:createClassificationJob",
+      "Resource": "arn:aws:states:::lambda:invoke",
       "Parameters": {
-        "S3JobDefinition": {
-          "BucketDefinitions": [{
-            "AccountId.$": "$.AWS_ACCOUNT_ID",
-            "Buckets": ["${DD214BucketName}"]
-          }]
-        },
-        "JobType": "ONE_TIME",
-        "Name.$": "States.Format('macie-scan-{}', $.documentId)"
+        "FunctionName": "${MacieHandlerFunction}",
+        "Payload": {
+          "operation": "scan",
+          "documentId.$": "$.documentId",
+          "bucket.$": "$.bucket",
+          "key.$": "$.key"
+        }
+      },
+      "Next": "WaitForMacieScan",
+      "ResultPath": "$.macieJob"
+    },
+    
+    "WaitForMacieScan": {
+      "Type": "Wait",
+      "Seconds": 10,
+      "Next": "CheckMacieStatus"
+    },
+    
+    "CheckMacieStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${MacieHandlerFunction}",
+        "Payload": {
+          "operation": "process_findings",
+          "macieJobId.$": "$.macieJob.body.macieJobId",
+          "documentId.$": "$.documentId"
+        }
+      },
+      "Next": "IsMacieScanComplete",
+      "ResultPath": "$.macieFindings"
+    },
+    
+    "IsMacieScanComplete": {
+      "Type": "Choice",
+      "Choices": [{
+        "Variable": "$.macieFindings.body.status",
+        "StringEquals": "processing",
+        "Next": "WaitForMacieScan"
+      }],
+      "Default": "RedactPIIIfNeeded"
+    },
+    
+    "RedactPIIIfNeeded": {
+      "Type": "Choice",
+      "Choices": [{
+        "Variable": "$.macieFindings.body.requiresRedaction",
+        "BooleanEquals": true,
+        "Next": "RedactPII"
+      }],
+      "Default": "AnalyzeWithComprehend"
+    },
+    
+    "RedactPII": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${MacieHandlerFunction}",
+        "Payload": {
+          "operation": "redact",
+          "documentId.$": "$.documentId",
+          "findings.$": "$.macieFindings.body.findings",
+          "extractedText.$": "$.extractedData.body.extractedData.textForAnalysis"
+        }
       },
       "Next": "AnalyzeWithComprehend",
-      "ResultPath": "$.macieJob",
-      "Catch": [{
-        "ErrorEquals": ["States.ALL"],
-        "Next": "AnalyzeWithComprehend"
-      }]
+      "ResultPath": "$.redactionResult"
     },
     
     "AnalyzeWithComprehend": {

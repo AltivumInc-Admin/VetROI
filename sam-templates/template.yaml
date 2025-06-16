@@ -287,6 +287,34 @@ Resources:
       LogGroupName: !Sub '/aws/lambda/${ONetRefreshFunction}'
       RetentionInDays: 30
 
+  # Macie Handler Function
+  MacieHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VetROI_Macie_Handler
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.macie_handler.lambda_handler
+      MemorySize: 1024
+      Timeout: 300
+      Environment:
+        Variables:
+          DD214_BUCKET: !Ref DD214UploadBucket
+          TABLE_NAME: !Ref SessionsTable
+          FINDINGS_BUCKET: !Sub '${DD214UploadBucket}-macie-findings'
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - macie2:*
+              Resource: '*'
+        - S3CrudPolicy:
+            BucketName: !Ref DD214UploadBucket
+        - S3CrudPolicy:
+            BucketName: !Sub '${DD214UploadBucket}-macie-findings'
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+
   # DD214 Upload Trigger Function
   DD214UploadTriggerFunction:
     Type: AWS::Serverless::Function
@@ -386,9 +414,12 @@ Resources:
         ProfileTableName: !Ref SessionsTable
         NotificationTopicArn: !Ref DD214NotificationTopic
         DD214BucketName: !Ref DD214UploadBucket
+        MacieHandlerFunction: !GetAtt MacieHandlerFunction.Arn
       Policies:
         - LambdaInvokePolicy:
             FunctionName: !Ref DD214ParserFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref MacieHandlerFunction
         - DynamoDBWritePolicy:
             TableName: !Ref SessionsTable
         - S3FullAccessPolicy:
@@ -400,8 +431,67 @@ Resources:
                 - textract:*
                 - comprehend:*
                 - bedrock:InvokeModel
-                - macie2:CreateClassificationJob
+                - sns:Publish
               Resource: '*'
+
+  # Sentra Conversation Table
+  SentraConversationTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_Sentra_Conversations
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: conversationId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: conversationId
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # Sentra AI Career Counselor Function
+  SentraConversationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VetROI_Sentra_Conversation
+      CodeUri: ../lambda/sentra/
+      Handler: src.conversation_handler.lambda_handler
+      MemorySize: 2048
+      Timeout: 30
+      Runtime: python3.12
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: anthropic.claude-3-5-sonnet-20241022-v2:0
+          CONVERSATION_TABLE: !Ref SentraConversationTable
+          SESSION_TABLE: !Ref SessionsTable
+          DD214_BUCKET: !Ref DD214UploadBucket
+          DATA_BUCKET: altroi-data
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SentraConversationTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref SessionsTable
+        - S3ReadPolicy:
+            BucketName: !Ref DD214UploadBucket
+        - S3ReadPolicy:
+            BucketName: altroi-data
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0'
+      Events:
+        ConversationApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref VetROIApi
+            Path: /sentra/conversation
+            Method: POST
 
   # SNS Topic for DD214 notifications
   DD214NotificationTopic:

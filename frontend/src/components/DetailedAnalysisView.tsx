@@ -6,6 +6,7 @@ import '../styles/DetailedAnalysisView.css'
 interface DetailedAnalysisViewProps {
   selectedSOCs: string[]
   onBack: () => void
+  onMeetSentra: () => void
   userState?: string
   relocationState?: string
 }
@@ -13,6 +14,7 @@ interface DetailedAnalysisViewProps {
 export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
   selectedSOCs,
   onBack,
+  onMeetSentra,
   userState = 'CA',
   relocationState
 }) => {
@@ -78,6 +80,20 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
           </div>
         )}
       </main>
+      
+      {!loading && !error && (
+        <div className="meet-sentra-section">
+          <button className="meet-sentra-button" onClick={onMeetSentra}>
+            <div className="sentra-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="12" cy="12" r="10" strokeWidth="2"/>
+                <path d="M12 16v-4M12 8h.01" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <span>Meet with Sentra, our state-of-the-art career counselor</span>
+          </button>
+        </div>
+      )}
     </div>
   )
 }

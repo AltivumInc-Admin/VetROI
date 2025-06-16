@@ -6,6 +6,7 @@ import { CareerMatchDisplay } from './components/CareerMatchDisplay'
 import { DetailedAnalysisView } from './components/DetailedAnalysisView'
 import { DataPanel } from './components/DataPanel'
 import { DD214Upload } from './components/DD214Upload'
+import { SentraChat } from './components/SentraChat'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
 import './styles/App.css'
@@ -31,6 +32,9 @@ function App() {
   const [dataPanelMode, setDataPanelMode] = useState<'api' | 's3'>('api')
   const [showDD214Upload, setShowDD214Upload] = useState(false)
   const [dd214Processed, setDD214Processed] = useState(false)
+  const [dd214DocumentId, setDD214DocumentId] = useState<string>()
+  const [showSentraChat, setShowSentraChat] = useState(false)
+  const [careerDataCache, setCareerDataCache] = useState<any>({})
   console.log('Selected SOCs:', selectedSOCs) // Will be used in Phase 4
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
@@ -126,10 +130,66 @@ function App() {
     }
   }, [])
   
+  // Listen for S3 data fetched event to cache career data
+  useEffect(() => {
+    const handleS3DataFetched = (event: CustomEvent) => {
+      console.log('Caching S3 data:', event.detail)
+      setCareerDataCache(event.detail)
+    }
+
+    window.addEventListener('s3DataFetched', handleS3DataFetched as EventListener)
+    return () => {
+      window.removeEventListener('s3DataFetched', handleS3DataFetched as EventListener)
+    }
+  }, [])
+  
   const handleBackToCareerSelection = () => {
     setShowDetailedAnalysis(false)
     setShowCareerMatches(true)
     setDataPanelMode('api')
+  }
+  
+  const handleMeetSentra = () => {
+    setShowDetailedAnalysis(false)
+    setShowSentraChat(true)
+    setIsDataPanelOpen(false)
+  }
+  
+  const handleBackFromSentra = () => {
+    setShowSentraChat(false)
+    setShowDetailedAnalysis(true)
+  }
+  
+  // Prepare context for Sentra
+  const getSentraContext = () => {
+    if (!profileData || !apiResponse) return null
+    
+    const careersViewed = selectedSOCs.map(soc => ({
+      soc,
+      title: careerDataCache[soc]?.title || 'Unknown',
+      detailsViewed: true
+    }))
+    
+    return {
+      veteranProfile: {
+        branch: profileData.branch,
+        mos: profileData.code,
+        mosTitle: apiResponse.raw_onet_data?.data?.match?.[0]?.title || profileData.code,
+        education: profileData.education,
+        homeState: profileData.homeState,
+        relocate: profileData.relocate,
+        relocateState: profileData.relocateState
+      },
+      careerJourney: {
+        careersViewed,
+        selectedCareers: selectedSOCs,
+        lastViewedCareer: careerDataCache[selectedSOCs[selectedSOCs.length - 1]]
+      },
+      dd214Profile: dd214Processed ? {
+        documentId: dd214DocumentId || '',
+        hasDD214: true
+      } : undefined
+    }
   }
 
   const handleRestart = () => {
@@ -142,16 +202,19 @@ function App() {
     setShowDetailedAnalysis(false)
     setShowDD214Upload(false)
     setDD214Processed(false)
+    setShowSentraChat(false)
     setProfileData(null)
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
     setDataPanelMode('api')
+    setCareerDataCache({})
   }
   
   const handleDD214UploadComplete = (documentId: string) => {
     console.log('DD214 processed:', documentId)
     setDD214Processed(true)
+    setDD214DocumentId(documentId)
     setShowDD214Upload(false)
     setShowCareerMatches(true)
     
@@ -180,7 +243,7 @@ function App() {
       
       <main className="app-main">
         <div className="container">
-          {!chatSession && !needsConfirmation && !showCareerMatches && !showDetailedAnalysis && !showDD214Upload && (
+          {!chatSession && !needsConfirmation && !showCareerMatches && !showDetailedAnalysis && !showDD214Upload && !showSentraChat && (
             <VeteranForm 
               onSubmit={handleSubmit} 
               loading={loading}
@@ -253,8 +316,17 @@ function App() {
             <DetailedAnalysisView
               selectedSOCs={selectedSOCs}
               onBack={handleBackToCareerSelection}
+              onMeetSentra={handleMeetSentra}
               userState={profileData?.homeState || 'CA'}
               relocationState={profileData?.relocate ? profileData?.relocateState : undefined}
+            />
+          )}
+          
+          {showSentraChat && profileData && (
+            <SentraChat
+              veteranContext={getSentraContext()!}
+              sessionId={`session-${Date.now()}`}
+              onBack={handleBackFromSentra}
             />
           )}
           
@@ -308,7 +380,7 @@ function App() {
       )}
       
       {/* Restart Button - Show after initial form submission */}
-      {(chatSession || needsConfirmation || showCareerMatches || showDetailedAnalysis || showDD214Upload) && (
+      {(chatSession || needsConfirmation || showCareerMatches || showDetailedAnalysis || showDD214Upload || showSentraChat) && (
         <button 
           className="restart-button"
           onClick={handleRestart}
