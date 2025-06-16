@@ -34,10 +34,10 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   // Extract MOS title from API response
   const extractMOSTitle = () => {
-    // Check if O*NET military matches exist
-    if (apiResponse.onet_careers?.military_matches?.match?.[0]?.title) {
+    // Check current response structure
+    if (apiResponse.raw_onet_data?.data?.military_matches?.match?.[0]?.title) {
       // Extract just the title part, remove the branch/rank info in parentheses
-      const fullTitle = apiResponse.onet_careers.military_matches.match[0].title
+      const fullTitle = apiResponse.raw_onet_data.data.military_matches.match[0].title
       const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
       if (titleMatch) {
         return titleMatch[1].trim()
@@ -45,9 +45,9 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
       return fullTitle
     }
     
-    // Fallback: check old structure for backward compatibility
-    if (apiResponse.raw_onet_data?.data?.match?.[0]?.title) {
-      const fullTitle = apiResponse.raw_onet_data.data.match[0].title
+    // Future structure when Lambda updates
+    if (apiResponse.onet_careers?.military_matches?.match?.[0]?.title) {
+      const fullTitle = apiResponse.onet_careers.military_matches.match[0].title
       const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
       if (titleMatch) {
         return titleMatch[1].trim()
