@@ -82,6 +82,9 @@
   -webkit-box-orient: vertical;
   text-decoration: none !important;
   text-decoration-line: none !important;
+  /* Ensure visibility on all devices */
+  visibility: visible;
+  opacity: 1;
 }
 
 /* Green indicator at bottom */
@@ -90,6 +93,8 @@
   bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 1; /* Ensure it doesn't block content */
+  pointer-events: none; /* Allow clicks through to card */
 }
 
 /* Tag styles */
@@ -169,6 +174,12 @@
     padding: 1rem;
     height: auto;
     min-height: 140px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header {
+    margin-bottom: 0.5rem; /* Add space between header and content on mobile */
   }
 
   .soc-code {
@@ -179,10 +190,19 @@
   .career-title {
     font-size: 0.875rem;
     -webkit-line-clamp: 3;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .card-content {
     padding: 0.5rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px; /* Ensure minimum height for content */
   }
 
   .star-indicator {
@@ -192,5 +212,12 @@
   .tag {
     font-size: 0.7rem;
     padding: 0.3rem 0.6rem;
+  }
+
+  .green-indicator {
+    position: relative;
+    bottom: auto;
+    margin-top: 0.5rem;
+    transform: none;
   }
 }
