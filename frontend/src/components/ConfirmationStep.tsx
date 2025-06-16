@@ -34,9 +34,18 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   // Extract MOS title from API response
   const extractMOSTitle = () => {
+    // Check nested match structure (older O*NET format)
+    if (apiResponse.raw_onet_data?.data?.match?.[0]?.title) {
+      const fullTitle = apiResponse.raw_onet_data.data.match[0].title
+      const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
+      if (titleMatch) {
+        return titleMatch[1].trim()
+      }
+      return fullTitle
+    }
+    
     // Check current response structure
     if (apiResponse.raw_onet_data?.data?.military_matches?.match?.[0]?.title) {
-      // Extract just the title part, remove the branch/rank info in parentheses
       const fullTitle = apiResponse.raw_onet_data.data.military_matches.match[0].title
       const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
       if (titleMatch) {
