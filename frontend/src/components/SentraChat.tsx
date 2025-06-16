@@ -189,7 +189,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
             </div>
             <div className="message-content">
               {msg.role === 'assistant' ? (
-                <MessageContent content={msg.content} />
+                <MessageContent content={msg.content} role="assistant" />
               ) : (
                 <p>{msg.content}</p>
               )}

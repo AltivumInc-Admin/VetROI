@@ -2,11 +2,13 @@ import axios from 'axios'
 import { VeteranRequest, RecommendationResponse } from './types'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://jg5fae61lj.execute-api.us-east-2.amazonaws.com/prod'
+const API_KEY = import.meta.env.VITE_API_KEY || ''
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
   },
 })
 
