@@ -239,6 +239,16 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
         {socData.technology?.category && socData.technology.category.length > 0 && (
           <section className="onet-compact-section">
             <h3>Technology & Tools</h3>
+            <div className="tech-legend">
+              <span className="legend-item">
+                <span className="legend-box hot"></span>
+                <span className="legend-text">High-demand technology</span>
+              </span>
+              <span className="legend-item">
+                <span className="legend-box regular"></span>
+                <span className="legend-text">Standard technology</span>
+              </span>
+            </div>
             <div className="tech-table">
               {socData.technology.category.map((cat: any, idx: number) => (
                 <div key={idx} className="tech-row">
