@@ -18,8 +18,17 @@ from typing import Dict, Any
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """Lambda handler that ONLY returns O*NET crosswalk data"""
     
-    # Handle CORS preflight
-    if event.get('httpMethod') == 'OPTIONS':
+    # Log the event to debug
+    print(f"Event received: {json.dumps(event)}")
+    
+    # Handle CORS preflight - check multiple possible event structures
+    http_method = (
+        event.get('httpMethod') or 
+        event.get('requestContext', {}).get('http', {}).get('method') or
+        event.get('requestContext', {}).get('httpMethod')
+    )
+    
+    if http_method == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
@@ -31,8 +40,13 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': ''
         }
     
+    # Check if this is a career detail request
+    path = event.get('path') or event.get('rawPath', '')
+    if '/career/' in path and http_method == 'GET':
+        return handle_career_detail(event, context)
+    
     try:
-        # Parse request
+        # Parse request for recommend endpoint
         body = json.loads(event.get('body', '{}'))
         
         # Validate required fields
@@ -62,7 +76,9 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
             },
             'body': json.dumps(response_data)
         }
@@ -175,7 +191,83 @@ def error_response(status_code: int, message: str) -> Dict[str, Any]:
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
         },
         'body': json.dumps({'error': message})
     }
+
+
+def handle_career_detail(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """Handle career detail requests from O*NET /mnm/careers/{soc}/report endpoint"""
+    try:
+        # Extract SOC code from path
+        path = event.get('path') or event.get('rawPath', '')
+        path_params = event.get('pathParameters', {})
+        
+        # Try to get SOC from pathParameters first
+        soc_code = path_params.get('socCode') or path_params.get('soc')
+        
+        # If not found, extract from path
+        if not soc_code and '/career/' in path:
+            soc_code = path.split('/career/')[-1].strip('/')
+        
+        if not soc_code:
+            return error_response(400, 'Missing SOC code in path')
+        
+        print(f"Fetching career details for SOC: {soc_code}")
+        
+        # Get O*NET credentials
+        secret_name = "ONET"
+        secrets_client = boto3.client('secretsmanager')
+        response = secrets_client.get_secret_value(SecretId=secret_name)
+        secret = json.loads(response['SecretString'])
+        
+        # Call O*NET career report API
+        http = urllib3.PoolManager()
+        url = f"https://services.onetcenter.org/ws/mnm/careers/{soc_code}/report"
+        
+        # Create basic auth header
+        credentials = f"{secret['username']}:{secret['password']}"
+        auth_header = base64.b64encode(credentials.encode()).decode()
+        
+        headers = {
+            'Accept': 'application/json',
+            'User-Agent': 'VetROI/1.0',
+            'Authorization': f'Basic {auth_header}'
+        }
+        
+        print(f"Calling O*NET API: {url}")
+        
+        response = http.request(
+            'GET',
+            url,
+            headers=headers,
+            timeout=10.0
+        )
+        
+        if response.status != 200:
+            print(f"O*NET API error: Status {response.status}")
+            return error_response(response.status, f"O*NET API error: {response.data.decode('utf-8')}")
+        
+        # Parse and return the O*NET response as-is
+        data = json.loads(response.data.decode('utf-8'))
+        print(f"Successfully fetched career data for {soc_code}")
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
+            },
+            'body': json.dumps(data)
+        }
+        
+    except Exception as e:
+        print(f"Error fetching career details: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return error_response(500, f"Error fetching career details: {str(e)}")
