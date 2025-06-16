@@ -147,125 +147,135 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
         )}
       </section>
 
-      {/* Knowledge Section */}
-      {socData.knowledge?.group && socData.knowledge.group.length > 0 && (
-        <section className="onet-compact-section">
-          <h3>Knowledge Areas</h3>
-          <p className="onet-attribution">
-            Source: O*NET - U.S. Department of Labor
-          </p>
-          <div className="compact-groups">
-            {socData.knowledge.group.map((group: any, idx: number) => (
-              <div key={idx} className="compact-group">
-                <span className="group-label">{group.title.name}:</span>
-                <span className="group-items">
-                  {group.element.map((el: any) => el.name).join(', ')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Skills Section */}
-      {socData.skills?.group && socData.skills.group.length > 0 && (
-        <section className="onet-compact-section">
-          <h3>Essential Skills</h3>
-          <div className="compact-groups">
-            {socData.skills.group.map((group: any, idx: number) => (
-              <div key={idx} className="compact-group">
-                <span className="group-label">{group.title.name}:</span>
-                <span className="group-items">
-                  {group.element.map((el: any) => el.name).join(', ')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Abilities Section */}
-      {socData.abilities?.group && socData.abilities.group.length > 0 && (
-        <section className="onet-compact-section">
-          <h3>Core Abilities</h3>
-          <div className="compact-groups">
-            {socData.abilities.group.map((group: any, idx: number) => (
-              <div key={idx} className="compact-group">
-                <span className="group-label">{group.title.name}:</span>
-                <span className="group-items">
-                  {group.element.map((el: any) => el.name).join(', ')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Personality Section */}
-      {socData.personality && (
-        <section className="onet-compact-section">
-          <h3>Personality Profile</h3>
-          
-          {socData.personality.top_interest && (
-            <div className="compact-group">
-              <span className="group-label">Primary Interest:</span>
-              <span className="group-items">
-                {socData.personality.top_interest.title} - {socData.personality.top_interest.description}
-              </span>
-            </div>
-          )}
-          
-          {socData.personality.work_styles?.element && (
-            <div className="compact-group">
-              <span className="group-label">Work Styles:</span>
-              <span className="group-items">
-                {socData.personality.work_styles.element.map((style: any) => style.name).join(', ')}
-              </span>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Technology Section */}
-      {socData.technology?.category && socData.technology.category.length > 0 && (
-        <section className="onet-compact-section">
-          <h3>Technology & Tools</h3>
-          <div className="tech-table">
-            {socData.technology.category.map((cat: any, idx: number) => (
-              <div key={idx} className="tech-row">
-                <span className="tech-category-name">{cat.title.name}</span>
-                <div className="tech-items">
-                  {cat.example.map((ex: any, exIdx: number) => (
-                    <span 
-                      key={exIdx} 
-                      className={`tech-name ${ex.hot_technology ? 'hot-technology' : ''}`}
-                    >
-                      {ex.name}
-                    </span>
-                  ))}
+      {/* Requirements Group */}
+      <div className="onet-data-group">
+        {/* Knowledge Section */}
+        {socData.knowledge?.group && socData.knowledge.group.length > 0 && (
+          <section className="onet-compact-section">
+            <h3>Knowledge Areas</h3>
+            <p className="onet-attribution">
+              Source: O*NET - U.S. Department of Labor
+            </p>
+            <div className="compact-groups">
+              {socData.knowledge.group.map((group: any, idx: number) => (
+                <div key={idx} className="compact-group">
+                  <span className="group-label">{group.title.name}</span>
+                  <span className="group-items">
+                    {group.element.map((el: any) => el.name).join(', ')}
+                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* Industries Section */}
-      {socData.where_do_they_work?.industry && (
-        <section className="industries-section">
-          <h3>Where They Work</h3>
-          <div className="industry-breakdown">
-            {socData.where_do_they_work.industry.map((ind: any, idx: number) => (
-              <div key={idx} className="industry-item">
-                <div className="industry-bar" style={{ width: `${ind.percent_employed}%` }}>
-                  <span className="industry-percent">{ind.percent_employed}%</span>
+        {/* Skills Section */}
+        {socData.skills?.group && socData.skills.group.length > 0 && (
+          <section className="onet-compact-section">
+            <h3>Essential Skills</h3>
+            <div className="compact-groups">
+              {socData.skills.group.map((group: any, idx: number) => (
+                <div key={idx} className="compact-group">
+                  <span className="group-label">{group.title.name}</span>
+                  <span className="group-items">
+                    {group.element.map((el: any) => el.name).join(', ')}
+                  </span>
                 </div>
-                <span className="industry-name">{ind.title}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Abilities Section */}
+        {socData.abilities?.group && socData.abilities.group.length > 0 && (
+          <section className="onet-compact-section">
+            <h3>Core Abilities</h3>
+            <div className="compact-groups">
+              {socData.abilities.group.map((group: any, idx: number) => (
+                <div key={idx} className="compact-group">
+                  <span className="group-label">{group.title.name}</span>
+                  <span className="group-items">
+                    {group.element.map((el: any) => el.name).join(', ')}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Personal Fit Group */}
+      <div className="onet-data-group">
+        {/* Personality Section */}
+        {socData.personality && (
+          <section className="onet-compact-section">
+            <h3>Personality Profile</h3>
+            <div className="compact-groups">
+              {socData.personality.top_interest && (
+                <div className="compact-group">
+                  <span className="group-label">Primary Interest</span>
+                  <span className="group-items">
+                    {socData.personality.top_interest.title} - {socData.personality.top_interest.description}
+                  </span>
+                </div>
+              )}
+              
+              {socData.personality.work_styles?.element && (
+                <div className="compact-group">
+                  <span className="group-label">Work Styles</span>
+                  <span className="group-items">
+                    {socData.personality.work_styles.element.map((style: any) => style.name).join(', ')}
+                  </span>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* Tools & Environment Group */}
+      <div className="onet-data-group">
+        {/* Technology Section */}
+        {socData.technology?.category && socData.technology.category.length > 0 && (
+          <section className="onet-compact-section">
+            <h3>Technology & Tools</h3>
+            <div className="tech-table">
+              {socData.technology.category.map((cat: any, idx: number) => (
+                <div key={idx} className="tech-row">
+                  <span className="tech-category-name">{cat.title.name}</span>
+                  <div className="tech-items">
+                    {cat.example.map((ex: any, exIdx: number) => (
+                      <span 
+                        key={exIdx} 
+                        className={`tech-name ${ex.hot_technology ? 'hot-technology' : ''}`}
+                      >
+                        {ex.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Industries Section */}
+        {socData.where_do_they_work?.industry && (
+          <section className="industries-section">
+            <h3>Where They Work</h3>
+            <div className="industry-breakdown">
+              {socData.where_do_they_work.industry.map((ind: any, idx: number) => (
+                <div key={idx} className="industry-item">
+                  <div className="industry-bar" style={{ width: `${ind.percent_employed}%` }}>
+                    <span className="industry-percent">{ind.percent_employed}%</span>
+                  </div>
+                  <span className="industry-name">{ind.title}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
 
       {/* Related Careers Section */}
       {socData.explore_more?.careers?.career && (

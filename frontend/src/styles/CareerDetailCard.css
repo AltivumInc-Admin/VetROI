@@ -364,6 +364,33 @@ section h3 {
   z-index: 10;
 }
 
+/* Responsive Design */
+@media (max-width: 768px) {
+  .compact-group,
+  .tech-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .group-label,
+  .tech-category-name {
+    text-align: left;
+    padding-right: 0;
+    border-right: none;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .compact-group:hover,
+  .tech-row:hover {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
 /* Animations */
 @keyframes greenGlow {
   0%, 100% {
@@ -396,52 +423,94 @@ section h3 {
   flex-shrink: 0;
 }
 
+.inline-section h4::after {
+  content: ':';
+  margin-left: 0.25rem;
+}
+
 .alternative-titles {
   color: rgba(255, 255, 255, 0.85);
   font-size: 0.95rem;
   line-height: 1.4;
 }
 
+/* O*NET Data Section Groups */
+.onet-data-group {
+  margin: 2rem 0;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.onet-data-group:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
 /* Compact O*NET Sections */
 .onet-compact-section {
-  margin-top: 1.5rem;
+  margin: 2rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.onet-compact-section::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #00d4ff 0%, transparent 100%);
+  opacity: 0.3;
 }
 
 .onet-compact-section h3 {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #00d4ff;
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .onet-attribution {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
   margin-bottom: 1rem;
   font-style: italic;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .compact-groups {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .compact-group {
   display: grid;
-  grid-template-columns: minmax(120px, max-content) 1fr;
-  gap: 1rem;
+  grid-template-columns: 160px 1fr;
+  gap: 1.5rem;
   align-items: baseline;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  padding: 0.75rem 0;
+  transition: all 0.2s ease;
 }
 
-.compact-group:last-child {
-  border-bottom: none;
+.compact-group:hover {
+  background: rgba(0, 212, 255, 0.02);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .group-label {
   color: #00d4ff;
   font-size: 0.9rem;
   font-weight: 600;
-  white-space: nowrap;
+  text-align: right;
+  padding-right: 1rem;
+  border-right: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .group-items {
@@ -453,34 +522,39 @@ section h3 {
 /* Technology Table */
 .tech-table {
   display: grid;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  gap: 0.5rem;
 }
 
 .tech-row {
   display: grid;
-  grid-template-columns: minmax(150px, max-content) 1fr;
-  gap: 1rem;
+  grid-template-columns: 160px 1fr;
+  gap: 1.5rem;
   align-items: baseline;
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  transition: all 0.2s ease;
 }
 
-.tech-row:last-child {
-  border-bottom: none;
+.tech-row:hover {
+  background: rgba(0, 212, 255, 0.02);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .tech-category-name {
   color: #00d4ff;
   font-size: 0.9rem;
   font-weight: 600;
-  white-space: nowrap;
+  text-align: right;
+  padding-right: 1rem;
+  border-right: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .tech-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .tech-name {
@@ -496,6 +570,7 @@ section h3 {
 .tech-name:hover {
   background: rgba(0, 212, 255, 0.1);
   border-color: rgba(0, 212, 255, 0.2);
+  transform: translateY(-1px);
 }
 
 .tech-name.hot-technology {
@@ -508,11 +583,34 @@ section h3 {
 .tech-name.hot-technology:hover {
   background: rgba(255, 107, 0, 0.15);
   border-color: rgba(255, 107, 0, 0.5);
+  transform: translateY(-1px);
 }
 
 /* Industries Section */
 .industries-section {
-  margin-top: 1.5rem;
+  margin: 2rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.industries-section::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #00d4ff 0%, transparent 100%);
+  opacity: 0.3;
+}
+
+.industries-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #00d4ff;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .industry-breakdown {
