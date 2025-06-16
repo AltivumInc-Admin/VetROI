@@ -50,6 +50,18 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
         </div>
       </div>
 
+      {/* Also Called Section */}
+      {career?.also_called?.title && career.also_called.title.length > 0 && (
+        <section className="also-called-section">
+          <div className="inline-section">
+            <h4>Also Known As:</h4>
+            <span className="alternative-titles">
+              {career.also_called.title.join(' • ')}
+            </span>
+          </div>
+        </section>
+      )}
+
       {/* Growth Outlook at Top */}
       {jobOutlook?.outlook && (
         <div className={`growth-outlook-top ${jobOutlook.outlook.category?.toLowerCase()}`}>
@@ -134,19 +146,6 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
           <p className="no-data">No specific data available for {userState}{relocationState ? ` or ${relocationState}` : ''}</p>
         )}
       </section>
-
-
-      {/* Also Called Section */}
-      {career?.also_called?.title && career.also_called.title.length > 0 && (
-        <section className="also-called-section">
-          <div className="inline-section">
-            <h4>Also Known As:</h4>
-            <span className="alternative-titles">
-              {career.also_called.title.join(' • ')}
-            </span>
-          </div>
-        </section>
-      )}
 
       {/* Knowledge Section */}
       {socData.knowledge?.group && socData.knowledge.group.length > 0 && (

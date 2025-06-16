@@ -99,8 +99,8 @@
 }
 
 .growth-outlook-top.bright {
-  background: rgba(34, 197, 94, 0.08);
-  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(255, 193, 7, 0.08);
+  border-color: rgba(255, 193, 7, 0.3);
 }
 
 .outlook-header {
@@ -133,7 +133,7 @@
 }
 
 .growth-outlook-top.bright .outlook-category {
-  color: #22c55e;
+  color: #ffc107;
 }
 
 .outlook-description {
@@ -159,9 +159,9 @@
 }
 
 .growth-outlook-top.bright .outlook-tag {
-  background: rgba(34, 197, 94, 0.1);
-  border-color: rgba(34, 197, 94, 0.3);
-  color: #22c55e;
+  background: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.3);
+  color: #ffc107;
 }
 
 /* Green Career Badge */
@@ -376,7 +376,9 @@ section h3 {
 
 /* Also Called Section - Compact */
 .also-called-section {
-  margin-top: 1.5rem;
+  margin: 0 0 1rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
 }
 
 .inline-section {
