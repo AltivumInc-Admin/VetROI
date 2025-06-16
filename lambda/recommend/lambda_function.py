@@ -46,8 +46,20 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return handle_career_detail(event, context)
     
     # Check if this is a Sentra conversation request
-    if '/sentra/conversation' in path and http_method == 'POST':
-        return handle_sentra_conversation(event, context)
+    if '/sentra/conversation' in path:
+        if http_method == 'OPTIONS':
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+                    'Access-Control-Max-Age': '86400'
+                },
+                'body': ''
+            }
+        elif http_method == 'POST':
+            return handle_sentra_conversation(event, context)
     
     try:
         # Parse request for recommend endpoint

@@ -54,40 +54,46 @@
 /* Markdown Elements */
 .message-markdown {
   line-height: 1.6;
-  color: #1f2937 !important;
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
-/* Ensure all markdown content is dark */
+/* User messages */
+.message-text {
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* Ensure all markdown content is light for dark theme */
 .message-markdown p,
 .message-markdown li,
 .message-markdown span {
-  color: #1f2937 !important;
+  color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .message-heading-1 {
   font-size: 1.5rem;
   font-weight: 700;
   margin: 1.5rem 0 1rem;
-  color: #111827;
+  color: #ffffff;
 }
 
 .message-heading-2 {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 1.25rem 0 0.75rem;
-  color: #1f2937;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 .message-heading-3 {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 1rem 0 0.5rem;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .message-bold {
   font-weight: 600;
-  color: #111827;
+  color: #ffffff;
 }
 
 .message-italic {
@@ -139,22 +145,22 @@
 }
 
 .message-quote {
-  border-left: 4px solid #3b82f6;
+  border-left: 4px solid #00d4ff;
   padding-left: 1rem;
   margin: 0.75rem 0;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.8);
   font-style: italic;
 }
 
 /* Links in markdown */
 .message-markdown a {
-  color: #2563eb;
+  color: #00d4ff;
   text-decoration: underline;
   font-weight: 500;
 }
 
 .message-markdown a:hover {
-  color: #1d4ed8;
+  color: #66e1ff;
 }
 
 /* Tables if needed */
@@ -166,20 +172,21 @@
 
 .message-markdown th,
 .message-markdown td {
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.5rem;
   text-align: left;
 }
 
 .message-markdown th {
-  background: #f9fafb;
+  background: rgba(255, 255, 255, 0.1);
   font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
 }
 
 /* Horizontal rules */
 .message-markdown hr {
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   margin: 1.5rem 0;
 }
 
