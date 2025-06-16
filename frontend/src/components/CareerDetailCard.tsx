@@ -130,34 +130,31 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
       </section>
 
       {/* Also Called Section */}
-      {career?.also_called?.title && (
+      {career?.also_called?.title && career.also_called.title.length > 0 && (
         <section className="also-called-section">
-          <h3>Also Known As</h3>
-          <div className="alternative-titles">
-            {career.also_called.title.map((title: string, index: number) => (
-              <span key={index} className="alt-title">{title}</span>
-            ))}
+          <div className="inline-section">
+            <h4>Also Known As:</h4>
+            <span className="alternative-titles">
+              {career.also_called.title.join(' • ')}
+            </span>
           </div>
         </section>
       )}
 
       {/* Knowledge Section */}
       {socData.knowledge?.group && socData.knowledge.group.length > 0 && (
-        <section className="knowledge-section">
-          <h3>Key Knowledge Areas</h3>
-          <p className="section-intro">
-            According to <strong>O*NET</strong> (the Occupational Information Network), 
-            professionals in this field demonstrate knowledge in:
+        <section className="onet-compact-section">
+          <h3>Knowledge Areas</h3>
+          <p className="onet-attribution">
+            Source: O*NET - U.S. Department of Labor
           </p>
-          <div className="knowledge-groups">
+          <div className="compact-groups">
             {socData.knowledge.group.map((group: any, idx: number) => (
-              <div key={idx} className="knowledge-group">
-                <h4>{group.title.name}</h4>
-                <div className="knowledge-items">
-                  {group.element.map((el: any, elIdx: number) => (
-                    <span key={elIdx} className="knowledge-item">{el.name}</span>
-                  ))}
-                </div>
+              <div key={idx} className="compact-group">
+                <span className="group-label">{group.title.name}:</span>
+                <span className="group-items">
+                  {group.element.map((el: any) => el.name).join(', ')}
+                </span>
               </div>
             ))}
           </div>
@@ -166,20 +163,15 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
 
       {/* Skills Section */}
       {socData.skills?.group && socData.skills.group.length > 0 && (
-        <section className="skills-section">
+        <section className="onet-compact-section">
           <h3>Essential Skills</h3>
-          <div className="skills-groups">
+          <div className="compact-groups">
             {socData.skills.group.map((group: any, idx: number) => (
-              <div key={idx} className="skills-group">
-                <h4>{group.title.name}</h4>
-                <div className="skill-items">
-                  {group.element.map((el: any, elIdx: number) => (
-                    <div key={elIdx} className="skill-item">
-                      <span className="skill-bullet">•</span>
-                      <span className="skill-text">{el.name}</span>
-                    </div>
-                  ))}
-                </div>
+              <div key={idx} className="compact-group">
+                <span className="group-label">{group.title.name}:</span>
+                <span className="group-items">
+                  {group.element.map((el: any) => el.name).join(', ')}
+                </span>
               </div>
             ))}
           </div>
@@ -188,17 +180,15 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
 
       {/* Abilities Section */}
       {socData.abilities?.group && socData.abilities.group.length > 0 && (
-        <section className="abilities-section">
+        <section className="onet-compact-section">
           <h3>Core Abilities</h3>
-          <div className="abilities-groups">
+          <div className="compact-groups">
             {socData.abilities.group.map((group: any, idx: number) => (
-              <div key={idx} className="abilities-group">
-                <h4>{group.title.name}</h4>
-                <div className="ability-items">
-                  {group.element.map((el: any, elIdx: number) => (
-                    <div key={elIdx} className="ability-item">{el.name}</div>
-                  ))}
-                </div>
+              <div key={idx} className="compact-group">
+                <span className="group-label">{group.title.name}:</span>
+                <span className="group-items">
+                  {group.element.map((el: any) => el.name).join(', ')}
+                </span>
               </div>
             ))}
           </div>
@@ -207,24 +197,24 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
 
       {/* Personality Section */}
       {socData.personality && (
-        <section className="personality-section">
+        <section className="onet-compact-section">
           <h3>Personality Profile</h3>
           
           {socData.personality.top_interest && (
-            <div className="personality-interest">
-              <h4 className="interest-type">{socData.personality.top_interest.title} Interest</h4>
-              <p className="interest-desc">{socData.personality.top_interest.description}</p>
+            <div className="compact-group">
+              <span className="group-label">Primary Interest:</span>
+              <span className="group-items">
+                {socData.personality.top_interest.title} - {socData.personality.top_interest.description}
+              </span>
             </div>
           )}
           
           {socData.personality.work_styles?.element && (
-            <div className="work-styles">
-              <h4>Key Work Styles</h4>
-              <div className="style-items">
-                {socData.personality.work_styles.element.map((style: any, idx: number) => (
-                  <span key={idx} className="style-item">{style.name}</span>
-                ))}
-              </div>
+            <div className="compact-group">
+              <span className="group-label">Work Styles:</span>
+              <span className="group-items">
+                {socData.personality.work_styles.element.map((style: any) => style.name).join(', ')}
+              </span>
             </div>
           )}
         </section>
@@ -232,19 +222,18 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
 
       {/* Technology Section */}
       {socData.technology?.category && socData.technology.category.length > 0 && (
-        <section className="technology-section">
+        <section className="onet-compact-section">
           <h3>Technology & Tools</h3>
-          <div className="tech-categories">
+          <div className="tech-table">
             {socData.technology.category.map((cat: any, idx: number) => (
-              <div key={idx} className="tech-category">
-                <h4>{cat.title.name}</h4>
-                <div className="tech-examples">
+              <div key={idx} className="tech-row">
+                <span className="tech-category-name">{cat.title.name}</span>
+                <div className="tech-items">
                   {cat.example.map((ex: any, exIdx: number) => (
                     <span 
                       key={exIdx} 
-                      className={`tech-item ${ex.hot_technology ? 'hot-tech' : ''}`}
+                      className={`tech-name ${ex.hot_technology ? 'hot-technology' : ''}`}
                     >
-                      {ex.hot_technology && <span className="hot-icon">🔥</span>}
                       {ex.name}
                     </span>
                   ))}

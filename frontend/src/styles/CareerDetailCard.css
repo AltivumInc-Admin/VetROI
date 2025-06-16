@@ -341,277 +341,143 @@ section h3 {
   }
 }
 
-/* Also Called Section */
+/* Also Called Section - Compact */
 .also-called-section {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
+}
+
+.inline-section {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.inline-section h4 {
+  color: #00d4ff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .alternative-titles {
-  display: flex;
-  flex-wrap: wrap;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Compact O*NET Sections */
+.onet-compact-section {
+  margin-top: 1.5rem;
+}
+
+.onet-compact-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.onet-attribution {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.compact-groups {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.compact-group {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.compact-group:last-child {
+  border-bottom: none;
+}
+
+.group-label {
+  color: #00d4ff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.group-items {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Technology Table */
+.tech-table {
+  display: grid;
   gap: 0.75rem;
   margin-top: 1rem;
 }
 
-.alt-title {
-  background: rgba(0, 212, 255, 0.1);
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-}
-
-.alt-title:hover {
-  background: rgba(0, 212, 255, 0.15);
-  border-color: rgba(0, 212, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-/* Knowledge Section */
-.knowledge-section {
-  margin-top: 2rem;
-}
-
-.section-intro {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin: 0.5rem 0 1.5rem 0;
-}
-
-.section-intro strong {
-  color: #00d4ff;
-  font-weight: 600;
-}
-
-.knowledge-groups {
+.tech-row {
   display: grid;
-  gap: 1.5rem;
+  grid-template-columns: minmax(150px, max-content) 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
 }
 
-.knowledge-group h4 {
+.tech-row:last-child {
+  border-bottom: none;
+}
+
+.tech-category-name {
   color: #00d4ff;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  white-space: nowrap;
 }
 
-.knowledge-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.knowledge-item {
-  background: rgba(20, 27, 58, 0.4);
-  border: 1px solid rgba(0, 212, 255, 0.15);
-  color: rgba(255, 255, 255, 0.85);
-  padding: 0.375rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-}
-
-.knowledge-item:hover {
-  background: rgba(0, 212, 255, 0.1);
-  border-color: rgba(0, 212, 255, 0.25);
-}
-
-/* Skills Section */
-.skills-section {
-  margin-top: 2rem;
-}
-
-.skills-groups {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.skills-group h4 {
-  color: #00d4ff;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.skill-items {
-  display: grid;
-  gap: 0.5rem;
-}
-
-.skill-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-}
-
-.skill-bullet {
-  color: #00d4ff;
-  font-size: 1.2rem;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.skill-text {
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1.5;
-  font-size: 0.95rem;
-}
-
-/* Abilities Section */
-.abilities-section {
-  margin-top: 2rem;
-}
-
-.abilities-groups {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.abilities-group h4 {
-  color: #00d4ff;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.ability-items {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.ability-item {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(0, 212, 255, 0.02) 100%);
-  border-left: 3px solid rgba(0, 212, 255, 0.4);
-  padding: 0.75rem 1rem;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-}
-
-.ability-item:hover {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(0, 212, 255, 0.04) 100%);
-  border-left-color: #00d4ff;
-  transform: translateX(4px);
-}
-
-/* Personality Section */
-.personality-section {
-  margin-top: 2rem;
-}
-
-.personality-interest {
-  background: rgba(138, 43, 226, 0.1);
-  border: 1px solid rgba(138, 43, 226, 0.3);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.interest-type {
-  color: #a78bfa;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.interest-desc {
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.6;
-  font-size: 0.95rem;
-}
-
-.work-styles h4 {
-  color: #00d4ff;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.style-items {
+.tech-items {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.style-item {
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  color: rgba(255, 255, 255, 0.9);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-}
-
-.style-item:hover {
-  background: rgba(168, 85, 247, 0.15);
-  border-color: rgba(168, 85, 247, 0.3);
-  transform: translateY(-1px);
-}
-
-/* Technology Section */
-.technology-section {
-  margin-top: 2rem;
-}
-
-.tech-categories {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.tech-category h4 {
-  color: #00d4ff;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.tech-examples {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.tech-item {
-  background: rgba(0, 212, 255, 0.05);
-  border: 1px solid rgba(0, 212, 255, 0.15);
+.tech-name {
+  background: rgba(20, 27, 58, 0.3);
+  border: 1px solid rgba(0, 212, 255, 0.1);
   color: rgba(255, 255, 255, 0.85);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
   font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
-.tech-item:hover {
+.tech-name:hover {
   background: rgba(0, 212, 255, 0.1);
-  border-color: rgba(0, 212, 255, 0.25);
-  transform: translateY(-1px);
+  border-color: rgba(0, 212, 255, 0.2);
 }
 
-.tech-item.hot-tech {
-  background: rgba(255, 107, 0, 0.1);
-  border-color: rgba(255, 107, 0, 0.3);
-}
-
-.tech-item.hot-tech:hover {
-  background: rgba(255, 107, 0, 0.15);
+.tech-name.hot-technology {
   border-color: rgba(255, 107, 0, 0.4);
+  background: rgba(255, 107, 0, 0.1);
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
 }
 
-.hot-icon {
-  font-size: 0.875rem;
+.tech-name.hot-technology:hover {
+  background: rgba(255, 107, 0, 0.15);
+  border-color: rgba(255, 107, 0, 0.5);
 }
 
 /* Industries Section */
 .industries-section {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
 }
 
 .industry-breakdown {
