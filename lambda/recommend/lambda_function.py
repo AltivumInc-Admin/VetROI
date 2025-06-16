@@ -310,13 +310,17 @@ def handle_sentra_conversation(event: Dict[str, Any], context: Any) -> Dict[str,
         
         # Initialize or get conversation history
         if conversation_id:
+            print(f"Continuing conversation: {conversation_id}")
             conversation_history = get_conversation_history(conversation_id)
+            print(f"Retrieved {len(conversation_history)} historical messages")
         else:
             conversation_id = str(uuid.uuid4())
             conversation_history = []
+            print(f"Starting new conversation: {conversation_id}")
         
         # Build the system prompt with context
-        system_prompt = build_sentra_system_prompt(veteran_context)
+        is_new_conversation = len(conversation_history) == 0
+        system_prompt = build_sentra_system_prompt(veteran_context, is_new_conversation)
         
         # Prepare messages for Claude
         messages = []
@@ -328,11 +332,18 @@ def handle_sentra_conversation(event: Dict[str, Any], context: Any) -> Dict[str,
                 "content": [{"text": msg['content']}]
             })
         
-        # Add current user message
-        messages.append({
-            "role": "user",
-            "content": [{"text": user_message}]
-        })
+        # Add current user message (unless it's the initial greeting)
+        if user_message != "INITIAL_GREETING":
+            messages.append({
+                "role": "user",
+                "content": [{"text": user_message}]
+            })
+        else:
+            # For initial greeting, add a system message to start the conversation
+            messages.append({
+                "role": "user",
+                "content": [{"text": "I'm ready to discuss my career transition. Please introduce yourself and ask me about my goals."}]
+            })
         
         # Call Claude 3.5 Sonnet v2 via Bedrock Converse API using inference profile
         bedrock_client = boto3.client('bedrock-runtime', region_name='us-east-2')
@@ -342,7 +353,7 @@ def handle_sentra_conversation(event: Dict[str, Any], context: Any) -> Dict[str,
             messages=messages,
             system=[{"text": system_prompt}],
             inferenceConfig={
-                "maxTokens": 1024,
+                "maxTokens": 4096,
                 "temperature": 0.7,
                 "topP": 0.9
             }
@@ -409,7 +420,7 @@ def prepare_veteran_context(session_id: str, provided_context: Dict) -> Dict[str
         return {}
 
 
-def build_sentra_system_prompt(veteran_context: Dict) -> str:
+def build_sentra_system_prompt(veteran_context: Dict, is_new_conversation: bool = True) -> str:
     """Build a comprehensive system prompt for Sentra with veteran context"""
     
     profile = veteran_context.get('veteranProfile', {})
@@ -417,8 +428,11 @@ def build_sentra_system_prompt(veteran_context: Dict) -> str:
     
     prompt = """You are Sentra, a knowledgeable and empathetic AI career counselor for military veterans. 
 
-You're speaking with a veteran who has the following background:
 """
+    if is_new_conversation:
+        prompt += "You're meeting a veteran for the first time who has the following background:\n"
+    else:
+        prompt += "You're continuing a conversation with a veteran. Their background:\n"
     
     # Add profile information
     if profile:
@@ -454,8 +468,20 @@ Key areas to explore:
 - GI Bill and other veteran benefits
 - Specific schools, certifications, or training programs
 
-This is a 30-minute career counseling session. Be warm, professional, and focused on actionable guidance. 
-Start by acknowledging what they've already explored and ask an insightful question to deepen the conversation."""
+This is a 30-minute career counseling session. Be warm, professional, and focused on actionable guidance.
+
+IMPORTANT: 
+- Build on previous messages in the conversation - don't repeat information
+- Keep responses concise and conversational
+- Ask one clear question at a time to guide the discussion forward
+- Provide specific, actionable advice when asked
+- Remember what the veteran has already told you in this conversation
+
+"""
+    if is_new_conversation:
+        prompt += "\nFor this first interaction, briefly introduce yourself and ask what brings them to career counseling today."
+    else:
+        prompt += "\nContinue the conversation naturally from where you left off. Don't re-introduce yourself or their background."
     
     return prompt
 

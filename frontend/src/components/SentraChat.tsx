@@ -120,6 +120,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         conversationId
       })
 
+      setConversationId(response.conversationId)
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: response.response,
