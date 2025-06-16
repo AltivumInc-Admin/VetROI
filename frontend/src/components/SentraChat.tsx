@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { sentraConversation } from '../api'
 import { MessageContent } from './MessageContent'
 import '../styles/SentraChat.css'
 
@@ -44,20 +43,17 @@ interface SentraChatProps {
 }
 
 export const SentraChat: React.FC<SentraChatProps> = ({ 
-  veteranContext, 
   sessionId,
   onBack 
 }) => {
   const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
-  const [conversationId, setConversationId] = useState<string>()
+  const [missionClicked, setMissionClicked] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
-    // Send initial context-aware greeting
-    sendInitialGreeting()
+    // Don't send initial greeting - wait for mission button
   }, [])
 
   useEffect(() => {
@@ -68,28 +64,36 @@ export const SentraChat: React.FC<SentraChatProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const sendInitialGreeting = async () => {
+  const handleMissionClick = async () => {
+    if (missionClicked) return
+    
+    setMissionClicked(true)
     setIsTyping(true)
     
     try {
-      const response = await sentraConversation({
-        sessionId,
-        message: "INITIAL_GREETING",
-        veteranContext,
-        conversationId: undefined
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/recommend`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action: 'lexMission',
+          sessionId
+        })
       })
 
-      setConversationId(response.conversationId)
+      const data = await response.json()
+      
       setMessages([{
         role: 'assistant',
-        content: response.response,
-        timestamp: new Date(response.timestamp)
+        content: data.message || "Visit https://altivum.ai/nextmission to continue your mission.",
+        timestamp: new Date()
       }])
     } catch (error) {
-      console.error('Failed to get initial greeting:', error)
+      console.error('Failed to get mission:', error)
       setMessages([{
         role: 'assistant',
-        content: "Hello! I'm Sentra, your AI career counselor. I'm here to help you navigate your transition to civilian careers. What would you like to discuss today?",
+        content: "Visit https://altivum.ai/nextmission to continue your mission.",
         timestamp: new Date()
       }])
     } finally {
@@ -97,58 +101,6 @@ export const SentraChat: React.FC<SentraChatProps> = ({
     }
   }
 
-  const sendMessage = async () => {
-    if (!input.trim() || isTyping) return
-
-    const userMessage = input.trim()
-    setInput('')
-    
-    // Add user message to chat
-    setMessages(prev => [...prev, {
-      role: 'user',
-      content: userMessage,
-      timestamp: new Date()
-    }])
-
-    setIsTyping(true)
-
-    try {
-      const response = await sentraConversation({
-        sessionId,
-        message: userMessage,
-        veteranContext,
-        conversationId
-      })
-
-      setConversationId(response.conversationId)
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: response.response,
-        timestamp: new Date(response.timestamp)
-      }])
-    } catch (error) {
-      console.error('Failed to send message:', error)
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
-        timestamp: new Date()
-      }])
-    } finally {
-      setIsTyping(false)
-    }
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage()
-    }
-  }
-
-  const askAbout = (topic: string) => {
-    setInput(topic)
-    textareaRef.current?.focus()
-  }
 
   return (
     <div className="sentra-chat-container">
@@ -179,6 +131,22 @@ export const SentraChat: React.FC<SentraChatProps> = ({
       </div>
       
       <div className="chat-messages">
+        {messages.length === 0 && (
+          <div className="mission-button-container">
+            <button 
+              className={`mission-button ${missionClicked ? 'clicked' : ''} ${isTyping ? 'loading' : ''}`}
+              onClick={handleMissionClick}
+              disabled={missionClicked}
+            >
+              {isTyping ? (
+                <span className="loading-text">Processing...</span>
+              ) : (
+                <span className="mission-text">Tell me my next mission</span>
+              )}
+            </button>
+          </div>
+        )}
+        
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.role}`}>
             <div className="message-avatar">
@@ -220,53 +188,25 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         <div ref={messagesEndRef} />
       </div>
       
-      <div className="chat-input-area">
-        <div className="chat-suggestions">
-          <p>Suggested topics:</p>
-          <div className="suggestion-chips">
-            <button 
-              onClick={() => askAbout("What salary can I expect in my field?")}
-              className="suggestion-chip"
-            >
-              💰 Salary expectations
-            </button>
-            <button 
-              onClick={() => askAbout("What certifications should I pursue?")}
-              className="suggestion-chip"
-            >
-              📜 Required certifications
-            </button>
-            <button 
-              onClick={() => askAbout("How do I prepare for interviews?")}
-              className="suggestion-chip"
-            >
-              🎯 Interview preparation
-            </button>
-            <button 
-              onClick={() => askAbout("How do I translate my military experience?")}
-              className="suggestion-chip"
-            >
-              🔄 Translate experience
-            </button>
-          </div>
+      <div className="chat-input-area disabled">
+        <div className="placeholder-notice">
+          <p>Full conversational AI coming soon. For now, click "Tell me my next mission" above.</p>
         </div>
         
         <div className="input-container">
           <textarea
             ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask Sentra anything about your career transition..."
+            value=""
+            disabled={true}
+            placeholder="Conversational interface coming soon..."
             rows={3}
-            className="chat-input"
+            className="chat-input disabled"
           />
           <button 
-            onClick={sendMessage} 
-            disabled={!input.trim() || isTyping}
-            className="send-button"
+            disabled={true}
+            className="send-button disabled"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" opacity="0.3">
               <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>

@@ -397,6 +397,117 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* Mission Button */
+.mission-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 300px;
+}
+
+.mission-button {
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  border: 2px solid transparent;
+  color: white;
+  padding: 2rem 4rem;
+  border-radius: 60px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+}
+
+.mission-button:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.mission-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 60px rgba(0, 212, 255, 0.6);
+}
+
+.mission-button:hover:before {
+  width: 300px;
+  height: 300px;
+}
+
+.mission-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mission-button.clicked {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.mission-button.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.loading-text {
+  display: inline-block;
+}
+
+.mission-text {
+  display: inline-block;
+}
+
+/* Disabled Input Area */
+.chat-input-area.disabled {
+  opacity: 0.6;
+}
+
+.placeholder-notice {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.placeholder-notice p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+}
+
+.chat-input.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.send-button.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .sentra-chat-container {
@@ -423,5 +534,10 @@
 
   .chat-input-area {
     padding: 1rem;
+  }
+  
+  .mission-button {
+    padding: 1.5rem 3rem;
+    font-size: 1.25rem;
   }
 }

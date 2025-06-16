@@ -16,10 +16,23 @@ from typing import Dict, Any
 
 
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    """Lambda handler that ONLY returns O*NET crosswalk data"""
+    """Lambda handler for O*NET crosswalk data and Lex integration"""
     
     # Log the event to debug
     print(f"Event received: {json.dumps(event)}")
+    
+    # Check if this is a Lex event
+    if 'bot' in event and 'name' in event['bot']:
+        return handle_lex_intent(event, context)
+    
+    # Handle frontend request to invoke Lex
+    if event.get('httpMethod') == 'POST' or event.get('requestContext', {}).get('http', {}).get('method') == 'POST':
+        try:
+            body = json.loads(event.get('body', '{}'))
+            if body.get('action') == 'lexMission':
+                return handle_lex_proxy(body, context)
+        except:
+            pass
     
     # Handle CORS preflight - check multiple possible event structures
     http_method = (
@@ -538,4 +551,120 @@ def store_conversation_turn(conversation_id: str, session_id: str, user_message:
         
     except Exception as e:
         print(f"Error storing conversation: {e}")
+        # Don't fail the request if storage fails
+
+
+def handle_lex_proxy(body: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """Proxy Lex invocation from frontend"""
+    try:
+        # Initialize Lex runtime client
+        lex_client = boto3.client('lexv2-runtime', region_name='us-east-1')
+        
+        # Get session ID or create new one
+        session_id = body.get('sessionId', str(uuid.uuid4()))
+        
+        # Invoke Lex with "What is my next mission?" text
+        response = lex_client.recognize_text(
+            botId='IV2NSREVFS',
+            botAliasId='TSTALIASID',  # TestBotAlias
+            localeId='en_US',
+            sessionId=session_id,
+            text='What is my next mission?'
+        )
+        
+        print(f"Lex response: {json.dumps(response)}")
+        
+        # Extract the message from Lex response
+        messages = response.get('messages', [])
+        message_content = messages[0]['content'] if messages else "No response from Lex"
+        
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
+            },
+            'body': json.dumps({
+                'message': message_content,
+                'sessionId': session_id,
+                'source': 'lex'
+            })
+        }
+        
+    except Exception as e:
+        print(f"Error in Lex proxy: {str(e)}")
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With'
+            },
+            'body': json.dumps({
+                'error': str(e),
+                'message': 'Error communicating with Lex'
+            })
+        }
+
+
+def handle_lex_intent(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """Handle Lex bot intents - just pass through for fulfillment"""
+    
+    print(f"Lex event received: {json.dumps(event)}")
+    
+    # This handler is called when Lex needs fulfillment
+    # Since you're configuring the response in Lex console, 
+    # we just need to return a success response
+    
+    session_attributes = event.get('sessionState', {}).get('sessionAttributes', {}) or {}
+    intent_name = event.get('sessionState', {}).get('intent', {}).get('name', '')
+    
+    # Return success so Lex can use its configured response
+    response = {
+        'sessionState': {
+            'dialogAction': {
+                'type': 'Close'
+            },
+            'intent': {
+                'name': intent_name,
+                'state': 'Fulfilled',
+                'confirmationState': 'None'
+            },
+            'sessionAttributes': session_attributes
+        }
+    }
+    
+    # Add requestAttributes if present
+    if 'requestAttributes' in event:
+        response['requestAttributes'] = event['requestAttributes']
+    
+    return response
+
+
+def store_lex_interaction(session_id: str, veteran_context: Dict, message: str) -> None:
+    """Store Lex interaction in DynamoDB"""
+    try:
+        dynamodb = boto3.resource('dynamodb')
+        table = dynamodb.Table('VetROI_Sessions')
+        
+        timestamp = int(time.time())
+        
+        item = {
+            'session_id': f"lex_{session_id}",
+            'timestamp': timestamp,
+            'interaction_type': 'lex_mission',
+            'veteran_context': veteran_context,
+            'message_delivered': message,
+            'created_at': datetime.utcnow().isoformat(),
+            'ttl': timestamp + (90 * 24 * 60 * 60)  # 90 days
+        }
+        
+        table.put_item(Item=item)
+        print(f"Stored Lex interaction: lex_{session_id}")
+        
+    except Exception as e:
+        print(f"Error storing Lex interaction: {e}")
         # Don't fail the request if storage fails
