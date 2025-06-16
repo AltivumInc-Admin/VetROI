@@ -2,7 +2,7 @@ import json
 import boto3
 import os
 from typing import Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta
 
 dynamodb = boto3.resource('dynamodb')
 stepfunctions = boto3.client('stepfunctions')
@@ -113,7 +113,9 @@ def update_processing_steps(item: Dict[str, Any], execution_response: Dict[str, 
             steps = list(item.get('processingSteps', {}).keys())
             start_time = execution_response['startDate']
             current_time = datetime.utcnow()
-            elapsed_seconds = (current_time - start_time.replace(tzinfo=None)).total_seconds()
+            # Convert AWS datetime to naive datetime for comparison
+            start_time_naive = start_time.replace(tzinfo=None) if hasattr(start_time, 'replace') else start_time
+            elapsed_seconds = (current_time - start_time_naive).total_seconds()
             
             # Rough estimate: each step takes about 10 seconds
             completed_steps = min(int(elapsed_seconds / 10), len(steps))
@@ -122,8 +124,8 @@ def update_processing_steps(item: Dict[str, Any], execution_response: Dict[str, 
                 if i < completed_steps:
                     item['processingSteps'][step] = {
                         'status': 'complete',
-                        'timestamp': (start_time.replace(tzinfo=None) + 
-                                    datetime.timedelta(seconds=i * 10)).isoformat()
+                        'timestamp': (start_time_naive + 
+                                    timedelta(seconds=i * 10)).isoformat()
                     }
                 elif i == completed_steps:
                     item['processingSteps'][step] = {

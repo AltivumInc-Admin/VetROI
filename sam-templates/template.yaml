@@ -85,6 +85,15 @@ Resources:
           - Id: DeleteOldFiles
             Status: Enabled
             ExpirationInDays: 90
+      NotificationConfiguration:
+        LambdaConfigurations:
+          - Event: s3:ObjectCreated:*
+            Function: !GetAtt DD214UploadTriggerFunction.Arn
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: uploads/
       Tags:
         - Key: Application
           Value: VetROI
@@ -240,15 +249,6 @@ Resources:
                 - secretsmanager:GetSecretValue
               Resource: !Ref ONetApiSecret
 
-  # Lambda permission for S3 to invoke DD214Parser
-  DD214ParserS3Permission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !GetAtt DD214ParserFunction.Arn
-      Action: lambda:InvokeFunction
-      Principal: s3.amazonaws.com
-      SourceAccount: !Ref AWS::AccountId
-      SourceArn: !Sub 'arn:aws:s3:::vetroi-dd214-uploads-${AWS::AccountId}'
 
   # O*NET Cache Bucket
   ONetCacheBucket:
@@ -286,6 +286,41 @@ Resources:
     Properties:
       LogGroupName: !Sub '/aws/lambda/${ONetRefreshFunction}'
       RetentionInDays: 30
+
+  # DD214 Upload Trigger Function
+  DD214UploadTriggerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: VetROI_DD214_UploadTrigger
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.upload_trigger.lambda_handler
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
+          TABLE_NAME: !Ref SessionsTable
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - states:StartExecution
+              Resource: !Ref DD214ProcessingStateMachine
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - S3ReadPolicy:
+            BucketName: !Ref DD214UploadBucket
+
+  # Lambda permission for S3 to invoke upload trigger
+  DD214UploadTriggerS3Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt DD214UploadTriggerFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub 'arn:aws:s3:::vetroi-dd214-uploads-${AWS::AccountId}'
 
   # DD214 API Functions
   DD214PresignedUrlFunction:
@@ -345,7 +380,7 @@ Resources:
     Properties:
       Name: VetROI-DD214-Processing
       Type: STANDARD
-      DefinitionUri: ../sam-templates/statemachine/dd214_processing.asl.json
+      DefinitionUri: statemachine/dd214_processing.asl.json
       DefinitionSubstitutions:
         DD214ProcessorFunction: !GetAtt DD214ParserFunction.Arn
         ProfileTableName: !Ref SessionsTable
@@ -381,7 +416,7 @@ Resources:
     Properties:
       Name: VetROI-ONetRefresh
       Type: STANDARD
-      DefinitionUri: ../sam-templates/statemachine/onet_refresh.asl.json
+      DefinitionUri: statemachine/onet_refresh.asl.json
       DefinitionSubstitutions:
         ONetRefreshFunctionArn: !GetAtt ONetRefreshFunction.Arn
       Policies:
