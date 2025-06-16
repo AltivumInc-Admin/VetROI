@@ -34,8 +34,8 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
   border-bottom: 1px solid rgba(0, 212, 255, 0.1);
 }
 
@@ -87,6 +87,87 @@
   color: #22c55e;
   border-color: rgba(34, 197, 94, 0.3);
   animation: greenGlow 2s ease-in-out infinite;
+}
+
+/* Growth Outlook at Top */
+.growth-outlook-top {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.growth-outlook-top.bright {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.outlook-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.outlook-icon {
+  font-size: 1.5rem;
+}
+
+.outlook-header h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: #00d4ff;
+}
+
+.outlook-content {
+  margin-left: 2.25rem;
+}
+
+.outlook-category {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.growth-outlook-top.bright .outlook-category {
+  color: #22c55e;
+}
+
+.outlook-description {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.95rem;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.5;
+}
+
+.outlook-details {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.outlook-tag {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.growth-outlook-top.bright .outlook-tag {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+/* Green Career Badge */
+.green-career-badge {
+  text-align: center;
+  margin-bottom: 1rem;
 }
 
 /* Career Overview */
@@ -183,54 +264,6 @@ section h3 {
   font-style: italic;
 }
 
-/* Growth Section */
-.growth-section {
-  text-align: center;
-}
-
-.growth-section h3 {
-  margin-bottom: 1.5rem;
-}
-
-.growth-indicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background: rgba(0, 212, 255, 0.05);
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  margin: 0 auto;
-  max-width: 600px;
-}
-
-.growth-indicator.average {
-  border-color: rgba(255, 193, 7, 0.3);
-  background: rgba(255, 193, 7, 0.05);
-}
-
-.growth-indicator.rapid,
-.growth-indicator.bright {
-  border-color: rgba(255, 215, 0, 0.3);
-  background: rgba(255, 215, 0, 0.1);
-}
-
-.growth-icon {
-  font-size: 2.5rem;
-}
-
-.growth-details h4 {
-  margin: 0 0 0.5rem 0;
-  color: #ffd700;
-  font-size: 1.125rem;
-}
-
-.growth-details p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
-}
 
 /* Related Careers Section */
 .related-careers-section {

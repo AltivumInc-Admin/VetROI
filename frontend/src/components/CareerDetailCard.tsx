@@ -48,19 +48,37 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
           <h2>{socData.title}</h2>
           <span className="soc-code">{socData.soc}</span>
         </div>
-        <div className="badges">
-          {career.tags?.bright_outlook && (
-            <span className="badge bright-outlook" title="Bright Outlook Career">
-              ⭐ Bright Outlook
-            </span>
-          )}
-          {career.tags?.green && (
-            <span className="badge green" title="Green Career">
-              🌱 Green Career
-            </span>
-          )}
-        </div>
       </div>
+
+      {/* Growth Outlook at Top */}
+      {jobOutlook?.outlook && (
+        <div className={`growth-outlook-top ${jobOutlook.outlook.category?.toLowerCase()}`}>
+          <div className="outlook-header">
+            <span className="outlook-icon">📈</span>
+            <h3>Career Growth Outlook</h3>
+          </div>
+          <div className="outlook-content">
+            <span className="outlook-category">{jobOutlook.outlook.category}</span>
+            <p className="outlook-description">{jobOutlook.outlook.description}</p>
+            {jobOutlook.bright_outlook?.category && (
+              <div className="outlook-details">
+                {jobOutlook.bright_outlook.category.map((cat: string, idx: number) => (
+                  <span key={idx} className="outlook-tag">{cat}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Green Career Badge */}
+      {career.tags?.green && (
+        <div className="green-career-badge">
+          <span className="badge green" title="Green Career">
+            🌱 Green Career
+          </span>
+        </div>
+      )}
 
       {/* Career Overview */}
       <section className="career-overview">
@@ -117,17 +135,6 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
         )}
       </section>
 
-      {/* Growth Outlook */}
-      <section className="growth-section">
-        <h3>Career Growth Outlook</h3>
-        <div className={`growth-indicator ${jobOutlook.outlook?.category?.toLowerCase()}`}>
-          <span className="growth-icon">📈</span>
-          <div className="growth-details">
-            <h4>{jobOutlook.outlook?.category || 'Average'}</h4>
-            <p>{jobOutlook.outlook?.description || 'Steady job opportunities expected.'}</p>
-          </div>
-        </div>
-      </section>
 
       {/* Also Called Section */}
       {career?.also_called?.title && career.also_called.title.length > 0 && (
