@@ -34,7 +34,17 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   // Extract MOS title from API response
   const extractMOSTitle = () => {
-    // Check new response structure
+    // Check new crosswalk structure
+    if (apiResponse.onet_careers?.match?.[0]?.title) {
+      const fullTitle = apiResponse.onet_careers.match[0].title
+      const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)
+      if (titleMatch) {
+        return titleMatch[1].trim()
+      }
+      return fullTitle
+    }
+    
+    // Check veterans endpoint structure
     if (apiResponse.onet_careers?.military_matches?.match?.[0]?.title) {
       const fullTitle = apiResponse.onet_careers.military_matches.match[0].title
       const titleMatch = fullTitle.match(/^([^(]+)(?:\s*\(|$)/)

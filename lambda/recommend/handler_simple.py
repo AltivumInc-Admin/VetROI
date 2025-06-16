@@ -82,7 +82,7 @@ def get_onet_data(military_code: str, branch: str) -> Dict[str, Any]:
         secret = json.loads(response['SecretString'])
         
         # Make O*NET API call
-        url = "https://services.onetcenter.org/ws/veterans/military"
+        url = "https://services.onetcenter.org/ws/online/crosswalks/military"
         params = {
             'keyword': military_code,
             'branch': branch

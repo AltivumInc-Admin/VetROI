@@ -304,9 +304,9 @@ function App() {
                 </div>
               )}
               <CareerMatchDisplay
-                mosTitle={apiResponse.onet_careers?.military_matches?.match?.[0]?.title || apiResponse.raw_onet_data?.data?.military_matches?.match?.[0]?.title || profileData.code}
+                mosTitle={apiResponse.onet_careers?.match?.[0]?.title || apiResponse.onet_careers?.military_matches?.match?.[0]?.title || apiResponse.raw_onet_data?.data?.military_matches?.match?.[0]?.title || profileData.code}
                 mosCode={profileData.code}
-                matches={apiResponse.onet_careers?.career || apiResponse.raw_onet_data?.data?.career || []}
+                matches={apiResponse.onet_careers?.match?.[0]?.occupations?.occupation || apiResponse.onet_careers?.career || apiResponse.raw_onet_data?.data?.career || []}
                 onSOCClick={handleSOCClick}
               />
             </div>
