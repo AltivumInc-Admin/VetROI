@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VetROI API Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+        pre { background: #2a2a2a; padding: 10px; border-radius: 5px; overflow: auto; }
+        button { background: #00d4ff; border: none; padding: 10px 20px; color: #000; cursor: pointer; margin: 10px 0; }
+        .success { color: #4ade80; }
+        .error { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>VetROI API Debug Tool</h1>
+    <p>This tool tests the API directly with cache-busting to ensure you get fresh responses.</p>
+    
+    <button onclick="testAPI()">Test API with 18D</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Testing API...</p>';
+            
+            try {
+                // Add timestamp to prevent caching
+                const timestamp = Date.now();
+                const response = await fetch(`https://jg5fae61lj.execute-api.us-east-2.amazonaws.com/prod/recommend?t=${timestamp}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    },
+                    body: JSON.stringify({
+                        branch: 'army',
+                        code: '18D',
+                        homeState: 'CA',
+                        relocate: false,
+                        education: 'bachelor'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Check response structure
+                let html = '<h2 class="success">API Response Received</h2>';
+                html += '<h3>Response Structure:</h3>';
+                html += '<pre>' + JSON.stringify(Object.keys(data), null, 2) + '</pre>';
+                
+                if (data.recommendations) {
+                    html += '<h3 class="error">❌ OLD RESPONSE STRUCTURE DETECTED</h3>';
+                    html += '<p>The API is returning the old "recommendations" array. This suggests Lambda deployment issue.</p>';
+                } else if (data.onet_careers) {
+                    html += '<h3 class="success">✓ NEW RESPONSE STRUCTURE DETECTED</h3>';
+                    html += '<p>The API is returning the correct structure.</p>';
+                    
+                    if (data.onet_careers.match?.[0]?.occupations?.occupation) {
+                        html += '<p class="success">✓ Found occupations at: onet_careers.match[0].occupations.occupation</p>';
+                        html += '<p>Total careers: ' + data.onet_careers.match[0].occupations.occupation.length + '</p>';
+                    }
+                }
+                
+                html += '<h3>Full Response:</h3>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

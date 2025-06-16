@@ -84,8 +84,7 @@ def get_onet_data(military_code: str, branch: str) -> Dict[str, Any]:
         # Make O*NET API call
         url = "https://services.onetcenter.org/ws/online/crosswalks/military"
         params = {
-            'keyword': military_code,
-            'branch': branch
+            'keyword': military_code
         }
         headers = {
             'Accept': 'application/json',
