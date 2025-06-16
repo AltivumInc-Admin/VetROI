@@ -129,6 +129,149 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
         </div>
       </section>
 
+      {/* Also Called Section */}
+      {career?.also_called?.title && (
+        <section className="also-called-section">
+          <h3>Also Known As</h3>
+          <div className="alternative-titles">
+            {career.also_called.title.map((title: string, index: number) => (
+              <span key={index} className="alt-title">{title}</span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Knowledge Section */}
+      {socData.knowledge?.group && socData.knowledge.group.length > 0 && (
+        <section className="knowledge-section">
+          <h3>Key Knowledge Areas</h3>
+          <p className="section-intro">
+            According to <strong>O*NET</strong> (the Occupational Information Network), 
+            professionals in this field demonstrate knowledge in:
+          </p>
+          <div className="knowledge-groups">
+            {socData.knowledge.group.map((group: any, idx: number) => (
+              <div key={idx} className="knowledge-group">
+                <h4>{group.title.name}</h4>
+                <div className="knowledge-items">
+                  {group.element.map((el: any, elIdx: number) => (
+                    <span key={elIdx} className="knowledge-item">{el.name}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Skills Section */}
+      {socData.skills?.group && socData.skills.group.length > 0 && (
+        <section className="skills-section">
+          <h3>Essential Skills</h3>
+          <div className="skills-groups">
+            {socData.skills.group.map((group: any, idx: number) => (
+              <div key={idx} className="skills-group">
+                <h4>{group.title.name}</h4>
+                <div className="skill-items">
+                  {group.element.map((el: any, elIdx: number) => (
+                    <div key={elIdx} className="skill-item">
+                      <span className="skill-bullet">•</span>
+                      <span className="skill-text">{el.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Abilities Section */}
+      {socData.abilities?.group && socData.abilities.group.length > 0 && (
+        <section className="abilities-section">
+          <h3>Core Abilities</h3>
+          <div className="abilities-groups">
+            {socData.abilities.group.map((group: any, idx: number) => (
+              <div key={idx} className="abilities-group">
+                <h4>{group.title.name}</h4>
+                <div className="ability-items">
+                  {group.element.map((el: any, elIdx: number) => (
+                    <div key={elIdx} className="ability-item">{el.name}</div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Personality Section */}
+      {socData.personality && (
+        <section className="personality-section">
+          <h3>Personality Profile</h3>
+          
+          {socData.personality.top_interest && (
+            <div className="personality-interest">
+              <h4 className="interest-type">{socData.personality.top_interest.title} Interest</h4>
+              <p className="interest-desc">{socData.personality.top_interest.description}</p>
+            </div>
+          )}
+          
+          {socData.personality.work_styles?.element && (
+            <div className="work-styles">
+              <h4>Key Work Styles</h4>
+              <div className="style-items">
+                {socData.personality.work_styles.element.map((style: any, idx: number) => (
+                  <span key={idx} className="style-item">{style.name}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Technology Section */}
+      {socData.technology?.category && socData.technology.category.length > 0 && (
+        <section className="technology-section">
+          <h3>Technology & Tools</h3>
+          <div className="tech-categories">
+            {socData.technology.category.map((cat: any, idx: number) => (
+              <div key={idx} className="tech-category">
+                <h4>{cat.title.name}</h4>
+                <div className="tech-examples">
+                  {cat.example.map((ex: any, exIdx: number) => (
+                    <span 
+                      key={exIdx} 
+                      className={`tech-item ${ex.hot_technology ? 'hot-tech' : ''}`}
+                    >
+                      {ex.hot_technology && <span className="hot-icon">🔥</span>}
+                      {ex.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Industries Section */}
+      {socData.where_do_they_work?.industry && (
+        <section className="industries-section">
+          <h3>Where They Work</h3>
+          <div className="industry-breakdown">
+            {socData.where_do_they_work.industry.map((ind: any, idx: number) => (
+              <div key={idx} className="industry-item">
+                <div className="industry-bar" style={{ width: `${ind.percent_employed}%` }}>
+                  <span className="industry-percent">{ind.percent_employed}%</span>
+                </div>
+                <span className="industry-name">{ind.title}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Related Careers Section */}
       {socData.explore_more?.careers?.career && (
         <section className="related-careers-section">
