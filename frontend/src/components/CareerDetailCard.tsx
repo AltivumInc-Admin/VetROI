@@ -45,8 +45,8 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
       {/* Header Section */}
       <div className="card-header">
         <div className="title-section">
-          <h2>{socData.title}</h2>
-          <span className="soc-code">{socData.soc}</span>
+          <h2>{career?.title || socData.title}</h2>
+          <span className="soc-code">{socData.code || socData.soc}</span>
         </div>
       </div>
 
