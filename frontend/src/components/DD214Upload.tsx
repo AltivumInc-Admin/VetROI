@@ -174,7 +174,9 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       'image/*': ['.jpg', '.jpeg', '.png']
     },
     maxFiles: 1,
-    disabled: uploadState.status !== 'idle' && uploadState.status !== 'error'
+    disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
+    noClick: false,
+    noKeyboard: false
   })
 
   const handleAuthSuccess = async (userId: string) => {
