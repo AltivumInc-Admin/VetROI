@@ -88,7 +88,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         session_id = str(uuid.uuid4())
         
         # Get O*NET crosswalk data - THE CORRECT ENDPOINT
-        onet_data = get_onet_crosswalk_data(body['code'])
+        onet_data = get_onet_crosswalk_data(body['code'], body.get('branch'))
         
         # Store session in DynamoDB
         store_session(session_id, body, onet_data)
@@ -119,7 +119,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         return error_response(500, str(e))
 
 
-def get_onet_crosswalk_data(military_code: str) -> Dict[str, Any]:
+def get_onet_crosswalk_data(military_code: str, branch: str = None) -> Dict[str, Any]:
     """
     Get O*NET military crosswalk data from the CORRECT endpoint
     /online/crosswalks/military - returns nested structure with occupations
@@ -147,10 +147,24 @@ def get_onet_crosswalk_data(military_code: str) -> Dict[str, Any]:
             'Authorization': f'Basic {auth_header}'
         }
         
-        # Only pass keyword parameter
+        # Pass keyword parameter
         params = {
             'keyword': military_code
         }
+        
+        # Add branch parameter if provided
+        if branch:
+            # Map frontend branch names to O*NET branch codes
+            branch_map = {
+                'army': 'army',
+                'navy': 'navy',
+                'air_force': 'air_force',
+                'marines': 'marine_corps',
+                'marine_corps': 'marine_corps',
+                'coast_guard': 'coast_guard'
+            }
+            if branch.lower() in branch_map:
+                params['branch'] = branch_map[branch.lower()]
         
         print(f"Calling O*NET API: {url} with params: {params}")
         

@@ -49,6 +49,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [missionClicked, setMissionClicked] = useState(false)
+  const [showNextMission, setShowNextMission] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -57,7 +58,16 @@ export const SentraChat: React.FC<SentraChatProps> = ({
 
   useEffect(() => {
     scrollToBottom()
-  }, [messages])
+    
+    // Show NextMission button 3 seconds after receiving mission response
+    if (messages.length === 2 && messages[1].role === 'assistant' && !showNextMission) {
+      const timer = setTimeout(() => {
+        setShowNextMission(true)
+      }, 3000)
+      
+      return () => clearTimeout(timer)
+    }
+  }, [messages, showNextMission])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -110,6 +120,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
 
 
   return (
+    <>
     <div className="sentra-chat-container">
       <div className="sentra-header">
         <button className="back-button" onClick={onBack}>
@@ -201,5 +212,19 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         )}
       </div>
     </div>
+    
+    {showNextMission && (
+      <div className="nextmission-container">
+        <a 
+          href="https://altivum.ai/nextmission" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="nextmission-button"
+        >
+          NextMission.ai
+        </a>
+      </div>
+    )}
+  </>
   )
 }
