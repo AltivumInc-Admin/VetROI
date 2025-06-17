@@ -275,7 +275,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
           <div 
             {...getRootProps()} 
             className={`dropzone ${isDragActive ? 'active' : ''}`}
-            onClick={() => console.log('Dropzone clicked, auth status:', isAuthenticated)}
           >
             <input {...getInputProps()} />
             <div className="dropzone-content">
