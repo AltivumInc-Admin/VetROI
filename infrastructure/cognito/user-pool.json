@@ -1,0 +1,63 @@
+{
+  "PoolName": "VetROI-DD214-Users",
+  "Policies": {
+    "PasswordPolicy": {
+      "MinimumLength": 12,
+      "RequireUppercase": true,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireSymbols": true,
+      "TemporaryPasswordValidityDays": 7
+    }
+  },
+  "AutoVerifiedAttributes": ["email"],
+  "UsernameAttributes": ["email"],
+  "MfaConfiguration": "OFF",
+  "Schema": [
+    {
+      "Name": "email",
+      "AttributeDataType": "String",
+      "Required": true,
+      "Mutable": true
+    },
+    {
+      "Name": "veteran_id",
+      "AttributeDataType": "String",
+      "Mutable": true,
+      "DeveloperOnlyAttribute": false,
+      "StringAttributeConstraints": {
+        "MinLength": "1",
+        "MaxLength": "256"
+      }
+    },
+    {
+      "Name": "dd214_uploaded",
+      "AttributeDataType": "String",
+      "Mutable": true,
+      "DeveloperOnlyAttribute": false,
+      "StringAttributeConstraints": {
+        "MinLength": "1",
+        "MaxLength": "5"
+      }
+    },
+    {
+      "Name": "upload_date",
+      "AttributeDataType": "DateTime",
+      "Mutable": true,
+      "DeveloperOnlyAttribute": false
+    }
+  ],
+  "AccountRecoverySetting": {
+    "RecoveryMechanisms": [
+      {
+        "Priority": 1,
+        "Name": "verified_email"
+      }
+    ]
+  },
+  "UserPoolTags": {
+    "Project": "VetROI",
+    "Purpose": "DD214Upload",
+    "Environment": "Production"
+  }
+}

@@ -1,0 +1,29 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "VetROI-DD214-CognitoAuthenticatedRole",
+        "RoleId": "AROAS74TMEQHKREX6QOHD",
+        "Arn": "arn:aws:iam::205930636302:role/VetROI-DD214-CognitoAuthenticatedRole",
+        "CreateDate": "2025-06-17T02:03:16+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Federated": "cognito-identity.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRoleWithWebIdentity",
+                    "Condition": {
+                        "StringEquals": {
+                            "cognito-identity.amazonaws.com:aud": "us-east-2:10f0038f-acb9-44c2-a433-c9aa12185217"
+                        },
+                        "ForAnyValue:StringLike": {
+                            "cognito-identity.amazonaws.com:amr": "authenticated"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

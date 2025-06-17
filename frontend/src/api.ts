@@ -20,15 +20,32 @@ export async function getRecommendations(request: VeteranRequest): Promise<Recom
 export async function getDD214PresignedUrl(
   fileName: string, 
   fileType: string, 
-  veteranId: string
+  _veteranId: string
 ): Promise<{ uploadUrl: string; documentId: string }> {
-  const { data } = await api.post('/dd214/presigned-url', {
-    fileName,
-    fileType,
-    veteranId
-  })
+  // Get the current user's JWT token
+  const { fetchAuthSession } = await import('aws-amplify/auth');
+  const session = await fetchAuthSession();
+  const token = session.tokens?.idToken?.toString();
   
-  return data
+  if (!token) {
+    throw new Error('Authentication required');
+  }
+  
+  const { data } = await axios.post(
+    'https://wzj49zuaaa.execute-api.us-east-2.amazonaws.com/prod/dd214/upload-url',
+    {
+      filename: fileName,
+      fileType: fileType
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  );
+  
+  return data;
 }
 
 export async function uploadDD214ToS3(uploadUrl: string, file: File): Promise<void> {

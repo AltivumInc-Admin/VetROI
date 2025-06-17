@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
+import { getCurrentUser } from 'aws-amplify/auth'
+import { AuthModal } from './AuthModal'
 import '../styles/DD214Upload.css'
 
 interface DD214UploadProps {
@@ -37,9 +39,33 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       { name: 'Profile Generation', status: 'pending' }
     ]
   })
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [currentUser, setCurrentUser] = useState<string | null>(null)
+
+  // Check authentication status on mount
+  React.useEffect(() => {
+    checkAuthStatus()
+  }, [])
+
+  const checkAuthStatus = async () => {
+    try {
+      const user = await getCurrentUser()
+      setIsAuthenticated(true)
+      setCurrentUser(user.username)
+    } catch {
+      setIsAuthenticated(false)
+    }
+  }
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return
+
+    // Check if authenticated first
+    if (!isAuthenticated) {
+      setShowAuthModal(true)
+      return
+    }
 
     const file = acceptedFiles[0]
     
@@ -89,7 +115,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         error: error instanceof Error ? error.message : 'Upload failed'
       }))
     }
-  }, [veteranId])
+  }, [veteranId, isAuthenticated])
 
   const pollProcessingStatus = async (documentId: string) => {
     const pollInterval = setInterval(async () => {
@@ -149,12 +175,36 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error'
   })
 
+  const handleAuthSuccess = async (userId: string) => {
+    setIsAuthenticated(true)
+    setCurrentUser(userId)
+    setShowAuthModal(false)
+    
+    // Update user attributes to mark DD214 upload intent
+    // This will be handled in Phase 2
+  }
+
   return (
     <div className="dd214-upload-container">
+      <AuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
+      
       <h3>Upload Your DD214</h3>
       <p className="upload-description">
         Upload your DD214 to unlock AI-powered career insights and personalized recommendations
       </p>
+      
+      {isAuthenticated && currentUser && (
+        <div className="auth-status">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span>Signed in as {currentUser}</span>
+        </div>
+      )}
 
       {uploadState.status === 'idle' || uploadState.status === 'error' ? (
         <div 

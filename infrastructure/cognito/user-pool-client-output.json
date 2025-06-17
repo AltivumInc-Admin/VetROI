@@ -1,0 +1,35 @@
+{
+    "UserPoolClient": {
+        "UserPoolId": "us-east-2_zVjrLf0jA",
+        "ClientName": "VetROI-DD214-WebClient",
+        "ClientId": "76n50up630j138tco47ebg9ml3",
+        "LastModifiedDate": "2025-06-16T21:01:01.490000-05:00",
+        "CreationDate": "2025-06-16T21:01:01.490000-05:00",
+        "RefreshTokenValidity": 30,
+        "TokenValidityUnits": {},
+        "ReadAttributes": [
+            "email_verified",
+            "custom:upload_date",
+            "custom:veteran_id",
+            "email",
+            "custom:dd214_uploaded"
+        ],
+        "WriteAttributes": [
+            "custom:upload_date",
+            "custom:veteran_id",
+            "email",
+            "custom:dd214_uploaded"
+        ],
+        "ExplicitAuthFlows": [
+            "ALLOW_USER_PASSWORD_AUTH",
+            "ALLOW_REFRESH_TOKEN_AUTH"
+        ],
+        "SupportedIdentityProviders": [
+            "COGNITO"
+        ],
+        "AllowedOAuthFlowsUserPoolClient": false,
+        "EnableTokenRevocation": true,
+        "EnablePropagateAdditionalUserContextData": false,
+        "AuthSessionValidity": 3
+    }
+}
