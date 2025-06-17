@@ -50,7 +50,6 @@ export const SentraChat: React.FC<SentraChatProps> = ({
   const [isTyping, setIsTyping] = useState(false)
   const [missionClicked, setMissionClicked] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     // Don't send initial greeting - wait for mission button
@@ -68,6 +67,14 @@ export const SentraChat: React.FC<SentraChatProps> = ({
     if (missionClicked) return
     
     setMissionClicked(true)
+    
+    // Add user message
+    setMessages([{
+      role: 'user',
+      content: 'What is my next mission?',
+      timestamp: new Date()
+    }])
+    
     setIsTyping(true)
     
     try {
@@ -84,14 +91,14 @@ export const SentraChat: React.FC<SentraChatProps> = ({
 
       const data = await response.json()
       
-      setMessages([{
+      setMessages(prev => [...prev, {
         role: 'assistant',
         content: data.message || "Visit https://altivum.ai/nextmission to continue your mission.",
         timestamp: new Date()
       }])
     } catch (error) {
       console.error('Failed to get mission:', error)
-      setMessages([{
+      setMessages(prev => [...prev, {
         role: 'assistant',
         content: "Visit https://altivum.ai/nextmission to continue your mission.",
         timestamp: new Date()
@@ -120,6 +127,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
           <div>
             <h2>Sentra</h2>
             <p className="sentra-subtitle">Your AI Career Counselor</p>
+            <p className="sentra-powered">Powered by Amazon Lex</p>
           </div>
         </div>
         <div className="security-badge">
@@ -131,22 +139,6 @@ export const SentraChat: React.FC<SentraChatProps> = ({
       </div>
       
       <div className="chat-messages">
-        {messages.length === 0 && (
-          <div className="mission-button-container">
-            <button 
-              className={`mission-button ${missionClicked ? 'clicked' : ''} ${isTyping ? 'loading' : ''}`}
-              onClick={handleMissionClick}
-              disabled={missionClicked}
-            >
-              {isTyping ? (
-                <span className="loading-text">Processing...</span>
-              ) : (
-                <span className="mission-text">Tell me my next mission</span>
-              )}
-            </button>
-          </div>
-        )}
-        
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.role}`}>
             <div className="message-avatar">
@@ -188,29 +180,25 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         <div ref={messagesEndRef} />
       </div>
       
-      <div className="chat-input-area disabled">
-        <div className="placeholder-notice">
-          <p>Full conversational AI coming soon. For now, click "Tell me my next mission" above.</p>
-        </div>
-        
-        <div className="input-container">
-          <textarea
-            ref={textareaRef}
-            value=""
-            disabled={true}
-            placeholder="Conversational interface coming soon..."
-            rows={3}
-            className="chat-input disabled"
-          />
-          <button 
-            disabled={true}
-            className="send-button disabled"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" opacity="0.3">
-              <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
+      <div className="chat-input-area">
+        {!missionClicked ? (
+          <div className="mission-prompt-container">
+            <button 
+              className="mission-prompt-button"
+              onClick={handleMissionClick}
+              disabled={isTyping}
+            >
+              <span className="mission-prompt-text">What is my next mission?</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        ) : (
+          <div className="placeholder-notice">
+            <p>Full conversational AI coming soon. Visit NextMission.ai for more assistance.</p>
+          </div>
+        )}
       </div>
     </div>
   )
