@@ -68,6 +68,30 @@ export async function getDD214Status(documentId: string): Promise<any> {
   return data;
 }
 
+export async function getDD214Insights(documentId: string): Promise<any> {
+  const { data } = await axios.get(
+    `https://wzj49zuaaa.execute-api.us-east-2.amazonaws.com/prod/dd214/insights/${documentId}`,
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  return data;
+}
+
+export async function getRedactedDocument(documentId: string): Promise<any> {
+  const { data } = await axios.get(
+    `https://wzj49zuaaa.execute-api.us-east-2.amazonaws.com/prod/dd214/redacted/${documentId}`,
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  return data;
+}
+
 // Career data is fetched through our Lambda proxy to handle authentication
 
 export async function fetchSOCData(socCode: string): Promise<any> {
