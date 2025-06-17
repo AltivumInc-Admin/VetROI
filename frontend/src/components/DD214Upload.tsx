@@ -59,10 +59,12 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   }
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    console.log('onDrop called with files:', acceptedFiles)
     if (acceptedFiles.length === 0) return
 
     // Check if authenticated first
     if (!isAuthenticated) {
+      console.log('Not authenticated, showing auth modal')
       setShowAuthModal(true)
       return
     }
@@ -207,12 +209,42 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       )}
 
       {uploadState.status === 'idle' || uploadState.status === 'error' ? (
-        <div 
-          {...getRootProps()} 
-          className={`dropzone ${isDragActive ? 'active' : ''}`}
-        >
-          <input {...getInputProps()} />
-          <div className="dropzone-content">
+        <>
+          {!isAuthenticated && (
+            <div style={{
+              background: 'rgba(255, 193, 7, 0.1)',
+              border: '1px solid rgba(255, 193, 7, 0.3)',
+              borderRadius: '8px',
+              padding: '1rem',
+              marginBottom: '1rem',
+              textAlign: 'center'
+            }}>
+              <p style={{ color: '#ffc107', marginBottom: '0.5rem' }}>
+                Authentication required to upload DD214
+              </p>
+              <button
+                onClick={() => setShowAuthModal(true)}
+                style={{
+                  background: '#00d4ff',
+                  color: '#0a0e1a',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '0.5rem 1.5rem',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                Sign In / Create Account
+              </button>
+            </div>
+          )}
+          <div 
+            {...getRootProps()} 
+            className={`dropzone ${isDragActive ? 'active' : ''}`}
+            onClick={() => console.log('Dropzone clicked, auth status:', isAuthenticated)}
+          >
+            <input {...getInputProps()} />
+            <div className="dropzone-content">
             <svg className="upload-icon" viewBox="0 0 24 24" width="48" height="48">
               <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill="currentColor"/>
             </svg>
@@ -225,8 +257,9 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
                 <p className="upload-formats">Supports PDF, JPG, PNG (max 10MB)</p>
               </>
             )}
+            </div>
           </div>
-        </div>
+        </>
       ) : (
         <div className="processing-container">
           {uploadState.status === 'uploading' && (
