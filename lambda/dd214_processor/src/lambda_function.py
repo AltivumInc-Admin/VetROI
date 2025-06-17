@@ -1,21 +1,23 @@
 import json
 import boto3
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 import uuid
 from datetime import datetime
+import re
 
 # Initialize AWS clients
-s3 = boto3.client('s3')
-textract = boto3.client('textract')
-comprehend = boto3.client('comprehend')
+s3_client = boto3.client('s3')
+textract_client = boto3.client('textract')
+comprehend_client = boto3.client('comprehend')
 bedrock_runtime = boto3.client('bedrock-runtime')
 dynamodb = boto3.resource('dynamodb')
 stepfunctions = boto3.client('stepfunctions')
 
 # Environment variables
-BUCKET_NAME = os.environ.get('DD214_BUCKET')
-TABLE_NAME = os.environ.get('PROFILE_TABLE')
+BUCKET_NAME = os.environ.get('BUCKET_NAME', 'vetroi-dd214-secure')
+REDACTED_BUCKET = os.environ.get('REDACTED_BUCKET', 'vetroi-dd214-redacted')
+TABLE_NAME = os.environ.get('TABLE_NAME', 'VetROI_DD214_Processing')
 STATE_MACHINE_ARN = os.environ.get('STATE_MACHINE_ARN')
 
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:

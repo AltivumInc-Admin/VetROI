@@ -57,8 +57,15 @@ export async function uploadDD214ToS3(uploadUrl: string, file: File): Promise<vo
 }
 
 export async function getDD214Status(documentId: string): Promise<any> {
-  const { data } = await api.get(`/dd214/status/${documentId}`)
-  return data
+  const { data } = await axios.get(
+    `https://wzj49zuaaa.execute-api.us-east-2.amazonaws.com/prod/dd214/status/${documentId}`,
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  return data;
 }
 
 // Career data is fetched through our Lambda proxy to handle authentication
