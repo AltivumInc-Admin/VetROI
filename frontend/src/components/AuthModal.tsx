@@ -67,9 +67,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
       
       if (nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
         setMode('confirm')
+      } else if (nextStep.signUpStep === 'DONE') {
+        // User already exists and is confirmed, switch to sign in
+        setMode('signIn')
+        setError('Account already exists. Please sign in.')
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to sign up')
+      if (err.message?.includes('already exists') || 
+          err.name === 'UsernameExistsException') {
+        setMode('signIn')
+        setError('An account with this email already exists. Please sign in.')
+      } else {
+        setError(err.message || 'Failed to sign up')
+      }
     } finally {
       setLoading(false)
     }
@@ -98,7 +108,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         }
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to confirm account')
+      // Handle case where user is already confirmed
+      if (err.message?.includes('Current status is CONFIRMED') || 
+          err.name === 'NotAuthorizedException' ||
+          err.message?.includes('User cannot be confirmed')) {
+        // User is already confirmed, switch to sign in
+        setMode('signIn')
+        setError('Your account is already confirmed. Please sign in.')
+      } else {
+        setError(err.message || 'Failed to confirm account')
+      }
     } finally {
       setLoading(false)
     }
@@ -115,7 +134,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         </div>
 
         {error && (
-          <div className="auth-error">
+          <div className={`auth-error ${error.includes('Please sign in') || error.includes('already confirmed') ? 'auth-info' : ''}`}>
             {error}
           </div>
         )}
@@ -225,6 +244,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
             <button type="submit" className="auth-submit" disabled={loading}>
               {loading ? 'Verifying...' : 'Verify Account'}
             </button>
+
+            <div className="auth-switch">
+              Already confirmed?{' '}
+              <button type="button" onClick={() => {
+                setMode('signIn')
+                setError('')
+              }}>
+                Sign In
+              </button>
+            </div>
           </form>
         )}
 
