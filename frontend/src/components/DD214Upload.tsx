@@ -52,7 +52,9 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     try {
       const user = await getCurrentUser()
       setIsAuthenticated(true)
-      setCurrentUser(user.username)
+      // Try to get email from signInDetails or username
+      const email = user.signInDetails?.loginId || user.username
+      setCurrentUser(email)
     } catch {
       setIsAuthenticated(false)
     }
@@ -179,9 +181,9 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     noKeyboard: false
   })
 
-  const handleAuthSuccess = async (userId: string) => {
+  const handleAuthSuccess = async (userEmail: string) => {
     setIsAuthenticated(true)
-    setCurrentUser(userId)
+    setCurrentUser(userEmail)
     setShowAuthModal(false)
     
     // Update user attributes to mark DD214 upload intent
