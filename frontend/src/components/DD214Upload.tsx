@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
-import { getCurrentUser } from 'aws-amplify/auth'
+import { getCurrentUser, signOut } from 'aws-amplify/auth'
 import { AuthModal } from './AuthModal'
 import '../styles/DD214Upload.css'
 
@@ -57,6 +57,28 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       setCurrentUser(email)
     } catch {
       setIsAuthenticated(false)
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      await signOut()
+      setIsAuthenticated(false)
+      setCurrentUser(null)
+      // Reset upload state
+      setUploadState({
+        status: 'idle',
+        progress: 0,
+        processingSteps: [
+          { name: 'Document Validation', status: 'pending' },
+          { name: 'Text Extraction', status: 'pending' },
+          { name: 'Security Scan', status: 'pending' },
+          { name: 'AI Enhancement', status: 'pending' },
+          { name: 'Profile Generation', status: 'pending' }
+        ]
+      })
+    } catch (error) {
+      console.error('Error signing out:', error)
     }
   }
 
@@ -205,10 +227,18 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       
       {isAuthenticated && currentUser && (
         <div className="auth-status">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
-          <span>Signed in as {currentUser}</span>
+          <div className="auth-status-info">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <span>Signed in as {currentUser}</span>
+          </div>
+          <button
+            onClick={handleSignOut}
+            className="sign-out-button"
+          >
+            Sign Out
+          </button>
         </div>
       )}
 
@@ -257,7 +287,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             ) : (
               <>
                 <p>Drag & drop your DD214 here</p>
-                <p className="upload-hint">or click to browse</p>
+                <p className="upload-hint">or click to browse files on your device</p>
                 <p className="upload-formats">Supports PDF, JPG, PNG (max 10MB)</p>
               </>
             )}
