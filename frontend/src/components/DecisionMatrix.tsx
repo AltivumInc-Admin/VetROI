@@ -302,7 +302,12 @@ export const DecisionMatrix: React.FC<DecisionMatrixProps> = ({
 
         {/* Confidence Explanation */}
         <div className="confidence-explanation">
-          <p><strong>Confidence Level:</strong> Based on data consistency across factors. High = balanced strengths, Medium = some variation, Low = significant gaps between factors.</p>
+          <p><strong>Confidence Level:</strong></p>
+          <p>
+            <span className="confidence-high">⬆️ High:</span> Well-rounded career scoring 70+ across all factors<br/>
+            <span className="confidence-medium">➡️ Medium:</span> Good overall but with some trade-offs (e.g., high salary, lower growth)<br/>
+            <span className="confidence-low">⬇️ Low:</span> Extreme highs/lows - risky choice heavily dependent on 1-2 factors
+          </p>
         </div>
         
         <div className="ranking-cards">

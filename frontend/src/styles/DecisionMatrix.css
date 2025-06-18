@@ -1,15 +1,16 @@
 /* Decision Matrix Styles */
 .decision-matrix {
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
 .matrix-header {
   text-align: center;
   margin-bottom: 3rem;
   width: 100%;
-  padding: 0 1rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 2rem;
 }
 
 .matrix-header h3 {
@@ -18,13 +19,13 @@
   margin-bottom: 1rem;
   font-weight: 300;
   letter-spacing: 0.5px;
+  line-height: 1.2;
 }
 
 .matrix-subtitle {
   color: rgba(255, 255, 255, 0.7);
   font-size: 1.1rem;
   line-height: 1.6;
-  padding: 0 2rem;
 }
 
 /* Career Rankings */
@@ -105,12 +106,33 @@
 .confidence-explanation p {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
-  margin: 0;
-  text-align: center;
+  margin: 0 0 0.5rem 0;
+  text-align: left;
+}
+
+.confidence-explanation p:last-child {
+  margin-bottom: 0;
 }
 
 .confidence-explanation strong {
   color: #00d4ff;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.confidence-high {
+  color: #4ecdc4;
+  font-weight: 600;
+}
+
+.confidence-medium {
+  color: #ffe66d;
+  font-weight: 600;
+}
+
+.confidence-low {
+  color: #ff6b6b;
+  font-weight: 600;
 }
 
 .career-rankings h4 {
