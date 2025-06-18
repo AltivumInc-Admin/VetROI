@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { fetchMultipleSOCData } from '../api'
 import { CareerDetailCard } from './CareerDetailCard'
+import { ComparisonView } from './ComparisonView'
 import '../styles/DetailedAnalysisView.css'
 
 interface DetailedAnalysisViewProps {
@@ -20,7 +21,8 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
 }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [careerData, setCareerData] = useState<Record<string, any>>({})  
+  const [careerData, setCareerData] = useState<Record<string, any>>({})
+  const [showComparison, setShowComparison] = useState(false)  
   
   useEffect(() => {
     // Trigger S3 data fetch when component mounts
@@ -67,7 +69,7 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
             </button>
           </div>
         )}
-        {!loading && !error && (
+        {!loading && !error && !showComparison && (
           <div className="career-cards">
             {Object.values(careerData).map((socData: any) => (
               <CareerDetailCard 
@@ -79,10 +81,32 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
             ))}
           </div>
         )}
+        {!loading && !error && showComparison && (
+          <ComparisonView
+            careerData={careerData}
+            selectedSOCs={selectedSOCs}
+            userState={userState}
+            relocationState={relocationState}
+          />
+        )}
       </main>
       
       {!loading && !error && (
-        <div className="meet-sentra-section">
+        <div className="action-buttons-section">
+          {selectedSOCs.length >= 2 && (
+            <button 
+              className="compare-careers-button" 
+              onClick={() => setShowComparison(!showComparison)}
+            >
+              <div className="compare-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M3 3h18M3 12h18M3 21h18M9 3v18M15 3v18" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </div>
+              <span>{showComparison ? 'Individual View' : 'Compare Careers'}</span>
+            </button>
+          )}
+          
           <button className="meet-sentra-button" onClick={onMeetSentra}>
             <div className="sentra-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">

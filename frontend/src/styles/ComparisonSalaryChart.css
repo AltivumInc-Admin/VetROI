@@ -1,0 +1,147 @@
+/* Comparison Salary Chart */
+.comparison-salary-chart {
+  width: 100%;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.chart-header h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0;
+}
+
+/* Chart Controls */
+.chart-controls {
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.toggle-button {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.toggle-button:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: #ffffff;
+}
+
+.toggle-button.active {
+  background: rgba(0, 212, 255, 0.2);
+  color: #00d4ff;
+}
+
+/* Canvas */
+.comparison-canvas {
+  width: 100%;
+  height: 400px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Legend */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.legend-value {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  margin-left: 0.5rem;
+}
+
+/* Salary Insights */
+.salary-insights {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.salary-insights h4 {
+  color: #00d4ff;
+  font-size: 1.125rem;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+.salary-insights ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.salary-insights li {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.salary-insights strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chart-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .comparison-canvas {
+    height: 300px;
+  }
+  
+  .chart-legend {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .legend-item {
+    width: 100%;
+  }
+}
