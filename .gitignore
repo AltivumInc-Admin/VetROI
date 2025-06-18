@@ -98,6 +98,11 @@ secrets.json
 *.pem
 *.key
 
+# AWS Outputs - SECURITY CRITICAL
+deployment-outputs.json
+*-output.json
+infrastructure/cognito/*-output.json
+
 # Deployment artifacts
 *.zip
 deployment/

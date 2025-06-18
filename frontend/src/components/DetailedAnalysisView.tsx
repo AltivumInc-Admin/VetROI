@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { fetchMultipleSOCData } from '../api'
 import { CareerDetailCard } from './CareerDetailCard'
 import { ComparisonView } from './ComparisonView'
+import { CareerCardSkeleton } from './SkeletonLoader'
 import '../styles/DetailedAnalysisView.css'
 
 interface DetailedAnalysisViewProps {
@@ -60,11 +61,10 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
       
       <main className="analysis-content">
         {loading && (
-          <div className="loading-state">
-            <div className="loading-spinner"></div>
-            <p className="loading-message">
-              Loading detailed analysis for {selectedSOCs.length} career{selectedSOCs.length > 1 ? 's' : ''}...
-            </p>
+          <div className="career-cards">
+            {selectedSOCs.map((_, index) => (
+              <CareerCardSkeleton key={index} />
+            ))}
           </div>
         )}
         {error && (
