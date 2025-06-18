@@ -1,0 +1,287 @@
+/* Comparison Education ROI */
+.comparison-education-roi {
+  width: 100%;
+}
+
+.education-header {
+  margin-bottom: 2rem;
+}
+
+.education-header h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0 0 0.5rem 0;
+}
+
+.education-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+}
+
+/* Education Table */
+.education-table {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.5fr 1fr 1.5fr 1fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 212, 255, 0.1);
+  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.header-cell {
+  color: #00d4ff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 2fr 1.5fr 1fr 1.5fr 1fr;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
+}
+
+.table-row:hover {
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+/* Cell Styles */
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cell.career {
+  gap: 0.5rem;
+}
+
+.career-title {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.job-zone {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+/* Education Cell */
+.cell.education {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.education-icon {
+  font-size: 1.5rem;
+}
+
+.education-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.education-level {
+  color: #ffffff;
+  font-size: 0.875rem;
+}
+
+.education-time {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+/* Investment Cell */
+.cost {
+  color: #ffe66d;
+  font-weight: 600;
+  font-family: 'SF Mono', monospace;
+}
+
+.apprenticeship-badge {
+  background: rgba(76, 237, 196, 0.2);
+  color: #4ecdc4;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Salary Cell */
+.salary-amount {
+  color: #ffffff;
+  font-weight: 600;
+  font-family: 'SF Mono', monospace;
+}
+
+.salary-label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+}
+
+/* ROI Cell */
+.cell.roi {
+  position: relative;
+}
+
+.roi-bar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 24px;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  opacity: 0.3;
+}
+
+.roi-bar.excellent {
+  background: #4ecdc4;
+}
+
+.roi-bar.good {
+  background: #ffe66d;
+}
+
+.roi-bar.moderate {
+  background: #ff6b6b;
+}
+
+.roi-value {
+  position: relative;
+  z-index: 1;
+  color: #ffffff;
+  font-weight: 700;
+  font-family: 'SF Mono', monospace;
+}
+
+/* Break Even Cell */
+.break-even-time {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* Education Insights */
+.education-insights {
+  background: rgba(255, 230, 109, 0.05);
+  border: 1px solid rgba(255, 230, 109, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.education-insights h4 {
+  color: #ffe66d;
+  font-size: 1.125rem;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+.education-insights ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.education-insights li {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.education-insights strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Apprenticeship Section */
+.apprenticeship-section {
+  background: rgba(76, 237, 196, 0.05);
+  border: 1px solid rgba(76, 237, 196, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.apprenticeship-section h4 {
+  color: #4ecdc4;
+  font-size: 1.125rem;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+.apprenticeship-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.apprenticeship-card {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.apprenticeship-card h5 {
+  color: #ffffff;
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem 0;
+  font-weight: 500;
+}
+
+.apprenticeship-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.apprenticeship-list li {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 968px) {
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .header-cell {
+    display: none;
+  }
+  
+  .table-row {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .cell::before {
+    content: attr(data-label);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+  
+  .cell.education {
+    flex-direction: column;
+  }
+}

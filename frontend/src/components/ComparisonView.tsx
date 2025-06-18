@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { ComparisonSalaryChart } from './ComparisonSalaryChart'
+import { ComparisonGrowthChart } from './ComparisonGrowthChart'
+import { ComparisonEducationROI } from './ComparisonEducationROI'
+import { ComparisonLocationMatrix } from './ComparisonLocationMatrix'
 import '../styles/ComparisonView.css'
 
 interface ComparisonViewProps {
@@ -132,25 +135,20 @@ export const ComparisonView: React.FC<ComparisonViewProps> = ({
           <ComparisonSalaryChart careers={comparisonData} />
         )}
         
-        {activeTab === 'growth' && (
-          <div className="coming-soon">
-            <h3>Growth Comparison</h3>
-            <p>Career growth outlook comparison coming in Phase 2</p>
-          </div>
+        {activeTab === 'growth' && comparisonData.length >= 2 && (
+          <ComparisonGrowthChart careers={comparisonData} />
         )}
         
-        {activeTab === 'education' && (
-          <div className="coming-soon">
-            <h3>Education Requirements</h3>
-            <p>Education ROI analysis coming in Phase 2</p>
-          </div>
+        {activeTab === 'education' && comparisonData.length >= 2 && (
+          <ComparisonEducationROI careers={comparisonData} />
         )}
         
-        {activeTab === 'location' && (
-          <div className="coming-soon">
-            <h3>Location Analysis</h3>
-            <p>Geographic opportunity comparison coming in Phase 2</p>
-          </div>
+        {activeTab === 'location' && comparisonData.length >= 2 && (
+          <ComparisonLocationMatrix 
+            careers={comparisonData} 
+            userState={userState}
+            relocationState={relocationState}
+          />
         )}
         
         {activeTab === 'overview' && (

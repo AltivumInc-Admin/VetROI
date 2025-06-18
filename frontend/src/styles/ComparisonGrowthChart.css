@@ -1,0 +1,199 @@
+/* Comparison Growth Chart */
+.comparison-growth-chart {
+  width: 100%;
+}
+
+.growth-header {
+  margin-bottom: 2rem;
+}
+
+.growth-header h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0 0 0.5rem 0;
+}
+
+.growth-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+}
+
+/* Growth Bars */
+.growth-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.growth-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.career-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.career-name {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.outlook-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Growth Bar Visualization */
+.growth-bar-wrapper {
+  position: relative;
+  height: 40px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.zero-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 1;
+}
+
+.negative-space,
+.positive-space {
+  flex: 1;
+  height: 100%;
+}
+
+.growth-bar {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 1rem;
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+.growth-bar.positive {
+  border-radius: 0 8px 8px 0;
+}
+
+.growth-bar.negative {
+  border-radius: 8px 0 0 8px;
+  justify-content: flex-start;
+}
+
+.growth-value {
+  color: #0a0e1a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.growth-bar.negative .growth-value {
+  color: #ffffff;
+}
+
+/* Growth Details */
+.growth-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.job-numbers {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  font-family: 'SF Mono', monospace;
+}
+
+.growth-description {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* Growth Scale */
+.growth-scale {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  margin-bottom: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  font-family: 'SF Mono', monospace;
+}
+
+/* Growth Insights */
+.growth-insights {
+  background: rgba(76, 237, 196, 0.05);
+  border: 1px solid rgba(76, 237, 196, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.growth-insights h4 {
+  color: #4ecdc4;
+  font-size: 1.125rem;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+.growth-insights ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.growth-insights li {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.growth-insights strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .career-label {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .growth-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .growth-bar {
+    padding: 0 0.5rem;
+  }
+  
+  .growth-value {
+    font-size: 0.8rem;
+  }
+}

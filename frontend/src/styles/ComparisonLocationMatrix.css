@@ -1,0 +1,324 @@
+/* Comparison Location Matrix */
+.comparison-location-matrix {
+  width: 100%;
+}
+
+.location-header {
+  margin-bottom: 2rem;
+}
+
+.location-header h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0 0 0.5rem 0;
+}
+
+.location-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+}
+
+/* State Selectors */
+.state-selectors {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.state-selectors h4 {
+  color: #00d4ff;
+  font-size: 1.125rem;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+.state-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.state-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.state-dropdown {
+  flex: 1;
+  padding: 0.75rem;
+  background: rgba(13, 17, 33, 0.8);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.state-dropdown:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+.state-dropdown:focus {
+  outline: none;
+  border-color: #00d4ff;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+
+.state-dropdown option {
+  background: #0a0e1a;
+  color: #ffffff;
+}
+
+.state-badge {
+  padding: 0.25rem 0.5rem;
+  background: rgba(0, 212, 255, 0.2);
+  color: #00d4ff;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Location Matrix */
+.location-matrix {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.matrix-header {
+  display: grid;
+  grid-template-columns: 2fr repeat(6, 1fr);
+  background: rgba(0, 212, 255, 0.1);
+  border-bottom: 2px solid rgba(0, 212, 255, 0.2);
+}
+
+.matrix-cell {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.career-header,
+.state-header {
+  color: #00d4ff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.matrix-row {
+  display: grid;
+  grid-template-columns: 2fr repeat(6, 1fr);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.3s ease;
+}
+
+.matrix-row:hover {
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.matrix-row:last-child {
+  border-bottom: none;
+}
+
+.career-name {
+  color: #ffffff;
+  font-weight: 500;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.quotient-cell {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  margin: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.quotient-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'SF Mono', monospace;
+  margin-bottom: 0.25rem;
+}
+
+.quotient-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.25rem;
+}
+
+.employment-count {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'SF Mono', monospace;
+}
+
+/* Location Legend */
+.location-legend {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.location-legend h4 {
+  color: #ffffff;
+  font-size: 1.125rem;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+.legend-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.legend-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-item span {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+}
+
+/* Location Insights */
+.location-insights {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.location-insights h4 {
+  color: #00d4ff;
+  font-size: 1.125rem;
+  margin: 0 0 1rem 0;
+  font-weight: 400;
+}
+
+.location-insights ul {
+  margin: 0 0 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.location-insights li {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.location-insights strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.insight-warning {
+  color: #ff6b6b;
+  font-style: italic;
+}
+
+/* Relocation Analysis */
+.relocation-analysis {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.relocation-analysis h5 {
+  color: #ffe66d;
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
+  font-weight: 500;
+}
+
+.relocation-analysis p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+}
+
+.positive-change {
+  color: #4ecdc4;
+  font-weight: 600;
+}
+
+.negative-change {
+  color: #ff6b6b;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .matrix-header,
+  .matrix-row {
+    grid-template-columns: 1.5fr repeat(4, 1fr);
+  }
+  
+  .state-selector-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .matrix-header,
+  .matrix-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .matrix-cell {
+    padding: 0.75rem;
+  }
+  
+  .career-name {
+    font-size: 0.875rem;
+    text-align: center;
+    justify-content: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .quotient-cell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: left;
+  }
+  
+  .quotient-value {
+    font-size: 1.25rem;
+  }
+  
+  .state-header {
+    display: none;
+  }
+  
+  .quotient-cell::before {
+    content: attr(data-state);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+  }
+}
