@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import VeteranForm from './components/VeteranForm'
 import { ChatInterface } from './components/ChatInterface'
 import { ConfirmationStep } from './components/ConfirmationStep'
@@ -21,6 +22,7 @@ interface ChatSession {
 }
 
 function App() {
+  const navigate = useNavigate()
   const { sessionWarning } = useAuth()
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
@@ -390,19 +392,33 @@ function App() {
         />
       )}
       
-      {/* Restart Button - Show after initial form submission */}
+      {/* Navigation Buttons - Show after initial form submission */}
       {(chatSession || needsConfirmation || showCareerMatches || showDetailedAnalysis || showDD214Upload || showSentraChat) && (
-        <button 
-          className="restart-button"
-          onClick={handleRestart}
-          title="Start over with a new profile"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M1 4v6h6"></path>
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-          </svg>
-          Start Over
-        </button>
+        <div className="navigation-buttons">
+          <button 
+            className="restart-button"
+            onClick={handleRestart}
+            title="Start over with a new profile"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 4v6h6"></path>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            Start Over
+          </button>
+          
+          <button 
+            className="welcome-button"
+            onClick={() => navigate('/')}
+            title="Back to Welcome Page"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            Welcome Page
+          </button>
+        </div>
       )}
 
       {/* Session Warning Modal */}
