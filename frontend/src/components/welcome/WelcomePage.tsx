@@ -34,83 +34,85 @@ const WelcomePage: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <motion.div 
-          className="logo-section"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1, delay: 0.2 }}
-        >
-          <div className="vetroi-logo">
-            <span className="logo-vet">VET</span>
-            <span className="logo-roi">ROI</span>
-            <span className="logo-tm">™</span>
-          </div>
-          <p className="tagline">Veteran Return on Investment</p>
-        </motion.div>
+        <div className="welcome-main">
+          <motion.div 
+            className="logo-section"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          >
+            <div className="vetroi-logo">
+              <span className="logo-vet">VET</span>
+              <span className="logo-roi">ROI</span>
+              <span className="logo-tm">™</span>
+            </div>
+            <p className="tagline">Veteran Return on Investment</p>
+          </motion.div>
 
-        <motion.h1 
-          className="welcome-title"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
-        >
-          Welcome to VetROI™
-        </motion.h1>
-        
-        <motion.p 
-          className="welcome-subtitle"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.7 }}
-        >
-          Transforming military service into civilian success through AI-powered career matching, 
-          seamless benefit optimization, and personalized transition roadmaps.
-        </motion.p>
+          <motion.h1 
+            className="welcome-title"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+          >
+            Welcome to VetROI™
+          </motion.h1>
+          
+          <motion.p 
+            className="welcome-subtitle"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.7 }}
+          >
+            Transforming military service into civilian success through AI-powered career matching, 
+            seamless benefit optimization, and personalized transition roadmaps.
+          </motion.p>
 
-        <motion.div 
-          className="auth-options"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-        >
-          <div className="glassmorphic-card">
-            <h2>Get Started</h2>
-            <p className="card-description">
-              Create an account to unlock premium features including DD214 analysis and personalized career insights
-            </p>
-            
-            <div className="button-group">
-              <button 
-                className="primary-button"
-                onClick={handleAuthChoice}
-              >
-                Create Account
-              </button>
+          <motion.div 
+            className="auth-options"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+          >
+            <div className="glassmorphic-card">
+              <h2>Get Started</h2>
+              <p className="card-description">
+                Create an account to unlock premium features including DD214 analysis and personalized career insights
+              </p>
+              
+              <div className="button-group">
+                <button 
+                  className="primary-button"
+                  onClick={handleAuthChoice}
+                >
+                  Create Account
+                </button>
+                
+                <button 
+                  className="secondary-button"
+                  onClick={handleAuthChoice}
+                >
+                  Sign In
+                </button>
+              </div>
+              
+              <div className="divider">
+                <span>or</span>
+              </div>
               
               <button 
-                className="secondary-button"
-                onClick={handleAuthChoice}
+                className="tertiary-button"
+                onClick={handleContinueWithoutAuth}
               >
-                Sign In
+                Continue without account
               </button>
+              
+              <p className="free-features-note">
+                Free access includes AI career counseling and O*NET data exploration
+              </p>
             </div>
-            
-            <div className="divider">
-              <span>or</span>
-            </div>
-            
-            <button 
-              className="tertiary-button"
-              onClick={handleContinueWithoutAuth}
-            >
-              Continue without account
-            </button>
-            
-            <p className="free-features-note">
-              Free access includes AI career counseling and O*NET data exploration
-            </p>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
         <motion.footer 
           className="welcome-footer"
