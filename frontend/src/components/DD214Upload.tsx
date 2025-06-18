@@ -40,12 +40,19 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     ]
   })
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const { isAuthenticated, user, checkAuth, signOutUser } = useAuth()
+  const { isAuthenticated, user, checkAuth, signOutUser, sessionExpired, clearSessionExpired, loading } = useAuth()
 
   // Check authentication status on mount
   useEffect(() => {
     checkAuth()
   }, [])
+
+  // Handle session expiration
+  useEffect(() => {
+    if (sessionExpired && !showAuthModal) {
+      setShowAuthModal(true)
+    }
+  }, [sessionExpired, showAuthModal])
 
   const handleSignOut = async () => {
     try {
@@ -201,7 +208,10 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     <div className="dd214-upload-container">
       <AuthModal 
         isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
+        onClose={() => {
+          setShowAuthModal(false)
+          clearSessionExpired()
+        }}
         onSuccess={handleAuthSuccess}
       />
       
@@ -231,7 +241,14 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         </div>
       </div>
       
-      {isAuthenticated && user && (
+      {/* Authentication Status Display */}
+      {loading ? (
+        <div className="auth-status">
+          <div className="auth-status-info">
+            <span>Checking authentication...</span>
+          </div>
+        </div>
+      ) : isAuthenticated && user ? (
         <div className="auth-status">
           <div className="auth-status-info">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -239,14 +256,40 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             </svg>
             <span>Signed in as {user.username || user.userId}</span>
           </div>
+          <div className="auth-actions">
+            <button
+              onClick={handleSignOut}
+              className="sign-out-button"
+            >
+              Sign Out
+            </button>
+            <button
+              onClick={() => checkAuth()}
+              className="refresh-button"
+              title="Refresh session"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      ) : sessionExpired ? (
+        <div className="auth-status session-expired">
+          <div className="auth-status-info">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff9800">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+            <span>Your session has expired</span>
+          </div>
           <button
-            onClick={handleSignOut}
-            className="sign-out-button"
+            onClick={() => setShowAuthModal(true)}
+            className="sign-in-button"
           >
-            Sign Out
+            Sign In Again
           </button>
         </div>
-      )}
+      ) : null}
 
       {uploadState.status === 'idle' || uploadState.status === 'error' ? (
         <>

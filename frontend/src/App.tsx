@@ -7,6 +7,8 @@ import { DetailedAnalysisView } from './components/DetailedAnalysisView'
 import { DataPanel } from './components/DataPanel'
 import { DD214Upload } from './components/DD214Upload'
 import { SentraChat } from './components/SentraChat'
+import { SessionWarningModal } from './components/SessionWarningModal'
+import { useAuth } from './contexts/AuthContext'
 import { VeteranRequest } from './types'
 import { getRecommendations } from './api'
 import './styles/App.css'
@@ -19,6 +21,7 @@ interface ChatSession {
 }
 
 function App() {
+  const { sessionWarning } = useAuth()
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,6 +38,7 @@ function App() {
   const [dd214DocumentId, setDD214DocumentId] = useState<string>()
   const [showSentraChat, setShowSentraChat] = useState(false)
   const [careerDataCache, setCareerDataCache] = useState<any>({})
+  const [showSessionWarning, setShowSessionWarning] = useState(false)
   console.log('Selected SOCs:', selectedSOCs) // Will be used in Phase 4
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
@@ -142,6 +146,13 @@ function App() {
       window.removeEventListener('s3DataFetched', handleS3DataFetched as EventListener)
     }
   }, [])
+
+  // Handle session warning
+  useEffect(() => {
+    if (sessionWarning && !showSessionWarning) {
+      setShowSessionWarning(true)
+    }
+  }, [sessionWarning, showSessionWarning])
   
   const handleBackToCareerSelection = () => {
     setShowDetailedAnalysis(false)
@@ -393,6 +404,12 @@ function App() {
           Start Over
         </button>
       )}
+
+      {/* Session Warning Modal */}
+      <SessionWarningModal 
+        isOpen={showSessionWarning}
+        onClose={() => setShowSessionWarning(false)}
+      />
     </div>
   )
 }
