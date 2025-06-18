@@ -262,12 +262,6 @@ export const DecisionMatrix: React.FC<DecisionMatrixProps> = ({
 
   return (
     <div className="decision-matrix">
-      <div className="matrix-header">
-        <h3>VetROI™ Decision Matrix</h3>
-        <p className="matrix-subtitle">
-          Comprehensive analysis combining salary, growth, education ROI, location, and sustainability factors
-        </p>
-      </div>
 
       {/* Overall Rankings */}
       <div className="career-rankings">
