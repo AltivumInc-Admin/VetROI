@@ -1,12 +1,13 @@
 .dd214-upload-container {
-  background: rgba(13, 17, 33, 0.7);
+  background: rgba(13, 17, 33, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 212, 255, 0.2);
   border-radius: 16px;
-  padding: 2rem;
-  max-width: 600px;
+  padding: 2.5rem;
+  max-width: 700px;
   margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .dd214-upload-container h3 {
@@ -19,8 +20,59 @@
 .upload-description {
   text-align: center;
   color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+/* Security Header */
+.security-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  color: #22c55e;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.security-badge svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Trust Indicators */
+.trust-indicators {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.trust-item svg {
+  flex-shrink: 0;
+  color: #00d4ff;
 }
 
 /* Dropzone Styles */
@@ -43,6 +95,15 @@
   border-color: #00d4ff;
   background: rgba(0, 212, 255, 0.1);
   transform: scale(1.02);
+}
+
+.dropzone.unauthenticated {
+  cursor: pointer;
+}
+
+.dropzone.unauthenticated:hover {
+  border-color: rgba(255, 193, 7, 0.5);
+  background: rgba(255, 193, 7, 0.05);
 }
 
 .dropzone-content {
@@ -73,6 +134,67 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.4);
   margin: 0;
+}
+
+/* Process Steps Preview */
+.process-steps-preview {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(0, 212, 255, 0.02);
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  border-radius: 12px;
+}
+
+.process-steps-preview h4 {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 1rem 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.steps-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.step-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 212, 255, 0.1);
+  border: 2px solid rgba(0, 212, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #00d4ff;
+  font-size: 0.875rem;
+}
+
+.step-preview span {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.step-arrow {
+  color: rgba(0, 212, 255, 0.3);
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
 /* Processing Container */

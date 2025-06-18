@@ -103,15 +103,18 @@ export default function VeteranForm({ onSubmit, loading, initialData }: VeteranF
       </div>
 
       <div className="form-group">
-        <label className="checkbox-label">
+        <div className="checkbox-container">
           <input
             type="checkbox"
+            id="relocate"
             name="relocate"
             checked={formData.relocate}
             onChange={handleChange}
           />
-          Willing to relocate
-        </label>
+          <label htmlFor="relocate" className="checkbox-label">
+            Willing to relocate
+          </label>
+        </div>
       </div>
 
       {formData.relocate && (

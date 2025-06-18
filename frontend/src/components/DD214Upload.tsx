@@ -71,7 +71,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     console.log('onDrop called with files:', acceptedFiles)
     if (acceptedFiles.length === 0) return
 
-    // Check if authenticated first
+    // This should not happen as we prevent drops for unauthenticated users
     if (!isAuthenticated) {
       console.log('Not authenticated, showing auth modal')
       setShowAuthModal(true)
@@ -184,8 +184,9 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     },
     maxFiles: 1,
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
-    noClick: false,
-    noKeyboard: false
+    noClick: !isAuthenticated, // Prevent click if not authenticated
+    noDrag: !isAuthenticated, // Prevent drag if not authenticated
+    noKeyboard: !isAuthenticated // Prevent keyboard activation if not authenticated
   })
 
   const handleAuthSuccess = async () => {
@@ -204,10 +205,40 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         onSuccess={handleAuthSuccess}
       />
       
+      <div className="security-header">
+        <div className="security-badge">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+          <span>Bank-Level Encryption</span>
+        </div>
+      </div>
+      
       <h3>Upload Your DD214</h3>
       <p className="upload-description">
-        Upload your DD214 to unlock AI-powered career insights and personalized recommendations
+        Your military service record unlocks personalized career intelligence powered by O*NET data
       </p>
+      
+      <div className="trust-indicators">
+        <div className="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+          <span>256-bit SSL Encryption</span>
+        </div>
+        <div className="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+          <span>HIPAA-Compliant Storage</span>
+        </div>
+        <div className="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span>Amazon Macie PII Protection</span>
+        </div>
+      </div>
       
       {isAuthenticated && user && (
         <div className="auth-status">
@@ -258,7 +289,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
           )}
           <div 
             {...getRootProps()} 
-            className={`dropzone ${isDragActive ? 'active' : ''}`}
+            className={`dropzone ${isDragActive ? 'active' : ''} ${!isAuthenticated ? 'unauthenticated' : ''}`}
+            onClick={!isAuthenticated ? () => setShowAuthModal(true) : undefined}
           >
             <input {...getInputProps()} />
             <div className="dropzone-content">
@@ -274,6 +306,31 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
                 <p className="upload-formats">Supports PDF, JPG, PNG (max 10MB)</p>
               </>
             )}
+            </div>
+          </div>
+          
+          <div className="process-steps-preview">
+            <h4>What happens next:</h4>
+            <div className="steps-grid">
+              <div className="step-preview">
+                <div className="step-number">1</div>
+                <span>Secure Upload</span>
+              </div>
+              <div className="step-arrow">→</div>
+              <div className="step-preview">
+                <div className="step-number">2</div>
+                <span>PII Redaction</span>
+              </div>
+              <div className="step-arrow">→</div>
+              <div className="step-preview">
+                <div className="step-number">3</div>
+                <span>AI Analysis</span>
+              </div>
+              <div className="step-arrow">→</div>
+              <div className="step-preview">
+                <div className="step-number">4</div>
+                <span>Career Insights</span>
+              </div>
             </div>
           </div>
         </>

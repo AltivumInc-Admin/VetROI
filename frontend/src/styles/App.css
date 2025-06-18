@@ -104,14 +104,30 @@
   border-color: #2a5298;
 }
 
-.checkbox-label {
-  display: flex;
+.checkbox-container {
+  display: inline-flex;
   align-items: center;
-  cursor: pointer;
+  gap: 0.5rem;
 }
 
-.checkbox-label input[type="checkbox"] {
-  margin-right: 0.5rem;
+.checkbox-label {
+  cursor: pointer;
+  user-select: none;
+  font-size: 1rem;
+  color: #333;
+  padding: 0.25rem;
+}
+
+.checkbox-label:hover {
+  color: #2a5298;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #2a5298;
 }
 
 .submit-button {
