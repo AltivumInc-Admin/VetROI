@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import ParticleBackground from './ParticleBackground';
-import CursorEffect from './CursorEffect';
 import { AuthModal } from '../AuthModal';
 import { motion } from 'framer-motion';
 import './WelcomePage.css';
@@ -28,7 +27,6 @@ const WelcomePage: React.FC = () => {
   return (
     <div className="welcome-container">
       <ParticleBackground />
-      <CursorEffect />
       
       <motion.div 
         className="welcome-content"
