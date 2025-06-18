@@ -24,7 +24,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({ data, categories }) => {
     if (!ctx) return
 
     // Set canvas size
-    const size = Math.min(container.offsetWidth, 400)
+    const size = Math.min(container.offsetWidth, 500)
     canvas.width = size * 2
     canvas.height = size * 2
     canvas.style.width = `${size}px`
@@ -36,7 +36,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({ data, categories }) => {
 
     const centerX = size / 2
     const centerY = size / 2
-    const radius = size * 0.35
+    const radius = size * 0.3
     const levels = 5
 
     // Draw grid
@@ -84,13 +84,15 @@ export const RadarChart: React.FC<RadarChartProps> = ({ data, categories }) => {
       ctx.stroke()
       
       // Draw category labels
-      const labelX = centerX + Math.cos(angle) * (radius + 20)
-      const labelY = centerY + Math.sin(angle) * (radius + 20)
-      
       ctx.fillStyle = '#ffffff'
       ctx.font = '12px SF Pro Display'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
+      
+      // Calculate label position with more padding
+      const labelPadding = 30
+      const labelX = centerX + Math.cos(angle) * (radius + labelPadding)
+      const labelY = centerY + Math.sin(angle) * (radius + labelPadding)
       
       // Adjust text alignment based on position
       if (Math.abs(labelX - centerX) < 10) {
@@ -99,6 +101,15 @@ export const RadarChart: React.FC<RadarChartProps> = ({ data, categories }) => {
         ctx.textAlign = 'left'
       } else {
         ctx.textAlign = 'right'
+      }
+      
+      // Adjust vertical alignment
+      if (labelY < centerY - 10) {
+        ctx.textBaseline = 'bottom'
+      } else if (labelY > centerY + 10) {
+        ctx.textBaseline = 'top'
+      } else {
+        ctx.textBaseline = 'middle'
       }
       
       ctx.fillText(categories[i], labelX, labelY)
