@@ -123,6 +123,13 @@
   }
 }
 
+.auth-checking {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 2rem;
+  font-size: 0.875rem;
+}
+
 .auth-field {
   margin-bottom: 1.5rem;
 }

@@ -283,7 +283,10 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             <span>Your session has expired</span>
           </div>
           <button
-            onClick={() => setShowAuthModal(true)}
+            onClick={() => {
+              handleSignOut()
+              setShowAuthModal(true)
+            }}
             className="sign-in-button"
           >
             Sign In Again

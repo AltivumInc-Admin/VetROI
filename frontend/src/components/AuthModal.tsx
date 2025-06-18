@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { signIn, signUp, confirmSignUp, SignInInput, SignUpInput } from 'aws-amplify/auth'
+import React, { useState, useEffect } from 'react'
+import { signIn, signUp, confirmSignUp, signOut, getCurrentUser, SignInInput, SignUpInput } from 'aws-amplify/auth'
 import '../styles/AuthModal.css'
 
 interface AuthModalProps {
@@ -19,6 +19,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(false)
+
+  // Check for existing session when modal opens
+  useEffect(() => {
+    if (isOpen && mode === 'signIn') {
+      checkExistingSession()
+    }
+  }, [isOpen, mode])
+
+  const checkExistingSession = async () => {
+    setCheckingAuth(true)
+    try {
+      const user = await getCurrentUser()
+      if (user) {
+        // User is already signed in, just close modal and call success
+        onSuccess(user.username || user.userId)
+      }
+    } catch (error) {
+      // No existing session, proceed normally
+    } finally {
+      setCheckingAuth(false)
+    }
+  }
 
   if (!isOpen) return null
 
@@ -39,6 +62,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         onSuccess(email)
       }
     } catch (err: any) {
+      // Handle the "already signed in" error
+      if (err.message?.includes('already a signed in user') || 
+          err.message?.includes('There is already a signed in user')) {
+        try {
+          // Sign out the existing user first
+          await signOut()
+          // Try signing in again
+          const { isSignedIn } = await signIn({ username: email, password })
+          if (isSignedIn) {
+            onSuccess(email)
+            return
+          }
+        } catch (signOutError) {
+          console.error('Error signing out existing user:', signOutError)
+          setError('Please refresh the page and try again')
+          return
+        }
+      }
       setError(err.message || 'Failed to sign in')
     } finally {
       setLoading(false)
@@ -151,7 +192,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           </div>
         )}
 
-        {mode === 'signIn' && (
+        {checkingAuth && (
+          <div className="auth-checking">
+            Checking authentication status...
+          </div>
+        )}
+
+        {mode === 'signIn' && !checkingAuth && (
           <form onSubmit={handleSignIn}>
             <div className="auth-field">
               <label>Email</label>
