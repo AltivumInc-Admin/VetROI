@@ -10,6 +10,11 @@ interface DetailedAnalysisViewProps {
   onMeetSentra: () => void
   userState?: string
   relocationState?: string
+  veteranProfile?: {
+    branch?: string
+    code?: string
+    education?: string
+  }
 }
 
 export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
@@ -17,7 +22,8 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
   onBack,
   onMeetSentra,
   userState = 'CA',
-  relocationState
+  relocationState,
+  veteranProfile
 }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -87,6 +93,7 @@ export const DetailedAnalysisView: React.FC<DetailedAnalysisViewProps> = ({
             selectedSOCs={selectedSOCs}
             userState={userState}
             relocationState={relocationState}
+            veteranProfile={veteranProfile}
           />
         )}
       </main>

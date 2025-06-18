@@ -44,11 +44,13 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  position: relative;
 }
 
 .state-dropdown {
-  flex: 1;
+  width: 100%;
   padding: 0.75rem;
+  padding-right: 4rem; /* Make room for badge */
   background: rgba(13, 17, 33, 0.8);
   border: 1px solid rgba(0, 212, 255, 0.2);
   border-radius: 6px;
@@ -74,6 +76,10 @@
 }
 
 .state-badge {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
   padding: 0.25rem 0.5rem;
   background: rgba(0, 212, 255, 0.2);
   color: #00d4ff;
@@ -81,6 +87,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  pointer-events: none; /* Prevent interfering with dropdown */
 }
 
 /* Location Matrix */

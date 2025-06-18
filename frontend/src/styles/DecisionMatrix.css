@@ -1,0 +1,296 @@
+/* Decision Matrix Styles */
+.decision-matrix {
+  width: 100%;
+}
+
+.matrix-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.matrix-header h3 {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  font-weight: 300;
+}
+
+.matrix-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+}
+
+/* Career Rankings */
+.career-rankings {
+  margin-bottom: 3rem;
+}
+
+.career-rankings h4 {
+  color: #00d4ff;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.ranking-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ranking-card {
+  background: rgba(13, 17, 33, 0.8);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.ranking-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+}
+
+.rank-number {
+  font-size: 3rem;
+  font-weight: 700;
+  color: rgba(0, 212, 255, 0.3);
+  line-height: 1;
+  font-family: 'SF Mono', monospace;
+}
+
+.career-info h5 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+}
+
+.score-display {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.overall-score {
+  font-size: 3rem;
+  font-weight: 700;
+  font-family: 'SF Mono', monospace;
+  line-height: 1;
+}
+
+.score-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.confidence-indicator {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  font-style: italic;
+  margin-left: auto;
+}
+
+/* Score Breakdown Bar */
+.score-breakdown-bar {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  display: flex;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.breakdown-segment {
+  height: 100%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.breakdown-segment:hover {
+  opacity: 0.8;
+}
+
+.breakdown-segment.salary {
+  background: #00d4ff;
+}
+
+.breakdown-segment.growth {
+  background: #4ecdc4;
+}
+
+.breakdown-segment.education {
+  background: #ffe66d;
+}
+
+.breakdown-segment.location {
+  background: #ff9f40;
+}
+
+.breakdown-segment.sustainability {
+  background: #ff6b6b;
+}
+
+/* Recommendations */
+.recommendations {
+  grid-column: 2;
+}
+
+.recommendation {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+/* Radar Comparison */
+.radar-comparison {
+  background: rgba(13, 17, 33, 0.6);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 3rem;
+}
+
+.radar-comparison h4 {
+  color: #ffffff;
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
+  text-align: center;
+}
+
+/* Action Plan */
+.action-plan {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.action-plan h4 {
+  color: #00d4ff;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+.career-action-plan h5 {
+  color: #ffffff;
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+/* Timeline */
+.action-timeline {
+  position: relative;
+  padding-left: 3rem;
+}
+
+.action-timeline::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(0, 212, 255, 0.3);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -3rem;
+  top: 0;
+  width: 2rem;
+  height: 2rem;
+  background: #00d4ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0a0e1a;
+  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.2);
+}
+
+.timeline-content {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.timeline-content h6 {
+  color: #00d4ff;
+  font-size: 1rem;
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+}
+
+.timeline-content ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.timeline-content li {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Timeline Item Colors */
+.timeline-item.immediate .timeline-marker {
+  background: #4ecdc4;
+}
+
+.timeline-item.short-term .timeline-marker {
+  background: #ffe66d;
+}
+
+.timeline-item.long-term .timeline-marker {
+  background: #ff9f40;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ranking-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .rank-number {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2rem;
+  }
+  
+  .score-display {
+    flex-wrap: wrap;
+  }
+  
+  .action-timeline {
+    padding-left: 2rem;
+  }
+  
+  .timeline-marker {
+    left: -2rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.625rem;
+  }
+}
