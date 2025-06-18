@@ -177,16 +177,49 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .career-label {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
+  .growth-header {
+    margin-bottom: 1.5rem;
   }
   
-  .growth-details {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
+  .growth-header h3 {
+    font-size: 1.25rem;
+  }
+  
+  .growth-subtitle {
+    font-size: 0.875rem;
+  }
+  
+  .growth-bars {
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .growth-bar-container {
+    gap: 0.375rem;
+  }
+  
+  .career-label {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .career-name {
+    font-size: 0.875rem;
+  }
+  
+  .outlook-badge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.65rem;
+  }
+  
+  .growth-bar-wrapper {
+    height: 32px;
+  }
+  
+  .zero-line {
+    width: 1px;
   }
   
   .growth-bar {
@@ -194,6 +227,43 @@
   }
   
   .growth-value {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+  }
+  
+  .growth-details {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+  }
+  
+  .job-numbers {
+    font-size: 0.75rem;
+  }
+  
+  .growth-description {
+    font-size: 0.75rem;
+    text-align: right;
+  }
+  
+  .growth-scale {
+    padding: 0.375rem 0;
+    margin-bottom: 1.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .growth-insights {
+    padding: 1rem;
+  }
+  
+  .growth-insights h4 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .growth-insights li {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
   }
 }

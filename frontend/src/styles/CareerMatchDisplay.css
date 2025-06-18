@@ -207,11 +207,14 @@
   }
 
   .career-match-header h2 {
-    font-size: 2rem;
+    font-size: 1.75rem;
+    line-height: 1.2;
   }
 
   .thank-you-message {
-    font-size: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    padding: 0 0.5rem;
   }
 
   /* Switch to tabs on mobile */
@@ -238,6 +241,40 @@
   /* Single column on mobile */
   .available-careers .career-cards-grid {
     grid-template-columns: 1fr;
+  }
+  
+  /* Rolodex mobile adjustments */
+  .rolodex-container {
+    gap: 1rem;
+    padding: 1rem 0;
+  }
+  
+  .rolodex-controls {
+    gap: 1rem;
+  }
+  
+  .rolodex-button {
+    width: 44px;
+    height: 44px;
+    font-size: 1.25rem;
+  }
+  
+  .rolodex-counter {
+    font-size: 1rem;
+  }
+  
+  .rolodex-card-edge {
+    width: 30px;
+    height: 150px;
+    font-size: 1.25rem;
+  }
+  
+  .rolodex-card-edge.prev {
+    left: -15px;
+  }
+  
+  .rolodex-card-edge.next {
+    right: -15px;
   }
 }
 
@@ -295,13 +332,14 @@
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 212, 255, 0.3);
   border-radius: 12px;
-  padding: 2rem;
-  width: 600px;
-  max-width: 90vw;
+  padding: clamp(1rem, 4vw, 2rem);
+  width: min(600px, 90vw);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
               0 0 80px rgba(0, 212, 255, 0.1);
   z-index: 100;
   animation: fadeInDown 0.3s ease-out;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 @keyframes fadeInDown {
@@ -434,8 +472,8 @@
 
 .rolodex-viewport {
   position: relative;
-  width: 400px;
-  height: 300px;
+  width: min(400px, 90vw);
+  height: clamp(250px, 40vh, 300px);
   perspective: 1000px;
   display: flex;
   align-items: center;
@@ -444,8 +482,8 @@
 
 .rolodex-card {
   position: absolute;
-  width: 350px;
-  height: 250px;
+  width: min(350px, 85vw);
+  height: clamp(200px, 35vh, 250px);
   transition: all 0.4s ease;
   transform-style: preserve-3d;
 }
