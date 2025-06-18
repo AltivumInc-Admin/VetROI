@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 const CursorEffect: React.FC = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [cursorVariant, setCursorVariant] = useState('default');
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   
   useEffect(() => {
     const mouseMove = (e: MouseEvent) => {
@@ -36,8 +36,10 @@ const CursorEffect: React.FC = () => {
       link.addEventListener('mouseleave', handleLinkLeave);
     });
     
-    // Hide default cursor
-    document.body.style.cursor = 'none';
+    // Hide default cursor on desktop only
+    if (window.innerWidth > 768) {
+      document.body.style.cursor = 'none';
+    }
     
     return () => {
       window.removeEventListener('mousemove', mouseMove);
@@ -106,22 +108,53 @@ const CursorEffect: React.FC = () => {
       }}
     >
       <div 
-        className="w-full h-full flex items-center justify-center"
-        style={{
-          background: 'radial-gradient(circle, rgba(0, 212, 255, 0.8) 0%, rgba(0, 212, 255, 0.4) 50%, transparent 70%)',
-          filter: 'blur(1px)',
-        }}
+        className="w-full h-full flex items-center justify-center relative"
       >
-        <span 
-          className="text-xs font-bold"
-          style={{ 
-            color: '#0a0e1a',
-            fontSize: '8px',
-            letterSpacing: '0.5px'
+        {/* Outer ring for better visibility */}
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{
+            background: 'radial-gradient(circle, rgba(0, 212, 255, 0.8) 0%, rgba(0, 212, 255, 0.4) 50%, transparent 70%)',
+            filter: 'blur(2px)',
+          }}
+        />
+        
+        {/* Inner circle with VR text */}
+        <div
+          className="absolute inset-0 rounded-full flex items-center justify-center"
+          style={{
+            background: 'rgba(0, 212, 255, 0.2)',
+            border: '2px solid rgba(0, 212, 255, 0.8)',
+            backdropFilter: 'blur(2px)',
           }}
         >
-          VR
-        </span>
+          <span 
+            className="text-xs font-bold"
+            style={{ 
+              color: '#00d4ff',
+              fontSize: '10px',
+              letterSpacing: '0.5px',
+              textShadow: '0 0 4px rgba(0, 212, 255, 0.8)'
+            }}
+          >
+            VR
+          </span>
+        </div>
+        
+        {/* Center dot for precise tracking */}
+        <div
+          className="absolute"
+          style={{
+            width: '4px',
+            height: '4px',
+            background: '#00d4ff',
+            borderRadius: '50%',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            boxShadow: '0 0 6px rgba(0, 212, 255, 1)'
+          }}
+        />
       </div>
     </motion.div>
   );
