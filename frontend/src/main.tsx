@@ -1,8 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Amplify } from 'aws-amplify'
 import { awsConfig } from './aws-config'
+import { AuthProvider } from './contexts/AuthContext'
 import App from './App.tsx'
+import WelcomePage from './components/welcome/WelcomePage.tsx'
 import './styles/index.css'
 import './styles/DarkTheme.css'
 
@@ -11,6 +14,13 @@ Amplify.configure(awsConfig)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<WelcomePage />} />
+          <Route path="/app" element={<App />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>,
 )

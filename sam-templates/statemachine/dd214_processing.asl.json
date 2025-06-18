@@ -49,20 +49,22 @@
       "Type": "Task",
       "Resource": "arn:aws:states:::textract:getDocumentAnalysis",
       "Parameters": {
-        "JobId.$": "$.textractJob.JobId"
+        "JobId.$": "$.textractJob.JobId",
+        "MaxResults": 1
       },
       "Next": "CheckTextractComplete",
-      "ResultPath": "$.textractResult"
+      "ResultPath": "$.textractStatus",
+      "OutputPath": "$"
     },
     
     "CheckTextractComplete": {
       "Type": "Choice",
       "Choices": [{
-        "Variable": "$.textractResult.JobStatus",
+        "Variable": "$.textractStatus.JobStatus",
         "StringEquals": "SUCCEEDED",
         "Next": "ProcessTextractResults"
       }, {
-        "Variable": "$.textractResult.JobStatus",
+        "Variable": "$.textractStatus.JobStatus",
         "StringEquals": "FAILED",
         "Next": "TextractFailed"
       }],

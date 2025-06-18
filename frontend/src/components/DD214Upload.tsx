@@ -1,7 +1,7 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
-import { getCurrentUser, signOut } from 'aws-amplify/auth'
+import { useAuth } from '../contexts/AuthContext'
 import { AuthModal } from './AuthModal'
 import '../styles/DD214Upload.css'
 
@@ -40,31 +40,16 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     ]
   })
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [currentUser, setCurrentUser] = useState<string | null>(null)
+  const { isAuthenticated, user, checkAuth, signOutUser } = useAuth()
 
   // Check authentication status on mount
-  React.useEffect(() => {
-    checkAuthStatus()
+  useEffect(() => {
+    checkAuth()
   }, [])
-
-  const checkAuthStatus = async () => {
-    try {
-      const user = await getCurrentUser()
-      setIsAuthenticated(true)
-      // Try to get email from signInDetails or username
-      const email = user.signInDetails?.loginId || user.username
-      setCurrentUser(email)
-    } catch {
-      setIsAuthenticated(false)
-    }
-  }
 
   const handleSignOut = async () => {
     try {
-      await signOut()
-      setIsAuthenticated(false)
-      setCurrentUser(null)
+      await signOutUser()
       // Reset upload state
       setUploadState({
         status: 'idle',
@@ -203,9 +188,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     noKeyboard: false
   })
 
-  const handleAuthSuccess = async (userEmail: string) => {
-    setIsAuthenticated(true)
-    setCurrentUser(userEmail)
+  const handleAuthSuccess = async () => {
+    await checkAuth()
     setShowAuthModal(false)
     
     // Update user attributes to mark DD214 upload intent
@@ -225,13 +209,13 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         Upload your DD214 to unlock AI-powered career insights and personalized recommendations
       </p>
       
-      {isAuthenticated && currentUser && (
+      {isAuthenticated && user && (
         <div className="auth-status">
           <div className="auth-status-info">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
-            <span>Signed in as {currentUser}</span>
+            <span>Signed in as {user.username || user.userId}</span>
           </div>
           <button
             onClick={handleSignOut}

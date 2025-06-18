@@ -1,0 +1,313 @@
+/* Welcome Page Styles - Altivum Signature Dark Theme */
+
+.welcome-container {
+  min-height: 100vh;
+  background: #0a0e1a;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo Section */
+.logo-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.vetroi-logo {
+  font-size: 4rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 40px rgba(0, 212, 255, 0.5);
+}
+
+.logo-vet {
+  font-weight: 300;
+}
+
+.logo-roi {
+  font-weight: 900;
+}
+
+.logo-tm {
+  font-size: 1.5rem;
+  vertical-align: super;
+  opacity: 0.8;
+}
+
+.tagline {
+  color: #6A6D73;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Welcome Title */
+.welcome-title {
+  font-size: 3.5rem;
+  font-weight: 200;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.welcome-subtitle {
+  font-size: 1.25rem;
+  color: #9CA3AF;
+  text-align: center;
+  max-width: 800px;
+  line-height: 1.8;
+  margin-bottom: 4rem;
+  font-weight: 300;
+}
+
+/* Glassmorphic Card */
+.glassmorphic-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 3rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 
+    0 8px 32px 0 rgba(0, 212, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+.glassmorphic-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 
+    0 12px 48px 0 rgba(0, 212, 255, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.glassmorphic-card h2 {
+  font-size: 2rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.card-description {
+  color: #9CA3AF;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* Buttons */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.primary-button,
+.secondary-button,
+.tertiary-button {
+  flex: 1;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #0a0e1a;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(0, 212, 255, 0.4);
+}
+
+.secondary-button {
+  background: transparent;
+  color: #00d4ff;
+  border: 2px solid #00d4ff;
+}
+
+.secondary-button:hover {
+  background: rgba(0, 212, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.tertiary-button {
+  background: transparent;
+  color: #9CA3AF;
+  border: 1px solid rgba(156, 163, 175, 0.3);
+  width: 100%;
+}
+
+.tertiary-button:hover {
+  background: rgba(156, 163, 175, 0.1);
+  color: #ffffff;
+  border-color: rgba(156, 163, 175, 0.5);
+}
+
+/* Divider */
+.divider {
+  text-align: center;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(156, 163, 175, 0.2);
+}
+
+.divider span {
+  background: #0a0e1a;
+  padding: 0 1rem;
+  position: relative;
+  color: #6A6D73;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+}
+
+/* Free Features Note */
+.free-features-note {
+  text-align: center;
+  color: #6A6D73;
+  font-size: 0.875rem;
+  margin-top: 1.5rem;
+  font-style: italic;
+}
+
+/* Footer */
+.welcome-footer {
+  position: absolute;
+  bottom: 2rem;
+  text-align: center;
+  color: #6A6D73;
+  font-size: 0.875rem;
+}
+
+.security-note {
+  margin-top: 0.5rem;
+  color: #00d4ff;
+  opacity: 0.8;
+}
+
+/* Auth Modal */
+.auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.auth-modal {
+  background: #0f1420;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 3rem;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: #6A6D73;
+  font-size: 2rem;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.coming-soon {
+  text-align: center;
+  color: #6A6D73;
+  font-style: italic;
+  margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .vetroi-logo {
+    font-size: 3rem;
+  }
+  
+  .welcome-title {
+    font-size: 2.5rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .glassmorphic-card {
+    padding: 2rem;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+}

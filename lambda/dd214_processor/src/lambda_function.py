@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional
 import uuid
 from datetime import datetime
 import re
+from decimal import Decimal
 
 # Initialize AWS clients
 s3_client = boto3.client('s3')
@@ -19,6 +20,96 @@ BUCKET_NAME = os.environ.get('BUCKET_NAME', 'vetroi-dd214-secure')
 REDACTED_BUCKET = os.environ.get('REDACTED_BUCKET', 'vetroi-dd214-redacted')
 TABLE_NAME = os.environ.get('TABLE_NAME', 'VetROI_DD214_Processing')
 STATE_MACHINE_ARN = os.environ.get('STATE_MACHINE_ARN')
+
+# AWS resource references
+s3 = s3_client
+textract = textract_client
+comprehend = comprehend_client
+
+# Helper Functions
+def extract_text_from_blocks(blocks: List[Dict[str, Any]]) -> str:
+    """Extract all text from Textract blocks"""
+    lines = []
+    for block in blocks:
+        if block.get('BlockType') == 'LINE':
+            lines.append(block.get('Text', ''))
+    return '\n'.join(lines)
+
+def extract_dd214_fields(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Extract DD214 fields from Textract blocks"""
+    # Build text lines for better extraction
+    lines = []
+    for block in blocks:
+        if block.get('BlockType') == 'LINE':
+            lines.append(block.get('Text', ''))
+    
+    # Join all text for pattern matching
+    full_text = '\n'.join(lines)
+    
+    # Extract specific fields using patterns
+    extracted = {
+        'name': extract_field_pattern(full_text, [r'1\.\s*NAME[:\s]+(.+?)(?:\n|$)', r'NAME OF VETERAN[:\s]+(.+?)(?:\n|$)']),
+        'ssn': extract_field_pattern(full_text, [r'2\.\s*SOCIAL SECURITY[:\s]+(.+?)(?:\n|$)', r'SSN[:\s]+(.+?)(?:\n|$)']),
+        'branch': extract_field_pattern(full_text, [r'4\.\s*BRANCH[:\s]+(.+?)(?:\n|$)', r'BRANCH OF SERVICE[:\s]+(.+?)(?:\n|$)']),
+        'rank': extract_field_pattern(full_text, [r'5\.\s*GRADE[:\s]+(.+?)(?:\n|$)', r'RANK[:\s]+(.+?)(?:\n|$)']),
+        'pay_grade': extract_field_pattern(full_text, [r'6\.\s*PAY GRADE[:\s]+(.+?)(?:\n|$)']),
+        'home_of_record': extract_field_pattern(full_text, [r'8\.\s*HOME OF RECORD[:\s]+(.+?)(?:\n|$)']),
+        'last_duty': extract_field_pattern(full_text, [r'9\.\s*LAST DUTY ASSIGNMENT[:\s]+(.+?)(?:\n|$)']),
+        'mos': extract_field_pattern(full_text, [r'11\.\s*PRIMARY SPECIALTY[:\s]+(.+?)(?:\n|$)', r'MOS[:\s]+(.+?)(?:\n|$)']),
+        'service_start': extract_field_pattern(full_text, [r'12a\.\s*DATE ENTERED[:\s]+(.+?)(?:\n|$)']),
+        'service_end': extract_field_pattern(full_text, [r'12b\.\s*SEPARATION DATE[:\s]+(.+?)(?:\n|$)']),
+        'foreign_service': extract_field_pattern(full_text, [r'12c\.\s*FOREIGN SERVICE[:\s]+(.+?)(?:\n|$)']),
+        'decorations': extract_field_pattern(full_text, [r'13\.\s*DECORATIONS[:\s]+(.+?)(?:\n|$)']),
+        'education': extract_field_pattern(full_text, [r'14\.\s*MILITARY EDUCATION[:\s]+(.+?)(?:\n|$)']),
+        'discharge_type': extract_field_pattern(full_text, [r'24\.\s*CHARACTER OF SERVICE[:\s]+(.+?)(?:\n|$)']),
+        'separation_code': extract_field_pattern(full_text, [r'26\.\s*SEPARATION CODE[:\s]+(.+?)(?:\n|$)']),
+        'reentry_code': extract_field_pattern(full_text, [r'27\.\s*REENTRY CODE[:\s]+(.+?)(?:\n|$)'])
+    }
+    
+    # Clean empty values
+    extracted = {k: v for k, v in extracted.items() if v}
+    
+    return extracted
+
+def extract_field_pattern(text: str, patterns: List[str]) -> Optional[str]:
+    """Extract field value using regex patterns"""
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+        if match:
+            return match.group(1).strip()
+    return None
+
+def find_field_value(text_map: Dict[str, str], field_patterns: List[str]) -> Optional[str]:
+    """Find field value from text map using patterns"""
+    for pattern in field_patterns:
+        for key, value in text_map.items():
+            if pattern in key:
+                # Try to get the value after the field name
+                parts = value.split(pattern, 1)
+                if len(parts) > 1:
+                    return parts[1].strip()
+    return None
+
+def calculate_average_confidence(blocks: List[Dict[str, Any]]) -> Decimal:
+    """Calculate average confidence score from blocks"""
+    confidences = []
+    for block in blocks:
+        if 'Confidence' in block:
+            confidences.append(Decimal(str(block['Confidence'])))
+    if confidences:
+        return sum(confidences) / Decimal(str(len(confidences)))
+    return Decimal('0.0')
+
+def count_data_points(extracted_data: Dict[str, Any]) -> int:
+    """Count non-empty data points"""
+    count = 0
+    for key, value in extracted_data.items():
+        if value:
+            if isinstance(value, dict):
+                count += count_data_points(value)
+            else:
+                count += 1
+    return count
 
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
@@ -134,34 +225,115 @@ def handle_textract_results(event: Dict[str, Any]) -> Dict[str, Any]:
     """
     job_id = event['textractJobId']
     document_id = event['documentId']
+    bucket = event.get('bucket')
+    key = event.get('key')
     
-    # Get Textract results
-    textract_response = textract.get_document_analysis(JobId=job_id)
+    # Get ALL Textract results with pagination
+    all_blocks = []
+    next_token = None
+    page_count = 0
     
-    # Extract key DD214 fields
-    extracted_data = {
-        'name': extract_field(textract_response, 'Name'),
-        'ssn_last_four': extract_field(textract_response, 'SSN')[-4:] if extract_field(textract_response, 'SSN') else None,
-        'branch': extract_field(textract_response, 'Branch of Service'),
-        'rank': extract_field(textract_response, 'Rank/Grade'),
-        'mos': extract_field(textract_response, 'Primary Specialty'),
-        'service_dates': {
-            'start': extract_field(textract_response, 'Date Entered Active Duty'),
-            'end': extract_field(textract_response, 'Date of Separation')
-        },
-        'decorations': extract_field(textract_response, 'Decorations, Medals'),
-        'education': extract_field(textract_response, 'Education'),
-        'additional_mos': extract_field(textract_response, 'Additional MOS')
+    while True:
+        if next_token:
+            textract_response = textract.get_document_text_detection(
+                JobId=job_id,
+                NextToken=next_token
+            )
+        else:
+            textract_response = textract.get_document_text_detection(JobId=job_id)
+        
+        all_blocks.extend(textract_response.get('Blocks', []))
+        page_count += 1
+        
+        next_token = textract_response.get('NextToken')
+        if not next_token:
+            break
+            
+    print(f"Fetched {len(all_blocks)} blocks across {page_count} pages")
+    
+    # Save full Textract results to S3 for demo purposes
+    full_results_key = f"textract-results/{document_id}/full_results.json"
+    s3.put_object(
+        Bucket=bucket,
+        Key=full_results_key,
+        Body=json.dumps({
+            'jobId': job_id,
+            'blockCount': len(all_blocks),
+            'blocks': all_blocks,
+            'timestamp': datetime.utcnow().isoformat()
+        }),
+        ContentType='application/json'
+    )
+    
+    # Extract text and build structured response
+    extracted_text = extract_text_from_blocks(all_blocks)
+    
+    # Extract key DD214 fields using the blocks
+    extracted_data = extract_dd214_fields(all_blocks)
+    
+    # Generate demo insights
+    demo_stats = {
+        'totalBlocksFound': len(all_blocks),
+        'totalLinesExtracted': len([b for b in all_blocks if b.get('BlockType') == 'LINE']),
+        'totalWordsExtracted': len([b for b in all_blocks if b.get('BlockType') == 'WORD']),
+        'confidenceScore': str(calculate_average_confidence(all_blocks)),  # Convert Decimal to string for DynamoDB
+        'fieldsIdentified': len([k for k, v in extracted_data.items() if v]),
+        'dataPoints': count_data_points(extracted_data)
     }
     
-    # Redact sensitive information
-    redacted_data = redact_pii(extracted_data)
+    # Save extraction summary for demo
+    summary_key = f"textract-results/{document_id}/extraction_summary.json"
+    s3.put_object(
+        Bucket=bucket,
+        Key=summary_key,
+        Body=json.dumps({
+            'documentId': document_id,
+            'extractedData': extracted_data,
+            'statistics': demo_stats,
+            'rawTextPreview': extracted_text[:500] + '...' if len(extracted_text) > 500 else extracted_text,
+            'timestamp': datetime.utcnow().isoformat()
+        }),
+        ContentType='application/json'
+    )
     
-    return {
+    # Update DynamoDB with progress
+    if TABLE_NAME:
+        table = dynamodb.Table(TABLE_NAME)
+        table.update_item(
+            Key={'document_id': document_id},
+            UpdateExpression='SET textractStatus = :status, extractionStats = :stats, lastUpdated = :time',
+            ExpressionAttributeValues={
+                ':status': 'completed',
+                ':stats': demo_stats,
+                ':time': datetime.utcnow().isoformat()
+            }
+        )
+    
+    # Return complete data to Step Function (with size limit protection)
+    response_data = {
         'documentId': document_id,
-        'extractedData': redacted_data,
-        'stepType': 'comprehend_start'
+        'extractedText': extracted_text[:5000] if len(extracted_text) > 5000 else extracted_text,  # Limit text size
+        'extractedFields': extracted_data,
+        'fieldCount': len([k for k, v in extracted_data.items() if v]),
+        'dataPoints': demo_stats['dataPoints'],
+        'resultsLocation': f"s3://{bucket}/{summary_key}",
+        'fullResultsLocation': f"s3://{bucket}/{full_results_key}",
+        'stepType': 'textract_complete'
     }
+    
+    # If text is too large, store reference only
+    if len(extracted_text) > 5000:
+        response_data['textTruncated'] = True
+        response_data['fullTextLocation'] = f"s3://{bucket}/textract-results/{document_id}/full_text.txt"
+        # Save full text to S3
+        s3.put_object(
+            Bucket=bucket,
+            Key=f"textract-results/{document_id}/full_text.txt",
+            Body=extracted_text,
+            ContentType='text/plain'
+        )
+    
+    return response_data
 
 def handle_comprehend_results(event: Dict[str, Any]) -> Dict[str, Any]:
     """

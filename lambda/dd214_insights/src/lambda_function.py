@@ -29,8 +29,21 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Update processing status
         update_processing_status(document_id, 'insights', 'in-progress')
         
-        # Get additional data from DynamoDB if not provided
-        if not extracted_data:
+        # Get the actual extracted data from S3
+        if 'resultsLocation' in extracted_data:
+            # Extract bucket and key from S3 URL
+            s3_url = extracted_data['resultsLocation']
+            # Parse s3://bucket/key format
+            s3_parts = s3_url.replace('s3://', '').split('/', 1)
+            bucket = s3_parts[0]
+            key = s3_parts[1]
+            
+            # Get the extraction summary from S3
+            response = s3_client.get_object(Bucket=bucket, Key=key)
+            summary_data = json.loads(response['Body'].read())
+            extracted_data = summary_data.get('extractedData', {})
+        elif not extracted_data or 'branch' not in extracted_data:
+            # Try to get from DynamoDB
             table = dynamodb.Table(TABLE_NAME)
             response = table.get_item(Key={'document_id': document_id})
             item = response.get('Item', {})
@@ -74,14 +87,18 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
 def build_veteran_profile(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
     """Build comprehensive veteran profile from DD214 data"""
     
+    # Handle None or empty extracted_data
+    if not extracted_data:
+        extracted_data = {}
+    
     profile = {
         'branch': extract_branch(extracted_data),
-        'rank': extracted_data.get('grade_rate_rank', ''),
+        'rank': extracted_data.get('rank', extracted_data.get('grade_rate_rank', '')),
         'mos': extract_mos(extracted_data),
         'service_duration': calculate_service_duration(extracted_data),
         'decorations': parse_decorations(extracted_data.get('decorations', '')),
-        'military_education': parse_military_education(extracted_data.get('military_education', '')),
-        'character_of_service': extracted_data.get('character_of_service', ''),
+        'military_education': parse_military_education(extracted_data.get('education', extracted_data.get('military_education', ''))),
+        'character_of_service': extracted_data.get('discharge_type', extracted_data.get('character_of_service', '')),
         'leadership_indicators': extract_leadership_indicators(extracted_data),
         'technical_skills': extract_technical_skills(extracted_data),
         'security_clearance': infer_security_clearance(extracted_data)
@@ -91,7 +108,13 @@ def build_veteran_profile(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
 
 def extract_branch(data: Dict[str, Any]) -> str:
     """Extract and normalize military branch"""
-    branch_text = data.get('branch', '').lower()
+    branch_text = data.get('branch', '')
+    
+    # Handle None or empty values
+    if not branch_text:
+        return 'unknown'
+    
+    branch_text = str(branch_text).lower()
     
     if 'army' in branch_text:
         return 'army'
@@ -110,7 +133,10 @@ def extract_branch(data: Dict[str, Any]) -> str:
 
 def extract_mos(data: Dict[str, Any]) -> str:
     """Extract MOS/Rate/AFSC code"""
-    mos = data.get('primary_specialty', '')
+    mos = data.get('mos', data.get('primary_specialty', ''))
+    
+    if not mos:
+        return 'unknown'
     
     # Extract code pattern (e.g., "11B", "68W", "IT", "3D0X2")
     patterns = [
@@ -523,23 +549,29 @@ def update_processing_status(document_id: str, step: str, status: str, error: st
     
     table = dynamodb.Table(TABLE_NAME)
     
-    update_expr = f"SET processing_steps.{step}.#status = :status, processing_steps.{step}.updated_at = :timestamp"
+    # Use simpler update expression to avoid nested attribute issues
+    update_expr = "SET #status = :status, last_updated = :timestamp"
     expr_values = {
-        ':status': status,
+        ':status': f"{step}_{status}",
         ':timestamp': datetime.utcnow().isoformat()
     }
     expr_names = {'#status': 'status'}
     
     if error:
-        update_expr += f", processing_steps.{step}.error = :error"
-        expr_values[':error'] = error
+        update_expr += ", #error_msg = :error"
+        expr_values[':error'] = f"{step}: {error}"
+        expr_names['#error_msg'] = 'error_message'
     
-    table.update_item(
-        Key={'document_id': document_id},
-        UpdateExpression=update_expr,
-        ExpressionAttributeValues=expr_values,
-        ExpressionAttributeNames=expr_names
-    )
+    try:
+        table.update_item(
+            Key={'document_id': document_id},
+            UpdateExpression=update_expr,
+            ExpressionAttributeValues=expr_values,
+            ExpressionAttributeNames=expr_names
+        )
+    except Exception as e:
+        print(f"Error updating DynamoDB status: {e}")
+        # Continue processing even if status update fails
 
 def error_response(status_code: int, message: str) -> Dict[str, Any]:
     """Generate error response"""
