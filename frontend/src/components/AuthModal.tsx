@@ -15,6 +15,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const [confirmPassword, setConfirmPassword] = useState('')
   const [confirmationCode, setConfirmationCode] = useState('')
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -24,6 +25,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccessMessage('')
     setLoading(true)
 
     try {
@@ -46,6 +48,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccessMessage('')
     
     if (password !== confirmPassword) {
       setError('Passwords do not match')
@@ -70,9 +73,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
       if (nextStep.signUpStep === 'CONFIRM_SIGN_UP') {
         setMode('confirm')
       } else if (nextStep.signUpStep === 'DONE') {
-        // User already exists and is confirmed, switch to sign in
+        // Sign up is complete, no confirmation needed
         setMode('signIn')
-        setError('Account already exists. Please sign in.')
+        setSuccessMessage('Account created successfully! Please sign in.')
+        setPassword('')
+        setConfirmPassword('')
       }
     } catch (err: any) {
       if (err.message?.includes('already exists') || 
@@ -90,6 +95,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccessMessage('')
     setLoading(true)
 
     try {
@@ -99,15 +105,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
       })
 
       if (isSignUpComplete) {
-        // Auto sign in after confirmation
-        const { isSignedIn } = await signIn({
-          username: email,
-          password
-        })
-        
-        if (isSignedIn) {
-          onSuccess(email)
-        }
+        // Don't auto sign in - show success message and switch to sign in mode
+        setMode('signIn')
+        setError('') // Clear any errors
+        setSuccessMessage('Account created successfully! Please sign in.')
+        setConfirmationCode('') // Clear the code
+        setPassword('') // Clear password for security
+        setConfirmPassword('')
       }
     } catch (err: any) {
       // Handle case where user is already confirmed
@@ -138,6 +142,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         {error && (
           <div className={`auth-error ${error.includes('Please sign in') || error.includes('already confirmed') ? 'auth-info' : ''}`}>
             {error}
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="auth-success">
+            {successMessage}
           </div>
         )}
 
@@ -191,7 +201,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
             <div className="auth-switch">
               Don't have an account?{' '}
-              <button type="button" onClick={() => setMode('signUp')}>
+              <button type="button" onClick={() => {
+                setMode('signUp')
+                setError('')
+                setSuccessMessage('')
+              }}>
                 Sign Up
               </button>
             </div>
@@ -279,7 +293,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
             <div className="auth-switch">
               Already have an account?{' '}
-              <button type="button" onClick={() => setMode('signIn')}>
+              <button type="button" onClick={() => {
+                setMode('signIn')
+                setError('')
+                setSuccessMessage('')
+              }}>
                 Sign In
               </button>
             </div>
@@ -312,6 +330,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               <button type="button" onClick={() => {
                 setMode('signIn')
                 setError('')
+                setSuccessMessage('')
               }}>
                 Sign In
               </button>
