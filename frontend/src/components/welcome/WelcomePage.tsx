@@ -11,14 +11,12 @@ const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
   const { checkAuth } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<'signIn' | 'signUp'>('signIn');
 
   const handleContinueWithoutAuth = () => {
     navigate('/app');
   };
 
-  const handleAuthChoice = (mode: 'signIn' | 'signUp') => {
-    setAuthMode(mode);
+  const handleAuthChoice = () => {
     setShowAuthModal(true);
   };
 
@@ -86,14 +84,14 @@ const WelcomePage: React.FC = () => {
             <div className="button-group">
               <button 
                 className="primary-button"
-                onClick={() => handleAuthChoice('signUp')}
+                onClick={handleAuthChoice}
               >
                 Create Account
               </button>
               
               <button 
                 className="secondary-button"
-                onClick={() => handleAuthChoice('signIn')}
+                onClick={handleAuthChoice}
               >
                 Sign In
               </button>

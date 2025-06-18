@@ -64,7 +64,7 @@ const CursorEffect: React.FC = () => {
       width: 24,
       rotate: -26,
       transition: { 
-        type: 'spring', 
+        type: 'spring' as const, 
         stiffness: 750, 
         damping: 35
       }
@@ -76,7 +76,7 @@ const CursorEffect: React.FC = () => {
       width: 36,
       rotate: -26,
       transition: { 
-        type: 'spring', 
+        type: 'spring' as const, 
         stiffness: 750, 
         damping: 35
       }
@@ -88,7 +88,7 @@ const CursorEffect: React.FC = () => {
       width: 18,
       rotate: -26,
       transition: { 
-        type: 'spring', 
+        type: 'spring' as const, 
         stiffness: 750, 
         damping: 35
       }
