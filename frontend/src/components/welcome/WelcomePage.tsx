@@ -118,7 +118,26 @@ const WelcomePage: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
         >
-          <p>© 2025 Altivum Inc. All rights reserved.</p>
+          <div className="footer-content">
+            <span>© 2025 Altivum Inc.</span>
+            <span>VetROI™ is a trademark of Altivum Inc.</span>
+            <span>Built for AWS Lambda Hackathon 2025</span>
+          </div>
+          
+          <div className="onet-attribution">
+            <img src="/onet-in-it.svg" 
+                 alt="O*NET in-it" />
+            <span>
+              This site incorporates information from{' '}
+              <a href="https://services.onetcenter.org/" 
+                 target="_blank" 
+                 rel="noopener noreferrer">
+                O*NET Web Services
+              </a>{' '}
+              by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA).
+            </span>
+          </div>
+          
           <p className="security-note">
             🔒 Your data is protected with enterprise-grade security
           </p>

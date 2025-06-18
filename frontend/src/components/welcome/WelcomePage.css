@@ -215,16 +215,73 @@
 /* Footer */
 .welcome-footer {
   position: absolute;
-  bottom: 2rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem;
   text-align: center;
-  color: #6A6D73;
+  background: linear-gradient(to top, rgba(10, 14, 26, 0.95) 0%, transparent 100%);
+  backdrop-filter: blur(10px);
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  color: #9CA3AF;
   font-size: 0.875rem;
+}
+
+.footer-content span {
+  position: relative;
+}
+
+.footer-content span:not(:last-child)::after {
+  content: '•';
+  position: absolute;
+  right: -0.5rem;
+  color: #6A6D73;
+}
+
+.onet-attribution {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  color: #9CA3AF;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.onet-attribution img {
+  height: 24px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.onet-attribution img:hover {
+  opacity: 1;
+}
+
+.onet-attribution a {
+  color: #00d4ff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.onet-attribution a:hover {
+  color: #00a3cc;
+  text-decoration: underline;
 }
 
 .security-note {
   margin-top: 0.5rem;
   color: #00d4ff;
   opacity: 0.8;
+  font-size: 0.875rem;
 }
 
 /* Auth Modal */
@@ -309,5 +366,25 @@
   .primary-button,
   .secondary-button {
     width: 100%;
+  }
+  
+  .welcome-footer {
+    position: relative;
+    padding: 1.5rem 1rem;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .footer-content span:not(:last-child)::after {
+    display: none;
+  }
+  
+  .onet-attribution {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
   }
 }
