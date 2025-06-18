@@ -272,6 +272,39 @@ export const DecisionMatrix: React.FC<DecisionMatrixProps> = ({
       {/* Overall Rankings */}
       <div className="career-rankings">
         <h4>Career Rankings by VetROI™ Score</h4>
+        
+        {/* Score Breakdown Legend */}
+        <div className="score-breakdown-legend">
+          <h5>Score Components</h5>
+          <div className="legend-items">
+            <div className="legend-item">
+              <div className="legend-color salary"></div>
+              <span>Salary (30%)</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color growth"></div>
+              <span>Growth (25%)</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color education"></div>
+              <span>Education ROI (20%)</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color location"></div>
+              <span>Location (15%)</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color sustainability"></div>
+              <span>Sustainability (10%)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Confidence Explanation */}
+        <div className="confidence-explanation">
+          <p><strong>Confidence Level:</strong> Based on data consistency across factors. High = balanced strengths, Medium = some variation, Low = significant gaps between factors.</p>
+        </div>
+        
         <div className="ranking-cards">
           {careerScores.map(({ career, score }, index) => (
             <div key={career.soc || career.code || index} className="ranking-card">
@@ -352,7 +385,7 @@ export const DecisionMatrix: React.FC<DecisionMatrixProps> = ({
                 </div>
 
                 <div className="timeline-item short-term">
-                  <span className="timeline-marker">3-6 months</span>
+                  <span className="timeline-marker">3-6m</span>
                   <div className="timeline-content">
                     <h6>Short-term Goals</h6>
                     <ul>
@@ -364,7 +397,7 @@ export const DecisionMatrix: React.FC<DecisionMatrixProps> = ({
                 </div>
 
                 <div className="timeline-item long-term">
-                  <span className="timeline-marker">1-2 years</span>
+                  <span className="timeline-marker">1-2y</span>
                   <div className="timeline-content">
                     <h6>Long-term Objectives</h6>
                     <ul>
