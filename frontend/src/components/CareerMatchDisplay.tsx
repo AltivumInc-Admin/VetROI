@@ -269,7 +269,7 @@ const quotes = [
   '"Strength does not come from physical capacity. It comes from an indomitable will." — Mahatma Gandhi',
   '"Earn your leadership every day." — Michael Jordan',
   '"The ones who are crazy enough to think they can change the world are the ones who do." — Steve Jobs',
-  '"Control the controllable and influence the variables." — Christian Perez'
+  '"Control the controllable and influence the variables." — Christian Perez, Founder of Altivum Inc.'
 ]
 
 function getRandomQuote(): string {
