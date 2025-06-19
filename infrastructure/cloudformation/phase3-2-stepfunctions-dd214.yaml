@@ -1,0 +1,275 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Phase 3.2 - DD214 Processing Step Function'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: test
+    AllowedValues:
+      - test
+      - production
+    Description: Deployment environment
+
+Resources:
+  # IAM Role for Step Functions
+  StepFunctionsExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'VetROI-StepFunctions-DD214-Role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+      Policies:
+        - PolicyName: StepFunctionsDD214Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # Lambda invoke permissions
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_*'
+              # DynamoDB permissions
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                Resource:
+                  - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/VetROI_DD214_Processing'
+              # S3 permissions
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                Resource:
+                  - 'arn:aws:s3:::vetroi-dd214-*/*'
+                  - 'arn:aws:s3:::vetroi-processed-*/*'
+                  - 'arn:aws:s3:::vetroi-dd214-*'
+                  - 'arn:aws:s3:::vetroi-processed-*'
+              # Textract permissions
+              - Effect: Allow
+                Action:
+                  - textract:StartDocumentTextDetection
+                  - textract:GetDocumentTextDetection
+                Resource: '*'
+              # States permissions for SDK integrations
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                Resource: '*'
+
+  # CloudWatch Log Group for DD214 Processing
+  DD214ProcessingLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/stepfunctions/VetROI-DD214-Processing-${Environment}'
+      RetentionInDays: 30
+
+  # DD214 Processing State Machine
+  DD214ProcessingStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: !Sub 'VetROI-DD214-Processing-${Environment}'
+      StateMachineType: STANDARD
+      RoleArn: !GetAtt StepFunctionsExecutionRole.Arn
+      LoggingConfiguration:
+        Level: ERROR
+        IncludeExecutionData: true
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt DD214ProcessingLogGroup.Arn
+      DefinitionString: !Sub |
+        {
+          "Comment": "VetROI DD214 Processing Workflow",
+          "StartAt": "StartTextractJob",
+          "States": {
+            "StartTextractJob": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:textract:startDocumentTextDetection",
+              "Parameters": {
+                "DocumentLocation": {
+                  "S3Object": {
+                    "Bucket.$": "$.bucket",
+                    "Name.$": "$.key"
+                  }
+                }
+              },
+              "ResultPath": "$.textractJob",
+              "Next": "WaitForTextract"
+            },
+            "WaitForTextract": {
+              "Type": "Wait",
+              "Seconds": 30,
+              "Next": "GetTextractResults"
+            },
+            "GetTextractResults": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:textract:getDocumentTextDetection",
+              "Parameters": {
+                "JobId.$": "$.textractJob.JobId",
+                "MaxResults": 1000
+              },
+              "ResultPath": "$.textractStatus",
+              "Next": "CheckTextractStatus"
+            },
+            "CheckTextractStatus": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.textractStatus.JobStatus",
+                  "StringEquals": "SUCCEEDED",
+                  "Next": "ProcessTextractResults"
+                },
+                {
+                  "Variable": "$.textractStatus.JobStatus",
+                  "StringEquals": "FAILED",
+                  "Next": "ProcessingFailed"
+                }
+              ],
+              "Default": "WaitForTextract"
+            },
+            "ProcessTextractResults": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Processor",
+              "Parameters": {
+                "stepType": "textract_complete",
+                "documentId.$": "$.documentId",
+                "textractJobId.$": "$.textractJob.JobId"
+              },
+              "ResultPath": "$.processedData",
+              "Next": "StartMacieScan"
+            },
+            "StartMacieScan": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Macie",
+              "Parameters": {
+                "operation": "scan",
+                "documentId.$": "$.documentId",
+                "bucket.$": "$.bucket",
+                "key.$": "$.key"
+              },
+              "ResultPath": "$.macieJob",
+              "Next": "WaitForMacie"
+            },
+            "WaitForMacie": {
+              "Type": "Wait",
+              "Seconds": 60,
+              "Next": "CheckMacieFindings"
+            },
+            "CheckMacieFindings": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Macie",
+              "Parameters": {
+                "operation": "process_findings",
+                "macieJobId.$": "$.macieJob.macieJobId",
+                "documentId.$": "$.documentId"
+              },
+              "ResultPath": "$.macieFindings",
+              "Next": "EvaluateRedaction"
+            },
+            "EvaluateRedaction": {
+              "Type": "Choice",
+              "Choices": [
+                {
+                  "Variable": "$.macieFindings.status",
+                  "StringEquals": "in_progress",
+                  "Next": "WaitForMacie"
+                },
+                {
+                  "Variable": "$.macieFindings.requiresRedaction",
+                  "BooleanEquals": true,
+                  "Next": "RedactDocument"
+                }
+              ],
+              "Default": "GenerateInsights"
+            },
+            "RedactDocument": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Macie",
+              "Parameters": {
+                "operation": "redact",
+                "documentId.$": "$.documentId",
+                "findings.$": "$.macieFindings.findings"
+              },
+              "ResultPath": "$.redactionResult",
+              "Next": "GenerateInsights"
+            },
+            "GenerateInsights": {
+              "Type": "Task",
+              "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Insights",
+              "Parameters": {
+                "documentId.$": "$.documentId",
+                "extractedData.$": "$.processedData.extractedFields"
+              },
+              "ResultPath": "$.insights",
+              "Next": "UpdateDynamoDB"
+            },
+            "UpdateDynamoDB": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::dynamodb:updateItem",
+              "Parameters": {
+                "TableName": "VetROI_DD214_Processing",
+                "Key": {
+                  "document_id": {
+                    "S.$": "$.documentId"
+                  }
+                },
+                "UpdateExpression": "SET #status = :status, processing_complete = :complete, completed_at = :timestamp",
+                "ExpressionAttributeNames": {
+                  "#status": "status"
+                },
+                "ExpressionAttributeValues": {
+                  ":status": {
+                    "S": "complete"
+                  },
+                  ":complete": {
+                    "BOOL": true
+                  },
+                  ":timestamp": {
+                    "S.$": "$$.State.EnteredTime"
+                  }
+                }
+              },
+              "Next": "ProcessingComplete"
+            },
+            "ProcessingComplete": {
+              "Type": "Succeed"
+            },
+            "ProcessingFailed": {
+              "Type": "Fail",
+              "Error": "ProcessingError",
+              "Cause": "DD214 processing failed"
+            }
+          }
+        }
+
+Outputs:
+  DD214ProcessingStateMachineArn:
+    Description: ARN of the DD214 Processing State Machine
+    Value: !Ref DD214ProcessingStateMachine
+    Export:
+      Name: !Sub '${AWS::StackName}-DD214ProcessingArn'
+
+  StepFunctionsRoleArn:
+    Description: ARN of the Step Functions execution role
+    Value: !GetAtt StepFunctionsExecutionRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-StepFunctionsRoleArn'
+
+  TestCommand:
+    Description: Command to test the state machine
+    Value: !Sub |
+      aws stepfunctions start-execution \
+        --state-machine-arn ${DD214ProcessingStateMachine} \
+        --input '{"documentId":"test-123","bucket":"vetroi-dd214-documents","key":"test.pdf"}' \
+        --region ${AWS::Region}

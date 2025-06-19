@@ -1,0 +1,591 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Production Stack - Phase 1 & 2 (Data Resources + Lambda/IAM)'
+
+Parameters:
+  DeploymentBucket:
+    Type: String
+    Default: vetroi-cloudformation-deploys-20250619
+    Description: S3 bucket containing Lambda deployment packages
+    
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - production
+    Description: Deployment environment
+
+Resources:
+  # ===== PHASE 1: Data Resources =====
+  
+  # DynamoDB Tables
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_Sessions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-core
+
+  ConversationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_Conversations
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: conversation_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: conversation_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-core
+
+  DD214ProcessingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_DD214_Processing
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: documentId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: documentId
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  CareerDataTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_CareerData
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: soc_code
+          AttributeType: S
+      KeySchema:
+        - AttributeName: soc_code
+          KeyType: HASH
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-core
+
+  ONetCacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_ONetCache
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: cache_key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: cache_key
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-core
+
+  # S3 Buckets
+  DataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: altroi-data
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-core
+
+  DD214DocumentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: vetroi-dd214-documents
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldDocuments
+            Status: Enabled
+            ExpirationInDays: 90
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+            AllowedOrigins:
+              - '*'
+            ExposedHeaders:
+              - ETag
+            MaxAge: 3000
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  ProcessedDocumentsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: vetroi-processed-documents
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldDocuments
+            Status: Enabled
+            ExpirationInDays: 90
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # ===== PHASE 2: Lambda & IAM =====
+  
+  # Lambda Layer for shared dependencies
+  CommonDependenciesLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: VetROI-CommonDependencies
+      Description: Common dependencies for VetROI Lambda functions
+      Content:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: layers/common-dependencies.zip
+      CompatibleRuntimes:
+        - python3.12
+        - python3.11
+        - python3.10
+        - python3.9
+
+  # IAM Execution Role for Lambda functions
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: VetROI-LambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
+      Policies:
+        - PolicyName: VetROI-LambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # DynamoDB permissions
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !GetAtt SessionsTable.Arn
+                  - !GetAtt ConversationsTable.Arn
+                  - !GetAtt DD214ProcessingTable.Arn
+                  - !GetAtt CareerDataTable.Arn
+                  - !GetAtt ONetCacheTable.Arn
+              # S3 permissions
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub '${DataBucket.Arn}/*'
+                  - !Sub '${DD214DocumentsBucket.Arn}/*'
+                  - !Sub '${ProcessedDocumentsBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !GetAtt DataBucket.Arn
+                  - !GetAtt DD214DocumentsBucket.Arn
+                  - !GetAtt ProcessedDocumentsBucket.Arn
+              # Secrets Manager
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ONET-*'
+              # Bedrock permissions
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock-runtime:InvokeModel
+                  - bedrock-runtime:Converse
+                Resource:
+                  - !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/*'
+                  - !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/*'
+              # Macie permissions
+              - Effect: Allow
+                Action:
+                  - macie2:CreateClassificationJob
+                  - macie2:DescribeClassificationJob
+                  - macie2:GetFindings
+                  - macie2:GetClassificationExportConfiguration
+                Resource: '*'
+              # Textract permissions
+              - Effect: Allow
+                Action:
+                  - textract:AnalyzeDocument
+                  - textract:DetectDocumentText
+                Resource: '*'
+              # Step Functions permissions
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                Resource:
+                  - !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI_DD214_Processing'
+              # Lex permissions
+              - Effect: Allow
+                Action:
+                  - lex:RecognizeText
+                  - lex:PostText
+                  - lexv2:RecognizeText
+                Resource: '*'
+
+  # VetROI Recommend Lambda
+  RecommendLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_Recommend
+      Description: Main recommendation engine for VetROI
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_Recommend.zip
+      Timeout: 30
+      MemorySize: 1024
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+          DATA_BUCKET: !Ref DataBucket
+          ENABLE_S3_DATA: 'true'
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-core
+
+  # DD214 Upload URL Generator
+  DD214UploadLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GenerateUploadURL
+      Description: Generates presigned URLs for DD214 uploads
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_DD214_GenerateUploadURL.zip
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          DD214_BUCKET: !Ref DD214DocumentsBucket
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # DD214 Status Check
+  DD214StatusLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GetStatus
+      Description: Checks DD214 processing status
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_DD214_GetStatus.zip
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # DD214 Processor
+  DD214ProcessorLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_Processor
+      Description: Processes DD214 documents
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_DD214_Processor.zip
+      Timeout: 300
+      MemorySize: 2048
+      Environment:
+        Variables:
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+          PROCESSED_BUCKET: !Ref ProcessedDocumentsBucket
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # DD214 Macie Scanner
+  DD214MacieLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_Macie
+      Description: Runs Macie scans on DD214 documents
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_DD214_Macie.zip
+      Timeout: 60
+      MemorySize: 1024
+      Environment:
+        Variables:
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # DD214 Insights Generator
+  DD214InsightsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_Insights
+      Description: Generates AI insights from DD214 data
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_DD214_Insights.zip
+      Timeout: 120
+      MemorySize: 1024
+      Environment:
+        Variables:
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # DD214 Get Insights
+  DD214GetInsightsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GetInsights
+      Description: Retrieves DD214 insights
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_DD214_GetInsights.zip
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # DD214 Get Redacted
+  DD214GetRedactedLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GetRedacted
+      Description: Retrieves redacted DD214 documents
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_DD214_GetRedacted.zip
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+          PROCESSED_BUCKET: !Ref ProcessedDocumentsBucket
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # S3 Trigger Lambda
+  S3TriggerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_S3_DD214_Trigger
+      Description: Triggers DD214 processing on S3 upload
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_S3_DD214_Trigger.zip
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI_DD214_Processing'
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-dd214
+
+  # Lambda permissions for S3 trigger
+  S3TriggerLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref S3TriggerLambda
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !GetAtt DD214DocumentsBucket.Arn
+
+Outputs:
+  # Phase 1 Outputs
+  SessionsTableName:
+    Description: Name of the Sessions DynamoDB table
+    Value: !Ref SessionsTable
+    
+  DD214BucketName:
+    Description: Name of the DD214 documents S3 bucket
+    Value: !Ref DD214DocumentsBucket
+    
+  ProcessedBucketName:
+    Description: Name of the processed documents S3 bucket
+    Value: !Ref ProcessedDocumentsBucket
+    
+  # Phase 2 Outputs
+  LambdaLayerArn:
+    Description: ARN of the common dependencies layer
+    Value: !Ref CommonDependenciesLayer
+    Export:
+      Name: !Sub '${AWS::StackName}-LayerArn'
+      
+  LambdaExecutionRoleArn:
+    Description: ARN of the Lambda execution role
+    Value: !GetAtt LambdaExecutionRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ExecutionRoleArn'
+      
+  RecommendFunctionArn:
+    Description: ARN of the Recommend Lambda function
+    Value: !GetAtt RecommendLambda.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-RecommendFunctionArn'

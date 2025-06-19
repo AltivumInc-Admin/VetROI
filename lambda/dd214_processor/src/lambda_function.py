@@ -6,14 +6,11 @@ import uuid
 from datetime import datetime
 import re
 from decimal import Decimal
-from aws_xray_sdk.core import patch_all
-from aws_lambda_powertools import Logger, Tracer
+import logging
 
-# Enable X-Ray tracing for all AWS SDK calls
-patch_all()
-
-logger = Logger()
-tracer = Tracer()
+# Set up logging instead of aws_lambda_powertools
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 # Initialize AWS clients
 s3_client = boto3.client('s3')
@@ -49,508 +46,389 @@ def extract_dd214_fields(blocks: List[Dict[str, Any]]) -> Dict[str, Any]:
     lines = []
     for block in blocks:
         if block.get('BlockType') == 'LINE':
-            lines.append(block.get('Text', ''))
+            lines.append({
+                'text': block.get('Text', ''),
+                'confidence': block.get('Confidence', 0)
+            })
     
-    # Join all text for pattern matching
-    full_text = '\n'.join(lines)
-    
-    # Extract specific fields using patterns
-    extracted = {
-        'name': extract_field_pattern(full_text, [r'1\.\s*NAME[:\s]+(.+?)(?:\n|$)', r'NAME OF VETERAN[:\s]+(.+?)(?:\n|$)']),
-        'ssn': extract_field_pattern(full_text, [r'2\.\s*SOCIAL SECURITY[:\s]+(.+?)(?:\n|$)', r'SSN[:\s]+(.+?)(?:\n|$)']),
-        'branch': extract_field_pattern(full_text, [r'4\.\s*BRANCH[:\s]+(.+?)(?:\n|$)', r'BRANCH OF SERVICE[:\s]+(.+?)(?:\n|$)']),
-        'rank': extract_field_pattern(full_text, [r'5\.\s*GRADE[:\s]+(.+?)(?:\n|$)', r'RANK[:\s]+(.+?)(?:\n|$)']),
-        'pay_grade': extract_field_pattern(full_text, [r'6\.\s*PAY GRADE[:\s]+(.+?)(?:\n|$)']),
-        'home_of_record': extract_field_pattern(full_text, [r'8\.\s*HOME OF RECORD[:\s]+(.+?)(?:\n|$)']),
-        'last_duty': extract_field_pattern(full_text, [r'9\.\s*LAST DUTY ASSIGNMENT[:\s]+(.+?)(?:\n|$)']),
-        'mos': extract_field_pattern(full_text, [r'11\.\s*PRIMARY SPECIALTY[:\s]+(.+?)(?:\n|$)', r'MOS[:\s]+(.+?)(?:\n|$)']),
-        'service_start': extract_field_pattern(full_text, [r'12a\.\s*DATE ENTERED[:\s]+(.+?)(?:\n|$)']),
-        'service_end': extract_field_pattern(full_text, [r'12b\.\s*SEPARATION DATE[:\s]+(.+?)(?:\n|$)']),
-        'foreign_service': extract_field_pattern(full_text, [r'12c\.\s*FOREIGN SERVICE[:\s]+(.+?)(?:\n|$)']),
-        'decorations': extract_field_pattern(full_text, [r'13\.\s*DECORATIONS[:\s]+(.+?)(?:\n|$)']),
-        'education': extract_field_pattern(full_text, [r'14\.\s*MILITARY EDUCATION[:\s]+(.+?)(?:\n|$)']),
-        'discharge_type': extract_field_pattern(full_text, [r'24\.\s*CHARACTER OF SERVICE[:\s]+(.+?)(?:\n|$)']),
-        'separation_code': extract_field_pattern(full_text, [r'26\.\s*SEPARATION CODE[:\s]+(.+?)(?:\n|$)']),
-        'reentry_code': extract_field_pattern(full_text, [r'27\.\s*REENTRY CODE[:\s]+(.+?)(?:\n|$)'])
+    # Extract specific DD214 fields
+    extracted_data = {
+        'name': extract_field_by_pattern(lines, r'NAME.*?([A-Z]+,?\s+[A-Z]+(?:\s+[A-Z])?)', 'name'),
+        'ssn': extract_field_by_pattern(lines, r'SOCIAL SECURITY NUMBER.*?(\d{3}-?\d{2}-?\d{4})', 'ssn'),
+        'grade_rate_rank': extract_field_by_pattern(lines, r'GRADE.*?RATE.*?RANK.*?([A-Z0-9-]+)', 'grade'),
+        'service_branch': extract_service_branch(lines),
+        'dates_of_service': extract_dates_of_service(lines),
+        'military_education': extract_military_education(lines),
+        'decorations_medals': extract_decorations(lines),
+        'character_of_service': extract_field_by_pattern(lines, r'CHARACTER OF SERVICE.*?(HONORABLE|GENERAL|OTHER)', 'character'),
+        'separation_code': extract_field_by_pattern(lines, r'SEPARATION CODE.*?([A-Z0-9]+)', 'separation_code'),
+        're_code': extract_field_by_pattern(lines, r'REENTRY CODE.*?([A-Z0-9]+)', 're_code'),
+        'primary_specialty': extract_primary_specialty(lines)
     }
     
-    # Clean empty values
-    extracted = {k: v for k, v in extracted.items() if v}
-    
-    return extracted
+    # Clean None values
+    return {k: v for k, v in extracted_data.items() if v is not None}
 
-def extract_field_pattern(text: str, patterns: List[str]) -> Optional[str]:
-    """Extract field value using regex patterns"""
-    for pattern in patterns:
-        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
-        if match:
-            return match.group(1).strip()
+def extract_field_by_pattern(lines: List[Dict], pattern: str, field_name: str) -> Optional[str]:
+    """Extract field using regex pattern"""
+    full_text = '\n'.join([line['text'] for line in lines])
+    match = re.search(pattern, full_text, re.IGNORECASE | re.MULTILINE)
+    if match:
+        return match.group(1).strip()
     return None
 
-def find_field_value(text_map: Dict[str, str], field_patterns: List[str]) -> Optional[str]:
-    """Find field value from text map using patterns"""
-    for pattern in field_patterns:
-        for key, value in text_map.items():
-            if pattern in key:
-                # Try to get the value after the field name
-                parts = value.split(pattern, 1)
-                if len(parts) > 1:
-                    return parts[1].strip()
+def extract_service_branch(lines: List[Dict]) -> Optional[str]:
+    """Extract service branch"""
+    branches = ['ARMY', 'NAVY', 'AIR FORCE', 'MARINE CORPS', 'COAST GUARD', 'SPACE FORCE']
+    full_text = '\n'.join([line['text'] for line in lines]).upper()
+    
+    for branch in branches:
+        if branch in full_text:
+            return branch
     return None
 
-def calculate_average_confidence(blocks: List[Dict[str, Any]]) -> Decimal:
-    """Calculate average confidence score from blocks"""
-    confidences = []
-    for block in blocks:
-        if 'Confidence' in block:
-            confidences.append(Decimal(str(block['Confidence'])))
-    if confidences:
-        return sum(confidences) / Decimal(str(len(confidences)))
-    return Decimal('0.0')
-
-def count_data_points(extracted_data: Dict[str, Any]) -> int:
-    """Count non-empty data points"""
-    count = 0
-    for key, value in extracted_data.items():
-        if value:
-            if isinstance(value, dict):
-                count += count_data_points(value)
-            else:
-                count += 1
-    return count
-
-@tracer.capture_lambda_handler
-def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
-    """
-    Main handler for DD214 processing pipeline
-    Triggered by S3 upload or Step Function state
-    """
+def extract_dates_of_service(lines: List[Dict]) -> Dict[str, Optional[str]]:
+    """Extract service dates"""
+    full_text = '\n'.join([line['text'] for line in lines])
     
-    # Determine which step we're in
-    step_type = event.get('stepType', 'initial')
+    # Look for entry and separation dates
+    entry_pattern = r'(?:ENTERED|ENTRY).*?(\d{1,2}[-/]\d{1,2}[-/]\d{2,4}|\d{8})'
+    separation_pattern = r'(?:SEPARATED|SEPARATION|RELEASED).*?(\d{1,2}[-/]\d{1,2}[-/]\d{2,4}|\d{8})'
     
-    # Add X-Ray annotations
-    tracer.put_annotation("step_type", step_type)
-    if 'documentId' in event:
-        tracer.put_annotation("document_id", event['documentId'])
-    
-    # Handle S3 trigger
-    if 'Records' in event and event['Records'][0].get('s3'):
-        return handle_document_upload(event)
-    
-    # Handle Step Functions steps
-    if step_type == 'validate':
-        return handle_document_validation(event)
-    elif step_type == 'textract_complete':
-        return handle_textract_results(event)
-    elif step_type == 'enhance_profile':
-        return handle_ai_enhancement(event)
-    else:
-        raise ValueError(f"Unknown step type: {step_type}")
-
-@tracer.capture_method
-def handle_document_validation(event: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Validate document for processing
-    """
-    document_id = event['documentId']
-    bucket = event['bucket']
-    key = event['key']
-    
-    try:
-        # Validate file exists and is accessible
-        response = s3.head_object(Bucket=bucket, Key=key)
-        file_size = response['ContentLength']
-        content_type = response.get('ContentType', '')
-        
-        # Update status in DynamoDB
-        if TABLE_NAME:
-            table = dynamodb.Table(TABLE_NAME)
-            table.update_item(
-                Key={'documentId': document_id},
-                UpdateExpression='SET #status = :status, processingStartTime = :time, executionArn = :arn',
-                ExpressionAttributeNames={
-                    '#status': 'status'
-                },
-                ExpressionAttributeValues={
-                    ':status': 'processing',
-                    ':time': datetime.utcnow().isoformat(),
-                    ':arn': os.environ.get('AWS_STEP_FUNCTIONS_EXECUTION_ARN', '')
-                }
-            )
-        
-        return {
-            'documentId': document_id,
-            'bucket': bucket,
-            'key': key,
-            'fileSize': file_size,
-            'contentType': content_type,
-            'validationStatus': 'passed'
-        }
-        
-    except Exception as e:
-        print(f"Validation error: {str(e)}")
-        raise
-
-def handle_document_upload(event: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Step 1: Validate and initiate document processing
-    """
-    # Extract S3 event details
-    s3_event = event['Records'][0]['s3']
-    bucket = s3_event['bucket']['name']
-    key = s3_event['object']['key']
-    
-    # Generate unique document ID
-    document_id = str(uuid.uuid4())
-    
-    # Validate file type and size
-    response = s3.head_object(Bucket=bucket, Key=key)
-    file_size = response['ContentLength']
-    
-    if file_size > 10 * 1024 * 1024:  # 10MB limit
-        raise ValueError("File too large")
-    
-    # Start Step Function execution
-    execution_input = {
-        'documentId': document_id,
-        'bucket': bucket,
-        'key': key,
-        'uploadTime': datetime.utcnow().isoformat(),
-        'stepType': 'textract_start'
-    }
-    
-    stepfunctions.start_execution(
-        stateMachineArn=STATE_MACHINE_ARN,
-        name=f"dd214-processing-{document_id}",
-        input=json.dumps(execution_input)
-    )
+    entry_match = re.search(entry_pattern, full_text, re.IGNORECASE)
+    separation_match = re.search(separation_pattern, full_text, re.IGNORECASE)
     
     return {
-        'statusCode': 200,
-        'body': json.dumps({
-            'documentId': document_id,
-            'status': 'processing_started'
-        })
+        'entry': entry_match.group(1) if entry_match else None,
+        'separation': separation_match.group(1) if separation_match else None
     }
 
-def handle_textract_results(event: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Step 2: Process Textract results and extract structured data
-    """
-    job_id = event['textractJobId']
-    document_id = event['documentId']
-    bucket = event.get('bucket')
-    key = event.get('key')
+def extract_military_education(lines: List[Dict]) -> List[str]:
+    """Extract military education and training"""
+    education_keywords = ['SCHOOL', 'COURSE', 'TRAINING', 'QUALIFICATION']
+    education_items = []
     
-    # Get ALL Textract results with pagination
-    all_blocks = []
-    next_token = None
-    page_count = 0
+    for line in lines:
+        text = line['text'].upper()
+        if any(keyword in text for keyword in education_keywords):
+            # Clean and add if it looks like education
+            if len(text) > 10 and len(text) < 100:
+                education_items.append(line['text'])
     
-    while True:
-        if next_token:
-            textract_response = textract.get_document_text_detection(
-                JobId=job_id,
-                NextToken=next_token
-            )
+    return education_items[:10]  # Limit to top 10
+
+def extract_decorations(lines: List[Dict]) -> List[str]:
+    """Extract decorations and medals"""
+    decoration_keywords = ['MEDAL', 'RIBBON', 'COMMENDATION', 'ACHIEVEMENT', 'STAR', 'CROSS', 'HEART']
+    decorations = []
+    
+    for line in lines:
+        text = line['text'].upper()
+        if any(keyword in text for keyword in decoration_keywords):
+            decorations.append(line['text'])
+    
+    return decorations[:15]  # Limit to top 15
+
+def extract_primary_specialty(lines: List[Dict]) -> Optional[str]:
+    """Extract primary military specialty"""
+    specialty_pattern = r'(?:PRIMARY|MILITARY)?\s*(?:SPECIALTY|MOS|AFSC|RATE).*?([A-Z0-9]+(?:\s+[A-Z0-9]+)?)'
+    full_text = '\n'.join([line['text'] for line in lines])
+    
+    match = re.search(specialty_pattern, full_text, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+    return None
+
+def identify_pii(text: str) -> List[Dict[str, Any]]:
+    """Identify PII in text using patterns"""
+    pii_items = []
+    
+    # SSN pattern
+    ssn_pattern = r'\b\d{3}-?\d{2}-?\d{4}\b'
+    for match in re.finditer(ssn_pattern, text):
+        pii_items.append({
+            'type': 'SSN',
+            'start': match.start(),
+            'end': match.end(),
+            'text': match.group()
+        })
+    
+    # Date of birth pattern
+    dob_pattern = r'\b(?:DOB|DATE OF BIRTH|BIRTH DATE)[\s:]*(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})\b'
+    for match in re.finditer(dob_pattern, text, re.IGNORECASE):
+        pii_items.append({
+            'type': 'DATE_OF_BIRTH',
+            'start': match.start(),
+            'end': match.end(),
+            'text': match.group()
+        })
+    
+    # Add other PII patterns as needed
+    
+    return pii_items
+
+def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
+    """Main Lambda handler for DD214 processing"""
+    logger.info(f"Received event: {json.dumps(event)}")
+    
+    try:
+        step_type = event.get('stepType', 'unknown')
+        
+        if step_type == 'textract_complete':
+            return handle_textract_complete(event)
+        elif step_type == 'macie_complete':
+            return handle_macie_complete(event)
+        elif step_type == 'generate_insights':
+            return handle_generate_insights(event)
         else:
-            textract_response = textract.get_document_text_detection(JobId=job_id)
-        
-        all_blocks.extend(textract_response.get('Blocks', []))
-        page_count += 1
-        
-        next_token = textract_response.get('NextToken')
-        if not next_token:
-            break
+            # Handle direct invocation or S3 trigger
+            return handle_document_upload(event)
             
-    print(f"Fetched {len(all_blocks)} blocks across {page_count} pages")
+    except Exception as e:
+        logger.error(f"Error processing DD214: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': json.dumps({
+                'error': str(e),
+                'message': 'Error processing DD214 document'
+            })
+        }
+
+def handle_textract_complete(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle Textract completion"""
+    logger.info("Processing Textract results")
     
-    # Save full Textract results to S3 for demo purposes
-    full_results_key = f"textract-results/{document_id}/full_results.json"
-    s3.put_object(
-        Bucket=bucket,
-        Key=full_results_key,
-        Body=json.dumps({
-            'jobId': job_id,
-            'blockCount': len(all_blocks),
-            'blocks': all_blocks,
-            'timestamp': datetime.utcnow().isoformat()
-        }),
-        ContentType='application/json'
-    )
+    document_id = event.get('documentId')
+    textract_job_id = event.get('textractJobId')
     
-    # Extract text and build structured response
-    extracted_text = extract_text_from_blocks(all_blocks)
+    if not document_id or not textract_job_id:
+        raise ValueError("Missing documentId or textractJobId")
     
-    # Extract key DD214 fields using the blocks
-    extracted_data = extract_dd214_fields(all_blocks)
-    
-    # Generate demo insights
-    demo_stats = {
-        'totalBlocksFound': len(all_blocks),
-        'totalLinesExtracted': len([b for b in all_blocks if b.get('BlockType') == 'LINE']),
-        'totalWordsExtracted': len([b for b in all_blocks if b.get('BlockType') == 'WORD']),
-        'confidenceScore': str(calculate_average_confidence(all_blocks)),  # Convert Decimal to string for DynamoDB
-        'fieldsIdentified': len([k for k, v in extracted_data.items() if v]),
-        'dataPoints': count_data_points(extracted_data)
-    }
-    
-    # Save extraction summary for demo
-    summary_key = f"textract-results/{document_id}/extraction_summary.json"
-    s3.put_object(
-        Bucket=bucket,
-        Key=summary_key,
-        Body=json.dumps({
-            'documentId': document_id,
-            'extractedData': extracted_data,
-            'statistics': demo_stats,
-            'rawTextPreview': extracted_text[:500] + '...' if len(extracted_text) > 500 else extracted_text,
-            'timestamp': datetime.utcnow().isoformat()
-        }),
-        ContentType='application/json'
-    )
-    
-    # Update DynamoDB with progress
-    if TABLE_NAME:
+    # Get Textract results
+    try:
+        response = textract.get_document_text_detection(JobId=textract_job_id)
+        blocks = response.get('Blocks', [])
+        
+        # Extract text and fields
+        full_text = extract_text_from_blocks(blocks)
+        dd214_fields = extract_dd214_fields(blocks)
+        
+        # Identify PII
+        pii_locations = identify_pii(full_text)
+        
+        # Update DynamoDB
         table = dynamodb.Table(TABLE_NAME)
         table.update_item(
             Key={'document_id': document_id},
-            UpdateExpression='SET textractStatus = :status, extractionStats = :stats, lastUpdated = :time',
+            UpdateExpression='SET #status = :status, textract_complete = :complete, extracted_text = :text, dd214_fields = :fields, pii_locations = :pii, updated_at = :updated',
+            ExpressionAttributeNames={
+                '#status': 'status'
+            },
             ExpressionAttributeValues={
-                ':status': 'completed',
-                ':stats': demo_stats,
-                ':time': datetime.utcnow().isoformat()
+                ':status': 'textract_complete',
+                ':complete': True,
+                ':text': full_text[:5000],  # Limit size
+                ':fields': dd214_fields,
+                ':pii': pii_locations,
+                ':updated': datetime.utcnow().isoformat()
             }
         )
         
-        # Also update user documents table
-        try:
-            # Get user ID from processing table
-            proc_response = table.get_item(Key={'document_id': document_id})
-            if 'Item' in proc_response and 'user_id' in proc_response['Item']:
-                user_id = proc_response['Item']['user_id']
-                
-                user_docs_table = dynamodb.Table('VetROI_UserDocuments')
-                user_docs_table.update_item(
-                    Key={
-                        'userId': user_id,
-                        'documentId': document_id
-                    },
-                    UpdateExpression='SET processingStatus = :status, lastUpdated = :time',
-                    ExpressionAttributeValues={
-                        ':status': 'textract_complete',
-                        ':time': datetime.utcnow().isoformat()
-                    }
-                )
-        except Exception as e:
-            print(f"Error updating user documents table: {str(e)}")
-    
-    # Return complete data to Step Function (with size limit protection)
-    response_data = {
-        'documentId': document_id,
-        'extractedText': extracted_text[:5000] if len(extracted_text) > 5000 else extracted_text,  # Limit text size
-        'extractedFields': extracted_data,
-        'fieldCount': len([k for k, v in extracted_data.items() if v]),
-        'dataPoints': demo_stats['dataPoints'],
-        'resultsLocation': f"s3://{bucket}/{summary_key}",
-        'fullResultsLocation': f"s3://{bucket}/{full_results_key}",
-        'stepType': 'textract_complete'
-    }
-    
-    # If text is too large, store reference only
-    if len(extracted_text) > 5000:
-        response_data['textTruncated'] = True
-        response_data['fullTextLocation'] = f"s3://{bucket}/textract-results/{document_id}/full_text.txt"
-        # Save full text to S3
-        s3.put_object(
-            Bucket=bucket,
-            Key=f"textract-results/{document_id}/full_text.txt",
-            Body=extracted_text,
-            ContentType='text/plain'
-        )
-    
-    return response_data
+        return {
+            'statusCode': 200,
+            'documentId': document_id,
+            'status': 'textract_complete',
+            'extractedFields': dd214_fields,
+            'piiFound': len(pii_locations) > 0
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting Textract results: {str(e)}")
+        raise
 
-def handle_comprehend_results(event: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Step 3: Use Comprehend to extract entities and key phrases
-    """
-    document_id = event['documentId']
-    extracted_data = event['extractedData']
+def handle_macie_complete(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle Macie scan completion"""
+    logger.info("Processing Macie results")
     
-    # Combine relevant text for analysis
-    text_for_analysis = f"""
-    Military Service: {extracted_data.get('branch', '')}
-    Rank: {extracted_data.get('rank', '')}
-    Primary Specialty: {extracted_data.get('mos', '')}
-    Decorations: {extracted_data.get('decorations', '')}
-    Additional Training: {extracted_data.get('additional_mos', '')}
-    """
+    document_id = event.get('documentId')
+    findings = event.get('findings', [])
     
-    # Extract entities
-    entities_response = comprehend.detect_entities(
-        Text=text_for_analysis,
-        LanguageCode='en'
-    )
-    
-    # Extract key phrases
-    key_phrases_response = comprehend.detect_key_phrases(
-        Text=text_for_analysis,
-        LanguageCode='en'
-    )
-    
-    # Structure the results
-    comprehend_results = {
-        'entities': [
-            {'text': e['Text'], 'type': e['Type'], 'score': e['Score']}
-            for e in entities_response['Entities']
-        ],
-        'keyPhrases': [
-            {'text': kp['Text'], 'score': kp['Score']}
-            for kp in key_phrases_response['KeyPhrases']
-        ],
-        'skills': extract_skills_from_text(text_for_analysis)
-    }
-    
-    return {
-        'documentId': document_id,
-        'extractedData': extracted_data,
-        'comprehendResults': comprehend_results,
-        'stepType': 'enhance_profile'
-    }
-
-def handle_ai_enhancement(event: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Step 4: Use Bedrock to enhance profile with AI insights
-    """
-    document_id = event['documentId']
-    extracted_data = event['extractedData']
-    comprehend_results = event['comprehendResults']
-    
-    # Create prompt for Bedrock
-    prompt = f"""
-    Based on this military profile, provide civilian career insights:
-    
-    Branch: {extracted_data.get('branch')}
-    Rank: {extracted_data.get('rank')}
-    MOS: {extracted_data.get('mos')}
-    Key Skills: {', '.join([kp['text'] for kp in comprehend_results['keyPhrases'][:5]])}
-    
-    Please provide:
-    1. Top 3 transferable skills for civilian careers
-    2. Recommended job titles (3-5)
-    3. Key resume keywords
-    4. Potential certifications to pursue
-    
-    Format as JSON.
-    """
-    
-    # Call Bedrock
-    bedrock_response = bedrock_runtime.invoke_model(
-        modelId='amazon.nova-lite-v1:0',
-        contentType='application/json',
-        accept='application/json',
-        body=json.dumps({
-            'anthropic_version': 'bedrock-2023-05-31',
-            'messages': [{
-                'role': 'user',
-                'content': prompt
-            }],
-            'max_tokens': 1000,
-            'temperature': 0.7
-        })
-    )
-    
-    # Parse AI response
-    ai_insights = json.loads(bedrock_response['body'].read())
-    
-    # Combine all data
-    enhanced_profile = {
-        'documentId': document_id,
-        'basicInfo': extracted_data,
-        'nlpAnalysis': comprehend_results,
-        'aiInsights': ai_insights,
-        'createdAt': datetime.utcnow().isoformat()
-    }
-    
-    return {
-        'documentId': document_id,
-        'enhancedProfile': enhanced_profile,
-        'stepType': 'final_store'
-    }
-
-def handle_final_storage(event: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Step 5: Store enhanced profile in DynamoDB
-    """
-    document_id = event['documentId']
-    enhanced_profile = event['enhancedProfile']
-    
-    # Store in DynamoDB
+    # Update DynamoDB with Macie results
     table = dynamodb.Table(TABLE_NAME)
-    table.put_item(Item=enhanced_profile)
-    
-    # Generate pre-signed URL for results
-    results_key = f"processed/{document_id}/profile.json"
-    s3.put_object(
-        Bucket=BUCKET_NAME,
-        Key=results_key,
-        Body=json.dumps(enhanced_profile),
-        ContentType='application/json'
+    table.update_item(
+        Key={'document_id': document_id},
+        UpdateExpression='SET #status = :status, macie_complete = :complete, macie_findings = :findings, updated_at = :updated',
+        ExpressionAttributeNames={
+            '#status': 'status'
+        },
+        ExpressionAttributeValues={
+            ':status': 'macie_complete',
+            ':complete': True,
+            ':findings': findings,
+            ':updated': datetime.utcnow().isoformat()
+        }
     )
     
-    presigned_url = s3.generate_presigned_url(
-        'get_object',
-        Params={'Bucket': BUCKET_NAME, 'Key': results_key},
-        ExpiresIn=3600  # 1 hour
+    return {
+        'statusCode': 200,
+        'documentId': document_id,
+        'status': 'macie_complete',
+        'findingsCount': len(findings)
+    }
+
+def handle_generate_insights(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate insights using Bedrock"""
+    logger.info("Generating DD214 insights")
+    
+    document_id = event.get('documentId')
+    
+    # Get document data from DynamoDB
+    table = dynamodb.Table(TABLE_NAME)
+    response = table.get_item(Key={'document_id': document_id})
+    item = response.get('Item', {})
+    
+    dd214_fields = item.get('dd214_fields', {})
+    
+    # Generate insights using Bedrock
+    insights = generate_bedrock_insights(dd214_fields)
+    
+    # Update DynamoDB
+    table.update_item(
+        Key={'document_id': document_id},
+        UpdateExpression='SET #status = :status, insights = :insights, insights_generated = :generated, updated_at = :updated',
+        ExpressionAttributeNames={
+            '#status': 'status'
+        },
+        ExpressionAttributeValues={
+            ':status': 'complete',
+            ':insights': insights,
+            ':generated': True,
+            ':updated': datetime.utcnow().isoformat()
+        }
     )
+    
+    return {
+        'statusCode': 200,
+        'documentId': document_id,
+        'status': 'complete',
+        'insights': insights
+    }
+
+def generate_bedrock_insights(dd214_fields: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate insights using Bedrock"""
+    try:
+        # Prepare prompt
+        prompt = f"""Based on the following DD214 military service information, provide career transition insights:
+
+Service Member Information:
+- Branch: {dd214_fields.get('service_branch', 'Unknown')}
+- Grade/Rank: {dd214_fields.get('grade_rate_rank', 'Unknown')}
+- Primary Specialty: {dd214_fields.get('primary_specialty', 'Unknown')}
+- Character of Service: {dd214_fields.get('character_of_service', 'Unknown')}
+- Military Education: {', '.join(dd214_fields.get('military_education', [])[:5])}
+- Decorations: {', '.join(dd214_fields.get('decorations_medals', [])[:5])}
+
+Please provide:
+1. Top 3 civilian career matches
+2. Key transferable skills
+3. Recommended certifications or education
+4. Expected salary range
+5. Job search tips specific to this military background
+
+Format the response as JSON."""
+
+        # Call Bedrock
+        response = bedrock_runtime.invoke_model(
+            modelId="anthropic.claude-v2",
+            contentType="application/json",
+            accept="application/json",
+            body=json.dumps({
+                "prompt": f"\n\nHuman: {prompt}\n\nAssistant:",
+                "max_tokens_to_sample": 1000,
+                "temperature": 0.7
+            })
+        )
+        
+        result = json.loads(response['body'].read())
+        insights_text = result.get('completion', '')
+        
+        # Try to parse JSON from response
+        try:
+            # Extract JSON from the response
+            json_start = insights_text.find('{')
+            json_end = insights_text.rfind('}') + 1
+            if json_start >= 0 and json_end > json_start:
+                insights = json.loads(insights_text[json_start:json_end])
+            else:
+                insights = {'raw_insights': insights_text}
+        except:
+            insights = {'raw_insights': insights_text}
+        
+        return insights
+        
+    except Exception as e:
+        logger.error(f"Error generating Bedrock insights: {str(e)}")
+        return {
+            'error': 'Unable to generate insights',
+            'message': str(e)
+        }
+
+def handle_document_upload(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle new document upload"""
+    logger.info("Processing new document upload")
+    
+    # Extract S3 information
+    if 'Records' in event:
+        # S3 trigger
+        record = event['Records'][0]
+        bucket = record['s3']['bucket']['name']
+        key = record['s3']['object']['key']
+    else:
+        # Direct invocation
+        bucket = event.get('bucket', BUCKET_NAME)
+        key = event.get('key')
+    
+    if not key:
+        raise ValueError("No document key provided")
+    
+    # Generate document ID
+    document_id = str(uuid.uuid4())
+    
+    # Extract user ID from key (assuming format: uploads/{userId}/{filename})
+    user_id = key.split('/')[1] if '/' in key else 'unknown'
+    
+    # Create DynamoDB entry
+    table = dynamodb.Table(TABLE_NAME)
+    table.put_item(
+        Item={
+            'document_id': document_id,
+            'user_id': user_id,
+            'bucket': bucket,
+            'key': key,
+            'status': 'uploaded',
+            'created_at': datetime.utcnow().isoformat(),
+            'updated_at': datetime.utcnow().isoformat()
+        }
+    )
+    
+    # Start Step Functions execution if configured
+    if STATE_MACHINE_ARN:
+        stepfunctions.start_execution(
+            stateMachineArn=STATE_MACHINE_ARN,
+            name=f"dd214-processing-{document_id}",
+            input=json.dumps({
+                'documentId': document_id,
+                'bucket': bucket,
+                'key': key,
+                'userId': user_id
+            })
+        )
     
     return {
         'statusCode': 200,
         'body': json.dumps({
             'documentId': document_id,
-            'status': 'complete',
-            'profileUrl': presigned_url,
-            'message': 'DD214 processing complete. Enhanced profile ready.'
+            'status': 'processing_started',
+            'message': 'DD214 processing initiated'
         })
     }
-
-# Helper functions
-def extract_field(textract_response: Dict, field_name: str) -> str:
-    """Extract specific field from Textract response"""
-    for block in textract_response.get('Blocks', []):
-        if block['BlockType'] == 'LINE' and field_name.lower() in block.get('Text', '').lower():
-            # Look for the next LINE block as the value
-            return get_next_value(textract_response, block)
-    return None
-
-def get_next_value(textract_response: Dict, current_block: Dict) -> str:
-    """Get the value following a label in Textract results"""
-    # Implementation depends on DD214 structure
-    # This is a simplified version
-    return "extracted_value"
-
-def redact_pii(data: Dict) -> Dict:
-    """Redact sensitive information"""
-    redacted = data.copy()
-    # Remove full SSN, keep only last 4
-    if 'ssn' in redacted:
-        del redacted['ssn']
-    return redacted
-
-def extract_skills_from_text(text: str) -> List[str]:
-    """Extract military skills and qualifications"""
-    # This would use a more sophisticated NLP approach
-    # For now, a simple keyword extraction
-    military_skills = [
-        'leadership', 'logistics', 'communications',
-        'medical', 'security', 'intelligence'
-    ]
-    
-    found_skills = []
-    for skill in military_skills:
-        if skill in text.lower():
-            found_skills.append(skill)
-    
-    return found_skills

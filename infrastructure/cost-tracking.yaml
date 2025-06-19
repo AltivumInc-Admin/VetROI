@@ -1,0 +1,408 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: VetROI DD214 Processing Cost Tracking Infrastructure
+
+Parameters:
+  AlertEmail:
+    Type: String
+    Description: Email address for cost alerts
+    AllowedPattern: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+    
+  MonthlyBudgetLimit:
+    Type: Number
+    Default: 100
+    Description: Monthly budget limit in USD for DD214 processing
+    
+  CostAnomalyThreshold:
+    Type: Number
+    Default: 10
+    Description: Cost anomaly detection threshold in USD
+
+Resources:
+  # SNS Topic for Cost Alerts
+  CostAlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: VetROI-DD214-CostAlerts
+      DisplayName: VetROI DD214 Cost Alerts
+      Subscription:
+        - Endpoint: !Ref AlertEmail
+          Protocol: email
+
+  # Budget for DD214 Processing
+  DD214ProcessingBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: VetROI-DD214-Processing-Monthly
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref MonthlyBudgetLimit
+          Unit: USD
+        CostFilters:
+          TagKeyValue:
+            - "Feature$DD214Processing"
+        CostTypes:
+          IncludeTax: true
+          IncludeSupport: true
+          IncludeOtherSubscription: true
+          UseBlended: false
+          UseAmortized: false
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: SNS
+              Address: !Ref CostAlertTopic
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: SNS
+              Address: !Ref CostAlertTopic
+
+  # Cost Anomaly Detector
+  DD214CostAnomalyDetector:
+    Type: AWS::CE::AnomalyMonitor
+    Properties:
+      MonitorName: VetROI-DD214-Processing
+      MonitorType: CUSTOM
+      MonitorSpecification:
+        Tags:
+          Key: Feature
+          Values:
+            - DD214Processing
+      
+  # Cost Anomaly Subscription
+  DD214CostAnomalySubscription:
+    Type: AWS::CE::AnomalySubscription
+    Properties:
+      SubscriptionName: VetROI-DD214-Anomalies
+      MonitorArnList:
+        - !GetAtt DD214CostAnomalyDetector.Arn
+      Subscribers:
+        - Address: !Ref CostAlertTopic
+          Type: SNS
+      Threshold: !Ref CostAnomalyThreshold
+      Frequency: DAILY
+
+  # DynamoDB Table for Cost Tracking
+  CostTrackingTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: VetROI_DD214_CostTracking
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: documentId
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: documentId
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Feature
+          Value: DD214Processing
+
+  # Lambda Function for Cost Tracking
+  CostTrackingFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_CostTracker
+      Runtime: python3.12
+      Handler: index.lambda_handler
+      Timeout: 60
+      MemorySize: 512
+      Environment:
+        Variables:
+          COST_TABLE_NAME: !Ref CostTrackingTable
+          SNS_TOPIC_ARN: !Ref CostAlertTopic
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from decimal import Decimal
+          from datetime import datetime, timedelta
+          
+          dynamodb = boto3.resource('dynamodb')
+          ce = boto3.client('ce', region_name='us-east-1')
+          sns = boto3.client('sns')
+          
+          COST_TABLE = os.environ['COST_TABLE_NAME']
+          SNS_TOPIC = os.environ['SNS_TOPIC_ARN']
+          
+          # Service cost mapping
+          SERVICE_COSTS = {
+              'lambda_invocation': 0.0000002,
+              'lambda_gb_second': 0.0000166667,
+              'step_function_transition': 0.000025,
+              's3_put': 0.0000004,
+              's3_get': 0.00000004,
+              'dynamodb_write': 0.00000065,
+              'dynamodb_read': 0.00000013,
+              'textract_page': 0.015,
+              'macie_gb': 1.00,
+              'comprehend_unit': 0.0001,
+              'bedrock_nova_input_token': 0.00000015,
+              'bedrock_nova_output_token': 0.0000006
+          }
+          
+          def lambda_handler(event, context):
+              """Track costs for DD214 processing"""
+              
+              if event.get('source') == 'aws.events':
+                  # Scheduled cost report
+                  return generate_daily_report()
+              
+              # Track individual processing cost
+              document_id = event['documentId']
+              service_usage = event['serviceUsage']
+              
+              # Calculate costs
+              total_cost = Decimal('0')
+              cost_breakdown = {}
+              
+              for service, usage in service_usage.items():
+                  if service in SERVICE_COSTS:
+                      cost = Decimal(str(usage)) * Decimal(str(SERVICE_COSTS[service]))
+                      cost_breakdown[service] = float(cost)
+                      total_cost += cost
+              
+              # Store in DynamoDB
+              table = dynamodb.Table(COST_TABLE)
+              table.put_item(
+                  Item={
+                      'documentId': document_id,
+                      'timestamp': int(datetime.now().timestamp()),
+                      'totalCost': float(total_cost),
+                      'costBreakdown': cost_breakdown,
+                      'processedAt': datetime.now().isoformat(),
+                      'ttl': int((datetime.now() + timedelta(days=90)).timestamp())
+                  }
+              )
+              
+              # Check for anomalies
+              if total_cost > Decimal('0.15'):  # Alert if single document > $0.15
+                  send_alert(f"High cost detected for document {document_id}: ${total_cost:.4f}")
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'documentId': document_id,
+                      'totalCost': float(total_cost),
+                      'costBreakdown': cost_breakdown
+                  })
+              }
+          
+          def generate_daily_report():
+              """Generate daily cost report"""
+              table = dynamodb.Table(COST_TABLE)
+              
+              # Get costs for last 24 hours
+              yesterday = datetime.now() - timedelta(days=1)
+              
+              response = table.scan(
+                  FilterExpression='processedAt > :yesterday',
+                  ExpressionAttributeValues={
+                      ':yesterday': yesterday.isoformat()
+                  }
+              )
+              
+              documents = response['Items']
+              total_daily_cost = sum(Decimal(str(doc['totalCost'])) for doc in documents)
+              avg_cost = total_daily_cost / len(documents) if documents else Decimal('0')
+              
+              # Generate report
+              report = f"""
+              VetROI DD214 Processing Daily Cost Report
+              ========================================
+              Date: {datetime.now().strftime('%Y-%m-%d')}
+              
+              Documents Processed: {len(documents)}
+              Total Cost: ${total_daily_cost:.4f}
+              Average Cost per Document: ${avg_cost:.4f}
+              
+              Projected Monthly Cost: ${total_daily_cost * 30:.2f}
+              """
+              
+              # Send report
+              sns.publish(
+                  TopicArn=SNS_TOPIC,
+                  Subject='VetROI DD214 Daily Cost Report',
+                  Message=report
+              )
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps({
+                      'reportGenerated': True,
+                      'documentsProcessed': len(documents),
+                      'totalCost': float(total_daily_cost)
+                  })
+              }
+          
+          def send_alert(message):
+              """Send cost alert"""
+              sns.publish(
+                  TopicArn=SNS_TOPIC,
+                  Subject='VetROI DD214 Cost Alert',
+                  Message=message
+              )
+      Role: !GetAtt CostTrackingRole.Arn
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Feature
+          Value: DD214Processing
+
+  # IAM Role for Cost Tracking Lambda
+  CostTrackingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: CostTrackingPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Scan
+                  - dynamodb:Query
+                Resource: !GetAtt CostTrackingTable.Arn
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: !Ref CostAlertTopic
+              - Effect: Allow
+                Action:
+                  - ce:GetCostAndUsage
+                  - ce:GetCostForecast
+                Resource: '*'
+
+  # EventBridge Rule for Daily Reports
+  DailyCostReportRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: VetROI-DD214-DailyCostReport
+      Description: Trigger daily cost report generation
+      ScheduleExpression: cron(0 9 * * ? *)  # 9 AM UTC daily
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt CostTrackingFunction.Arn
+          Id: '1'
+
+  # Lambda Permission for EventBridge
+  CostReportLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref CostTrackingFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt DailyCostReportRule.Arn
+
+  # CloudWatch Dashboard
+  CostDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: VetROI-DD214-Costs
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/Lambda", "Invocations", { "stat": "Sum" } ],
+                  [ ".", "Duration", { "stat": "Average" } ],
+                  [ ".", "ConcurrentExecutions", { "stat": "Maximum" } ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Lambda Metrics",
+                "yAxis": {
+                  "left": {
+                    "min": 0
+                  }
+                }
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/States", "ExecutionsSucceeded", { "stat": "Sum" } ],
+                  [ ".", "ExecutionsFailed", { "stat": "Sum" } ],
+                  [ ".", "ExecutionTime", { "stat": "Average" } ]
+                ],
+                "period": 300,
+                "stat": "Average",
+                "region": "${AWS::Region}",
+                "title": "Step Functions Metrics"
+              }
+            },
+            {
+              "type": "text",
+              "x": 0,
+              "y": 6,
+              "width": 24,
+              "height": 3,
+              "properties": {
+                "markdown": "## DD214 Processing Cost Breakdown\n\n| Service | Cost per Document | % of Total |\n|---------|------------------|------------|\n| Textract | $0.045 | 56% |\n| CloudWatch Logs | $0.0265 | 33% |\n| Macie | $0.005 | 6% |\n| Other Services | $0.0039 | 5% |\n| **Total** | **$0.08** | **100%** |"
+              }
+            }
+          ]
+        }
+
+Outputs:
+  CostAlertTopicArn:
+    Description: SNS Topic for cost alerts
+    Value: !Ref CostAlertTopic
+    
+  CostTrackingTableName:
+    Description: DynamoDB table for cost tracking
+    Value: !Ref CostTrackingTable
+    
+  CostTrackingFunctionArn:
+    Description: Lambda function for cost tracking
+    Value: !GetAtt CostTrackingFunction.Arn
+    
+  DashboardURL:
+    Description: CloudWatch Dashboard URL
+    Value: !Sub https://console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=VetROI-DD214-Costs

@@ -1,0 +1,212 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Phase 3.4 - Additional Lambda Integrations for API Gateway'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: test
+    AllowedValues:
+      - test
+      - production
+    Description: Deployment environment
+
+  ApiId:
+    Type: String
+    Default: jg5fae61lj
+    Description: HTTP API Gateway ID
+
+Resources:
+  # DD214 Upload URL Generation
+  DD214UploadIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ApiId
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_GenerateUploadURL/invocations'
+      IntegrationMethod: POST
+      PayloadFormatVersion: '2.0'
+      TimeoutInMillis: 30000
+
+  DD214UploadRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'POST /dd214/upload-url'
+      Target: !Sub 'integrations/${DD214UploadIntegration}'
+      AuthorizationType: NONE
+
+  DD214UploadPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: VetROI_DD214_GenerateUploadURL
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*/dd214/upload-url'
+
+  # DD214 Status Check
+  DD214StatusIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ApiId
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_GetStatus/invocations'
+      IntegrationMethod: POST
+      PayloadFormatVersion: '2.0'
+      TimeoutInMillis: 30000
+
+  DD214StatusRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'GET /dd214/status/{documentId}'
+      Target: !Sub 'integrations/${DD214StatusIntegration}'
+      AuthorizationType: NONE
+
+  DD214StatusPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: VetROI_DD214_GetStatus
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*/dd214/status/*'
+
+  # DD214 Insights Retrieval
+  DD214InsightsIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ApiId
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_GetInsights/invocations'
+      IntegrationMethod: POST
+      PayloadFormatVersion: '2.0'
+      TimeoutInMillis: 30000
+
+  DD214InsightsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'GET /dd214/insights/{documentId}'
+      Target: !Sub 'integrations/${DD214InsightsIntegration}'
+      AuthorizationType: NONE
+
+  DD214InsightsPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: VetROI_DD214_GetInsights
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*/dd214/insights/*'
+
+  # DD214 Redacted Document Retrieval
+  DD214RedactedIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ApiId
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_GetRedacted/invocations'
+      IntegrationMethod: POST
+      PayloadFormatVersion: '2.0'
+      TimeoutInMillis: 30000
+
+  DD214RedactedRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'GET /dd214/redacted/{documentId}'
+      Target: !Sub 'integrations/${DD214RedactedIntegration}'
+      AuthorizationType: NONE
+
+  DD214RedactedPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: VetROI_DD214_GetRedacted
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${ApiId}/*/*/dd214/redacted/*'
+
+  # CORS Configuration for DD214 Routes
+  DD214UploadOptionsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'OPTIONS /dd214/upload-url'
+      Target: !Sub 'integrations/${CorsIntegration}'
+      AuthorizationType: NONE
+
+  DD214StatusOptionsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'OPTIONS /dd214/status/{documentId}'
+      Target: !Sub 'integrations/${CorsIntegration}'
+      AuthorizationType: NONE
+
+  DD214InsightsOptionsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'OPTIONS /dd214/insights/{documentId}'
+      Target: !Sub 'integrations/${CorsIntegration}'
+      AuthorizationType: NONE
+
+  DD214RedactedOptionsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref ApiId
+      RouteKey: 'OPTIONS /dd214/redacted/{documentId}'
+      Target: !Sub 'integrations/${CorsIntegration}'
+      AuthorizationType: NONE
+
+  # Shared CORS Integration
+  CorsIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref ApiId
+      IntegrationType: MOCK
+      RequestTemplates:
+        "application/json": '{"statusCode": 200}'
+      TemplateSelectionExpression: '\$request.body'
+      PassthroughBehavior: WHEN_NO_MATCH
+      ConnectionType: INTERNET
+
+Outputs:
+  DD214UploadEndpoint:
+    Description: DD214 Upload URL Generation Endpoint
+    Value: !Sub 'https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/upload-url'
+    Export:
+      Name: !Sub '${AWS::StackName}-DD214UploadEndpoint'
+
+  DD214StatusEndpoint:
+    Description: DD214 Processing Status Endpoint
+    Value: !Sub 'https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/status/{documentId}'
+    Export:
+      Name: !Sub '${AWS::StackName}-DD214StatusEndpoint'
+
+  DD214InsightsEndpoint:
+    Description: DD214 Career Insights Endpoint
+    Value: !Sub 'https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/insights/{documentId}'
+    Export:
+      Name: !Sub '${AWS::StackName}-DD214InsightsEndpoint'
+
+  DD214RedactedEndpoint:
+    Description: DD214 Redacted Document Endpoint
+    Value: !Sub 'https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/redacted/{documentId}'
+    Export:
+      Name: !Sub '${AWS::StackName}-DD214RedactedEndpoint'
+
+  TestCommands:
+    Description: Commands to test the new endpoints
+    Value: !Sub |
+      # Test upload URL generation
+      curl -X POST https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/upload-url \
+        -H "Content-Type: application/json" \
+        -d '{"filename":"dd214.pdf","contentType":"application/pdf"}'
+      
+      # Test status check
+      curl https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/status/test-doc-id
+      
+      # Test insights retrieval
+      curl https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/insights/test-doc-id
+      
+      # Test redacted document
+      curl https://${ApiId}.execute-api.${AWS::Region}.amazonaws.com/prod/dd214/redacted/test-doc-id

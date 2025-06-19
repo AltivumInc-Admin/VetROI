@@ -1,0 +1,58 @@
+[
+  {
+    "ResourceType": "AWS::DynamoDB::Table",
+    "LogicalResourceId": "SessionsTable",
+    "ResourceIdentifier": {
+      "TableName": "VetROI_Sessions"
+    }
+  },
+  {
+    "ResourceType": "AWS::DynamoDB::Table",
+    "LogicalResourceId": "DD214ProcessingTable",
+    "ResourceIdentifier": {
+      "TableName": "VetROI_DD214_Processing"
+    }
+  },
+  {
+    "ResourceType": "AWS::DynamoDB::Table",
+    "LogicalResourceId": "CareerInsightsTable",
+    "ResourceIdentifier": {
+      "TableName": "VetROI_CareerInsights"
+    }
+  },
+  {
+    "ResourceType": "AWS::DynamoDB::Table",
+    "LogicalResourceId": "ConversationsTable",
+    "ResourceIdentifier": {
+      "TableName": "VetROI_Conversations"
+    }
+  },
+  {
+    "ResourceType": "AWS::DynamoDB::Table",
+    "LogicalResourceId": "UserDocumentsTable",
+    "ResourceIdentifier": {
+      "TableName": "VetROI_UserDocuments"
+    }
+  },
+  {
+    "ResourceType": "AWS::S3::Bucket",
+    "LogicalResourceId": "DataLakeBucket",
+    "ResourceIdentifier": {
+      "BucketName": "altroi-data"
+    }
+  },
+  {
+    "ResourceType": "AWS::S3::Bucket",
+    "LogicalResourceId": "DD214SecureBucket",
+    "ResourceIdentifier": {
+      "BucketName": "vetroi-dd214-secure"
+    }
+  },
+  {
+    "ResourceType": "AWS::S3::Bucket",
+    "LogicalResourceId": "DD214RedactedBucket",
+    "ResourceIdentifier": {
+      "BucketName": "vetroi-dd214-redacted"
+    }
+  }
+]

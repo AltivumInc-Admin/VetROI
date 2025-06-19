@@ -1,0 +1,896 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Production Infrastructure - Complete Stack with Resource Imports'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - production
+      - staging
+      - development
+    Description: Environment name
+
+  ONetSecretArn:
+    Type: String
+    Default: "arn:aws:secretsmanager:us-east-2:205930636302:secret:ONET"
+    Description: ARN of the O*NET credentials secret
+
+  ExistingUserPoolId:
+    Type: String
+    Default: "us-east-2_zVjrLf0jA"
+    Description: Existing Cognito User Pool ID
+
+  ExistingIdentityPoolId:
+    Type: String
+    Default: "us-east-2:10f0038f-acb9-44c2-a433-c9aa12185217"
+    Description: Existing Cognito Identity Pool ID
+
+  ExistingApiGatewayId:
+    Type: String
+    Default: "jg5fae61lj"
+    Description: Existing HTTP API Gateway ID
+
+  ExistingRestApiId:
+    Type: String
+    Default: "wzj49zuaaa"
+    Description: Existing REST API Gateway ID
+
+  LambdaArtifactsBucket:
+    Type: String
+    Description: S3 bucket containing Lambda deployment packages
+    Default: vetroi-lambda-artifacts
+
+Resources:
+  ###################################
+  # Lambda Layer for Dependencies
+  ###################################
+  CommonDependenciesLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: !Sub '${AWS::StackName}-common-dependencies'
+      Description: 'Common Python dependencies for VetROI Lambda functions'
+      Content:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'layers/common-dependencies.zip'
+      CompatibleRuntimes:
+        - python3.12
+
+  ###################################
+  # DynamoDB Tables (Import Existing)
+  ###################################
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: VetROI_Sessions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  DD214ProcessingTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: VetROI_DD214_Processing
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: document_id
+          AttributeType: S
+        - AttributeName: user_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: document_id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserIdIndex
+          KeySchema:
+            - AttributeName: user_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  CareerInsightsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: VetROI_CareerInsights
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: document_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: document_id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  ConversationsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: VetROI_Conversations
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: conversation_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: conversation_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  UserDocumentsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    Properties:
+      TableName: VetROI_UserDocuments
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+        - AttributeName: documentId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+        - AttributeName: documentId
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  ###################################
+  # S3 Buckets (Import Existing)
+  ###################################
+  DataLakeBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: altroi-data
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersions
+            NoncurrentVersionExpirationInDays: 30
+            Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  DD214SecureBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: vetroi-dd214-secure
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldVersions
+            NoncurrentVersionExpirationInDays: 30
+            Status: Enabled
+          - Id: TransitionToGlacier
+            Transitions:
+              - StorageClass: GLACIER
+                TransitionInDays: 90
+            Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      # NotificationConfiguration removed to break circular dependency
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: SecurityLevel
+          Value: High
+
+  DD214RedactedBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: vetroi-dd214-redacted
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+
+  ###################################
+  # IAM Roles
+  ###################################
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: VetROI-Lambda-ExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
+      Policies:
+        - PolicyName: VetROI-Lambda-Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                Resource:
+                  - !GetAtt SessionsTable.Arn
+                  - !GetAtt DD214ProcessingTable.Arn
+                  - !GetAtt CareerInsightsTable.Arn
+                  - !GetAtt ConversationsTable.Arn
+                  - !GetAtt UserDocumentsTable.Arn
+                  - !Sub '${SessionsTable.Arn}/index/*'
+                  - !Sub '${DD214ProcessingTable.Arn}/index/*'
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub '${DataLakeBucket.Arn}'
+                  - !Sub '${DataLakeBucket.Arn}/*'
+                  - !Sub '${DD214SecureBucket.Arn}'
+                  - !Sub '${DD214SecureBucket.Arn}/*'
+                  - !Sub '${DD214RedactedBucket.Arn}'
+                  - !Sub '${DD214RedactedBucket.Arn}/*'
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Ref ONetSecretArn
+                  - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:VetROI/*'
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock:InvokeModelWithResponseStream
+                Resource:
+                  - !Sub 'arn:aws:bedrock:*:${AWS::AccountId}:model/*'
+              - Effect: Allow
+                Action:
+                  - textract:AnalyzeDocument
+                  - textract:DetectDocumentText
+                  - textract:GetDocumentAnalysis
+                  - textract:StartDocumentAnalysis
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - comprehend:DetectEntities
+                  - comprehend:DetectPiiEntities
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                Resource:
+                  # Use Ref here to avoid circular dependency
+                  - !Ref DD214ProcessingStateMachine
+              - Effect: Allow
+                Action:
+                  - cognito-idp:AdminGetUser
+                  - cognito-idp:AdminListGroupsForUser
+                Resource:
+                  - !Sub 'arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${ExistingUserPoolId}'
+
+  StepFunctionsExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: VetROI-StepFunctions-ExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: states.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: VetROI-StepFunctions-Policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  # Use Sub to construct ARNs to avoid circular dependency
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_Recommend'
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Processor'
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Macie'
+                  - !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Insights'
+              - Effect: Allow
+                Action:
+                  - xray:PutTraceSegments
+                  - xray:PutTelemetryRecords
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+
+  ###################################
+  # Lambda Functions
+  ###################################
+  RecommendFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_Recommend
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/recommend.zip'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 30
+      MemorySize: 1024
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+          DATA_BUCKET: !Ref DataLakeBucket
+          ENABLE_S3_DATA: 'true'
+          SOC_PREFIX: 'soc-details/'
+          REGION: !Ref AWS::Region
+          BEDROCK_MODEL_ID: 'amazon.nova-lite-v1:0'
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  DD214GenerateUploadURLFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GenerateUploadURL
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/dd214_upload.zip'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 30
+      MemorySize: 256
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          USER_POOL_ID: !Ref ExistingUserPoolId
+          BUCKET_NAME: !Ref DD214SecureBucket
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  DD214GetStatusFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GetStatus
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/dd214_status.zip'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 30
+      MemorySize: 256
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DD214ProcessingTable
+          BUCKET_NAME: !Ref DD214SecureBucket
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  DD214ProcessorFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_Processor
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/dd214_processor.zip'
+      Handler: src.lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 300
+      MemorySize: 1024
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DD214ProcessingTable
+          SECURE_BUCKET: !Ref DD214SecureBucket
+          REDACTED_BUCKET: !Ref DD214RedactedBucket
+          INSIGHTS_TABLE: !Ref CareerInsightsTable
+          USER_DOCUMENTS_TABLE: !Ref UserDocumentsTable
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  DD214MacieFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_Macie
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/dd214_macie.zip'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 300
+      MemorySize: 512
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          SECURE_BUCKET: !Ref DD214SecureBucket
+          REDACTED_BUCKET: !Ref DD214RedactedBucket
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  DD214InsightsFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_Insights
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/dd214_insights.zip'
+      Handler: src.lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 300
+      MemorySize: 1024
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          INSIGHTS_TABLE: !Ref CareerInsightsTable
+          BEDROCK_MODEL_ID: 'amazon.nova-lite-v1:0'
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  DD214GetInsightsFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GetInsights
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/dd214_get_insights.zip'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 30
+      MemorySize: 256
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          INSIGHTS_TABLE: !Ref CareerInsightsTable
+          PROCESSING_TABLE: !Ref DD214ProcessingTable
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  DD214GetRedactedFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_DD214_GetRedacted
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/dd214_redacted.zip'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 30
+      MemorySize: 256
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          REDACTED_BUCKET: !Ref DD214RedactedBucket
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  S3DD214TriggerFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: DD214ProcessingStateMachine
+    Properties:
+      FunctionName: VetROI_S3_DD214_Trigger
+      Code:
+        S3Bucket: !Ref LambdaArtifactsBucket
+        S3Key: 'functions/s3_trigger.zip'
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.12
+      Timeout: 60
+      MemorySize: 256
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
+          ENVIRONMENT: !Ref Environment
+          AWS_XRAY_TRACING_NAME: VetROI
+      Role: !GetAtt LambdaExecutionRole.Arn
+      TracingConfig:
+        Mode: Active
+      Tags:
+        - Key: Project
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: CostCenter
+          Value: DD214Processing
+
+  S3DD214TriggerFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref S3DD214TriggerFunction
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !GetAtt DD214SecureBucket.Arn
+
+  ###################################
+  # Step Functions State Machines
+  ###################################
+  DD214ProcessingStateMachine:
+    Type: AWS::StepFunctions::StateMachine
+    Properties:
+      StateMachineName: VetROI-DD214-Processing
+      StateMachineType: STANDARD
+      RoleArn: !GetAtt StepFunctionsExecutionRole.Arn
+      TracingConfiguration:
+        Enabled: true
+      LoggingConfiguration:
+        Level: ERROR
+        IncludeExecutionData: true
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt DD214ProcessingLogGroup.Arn
+      DefinitionString: !Sub |
+        {
+          "Comment": "DD214 document processing pipeline",
+          "StartAt": "ExtractText",
+          "States": {
+            "ExtractText": {
+              "Type": "Task",
+              "Resource": "${DD214ProcessorFunction.Arn}",
+              "Parameters": {
+                "step": "textract",
+                "documentId.$": "$.documentId",
+                "bucketName.$": "$.bucketName",
+                "objectKey.$": "$.objectKey",
+                "userId.$": "$.userId"
+              },
+              "ResultPath": "$.textractResult",
+              "Next": "RedactPII",
+              "Retry": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ]
+            },
+            "RedactPII": {
+              "Type": "Task",
+              "Resource": "${DD214MacieFunction.Arn}",
+              "Parameters": {
+                "documentId.$": "$.documentId",
+                "originalKey.$": "$.objectKey",
+                "extractedText.$": "$.textractResult.extractedText"
+              },
+              "ResultPath": "$.redactionResult",
+              "Next": "GenerateInsights",
+              "Retry": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ]
+            },
+            "GenerateInsights": {
+              "Type": "Task",
+              "Resource": "${DD214InsightsFunction.Arn}",
+              "Parameters": {
+                "documentId.$": "$.documentId",
+                "veteranData.$": "$.textractResult.veteranData",
+                "extractedText.$": "$.textractResult.extractedText"
+              },
+              "ResultPath": "$.insightsResult",
+              "Next": "UpdateStatus",
+              "Retry": [
+                {
+                  "ErrorEquals": ["States.ALL"],
+                  "IntervalSeconds": 2,
+                  "MaxAttempts": 3,
+                  "BackoffRate": 2
+                }
+              ]
+            },
+            "UpdateStatus": {
+              "Type": "Task",
+              "Resource": "${DD214ProcessorFunction.Arn}",
+              "Parameters": {
+                "step": "updateStatus",
+                "documentId.$": "$.documentId",
+                "status": "COMPLETED",
+                "redactedUrl.$": "$.redactionResult.redactedUrl",
+                "insights.$": "$.insightsResult"
+              },
+              "End": true
+            }
+          }
+        }
+
+  ###################################
+  # CloudWatch Log Groups
+  ###################################
+  DD214ProcessingLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/stepfunctions/VetROI-DD214-Processing
+      RetentionInDays: 30
+
+  ###################################
+  # Custom Resource for S3 Bucket Notification
+  ###################################
+  BucketNotificationFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI-BucketNotification-Function
+      Handler: index.handler
+      Runtime: python3.12
+      Timeout: 60
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import cfnresponse
+          
+          s3 = boto3.client('s3')
+          
+          def handler(event, context):
+              try:
+                  request_type = event['RequestType']
+                  bucket_name = event['ResourceProperties']['BucketName']
+                  lambda_arn = event['ResourceProperties']['LambdaArn']
+                  
+                  if request_type in ['Create', 'Update']:
+                      notification_config = {
+                          'LambdaFunctionConfigurations': [
+                              {
+                                  'LambdaFunctionArn': lambda_arn,
+                                  'Events': ['s3:ObjectCreated:*'],
+                                  'Filter': {
+                                      'Key': {
+                                          'FilterRules': [
+                                              {
+                                                  'Name': 'prefix',
+                                                  'Value': 'uploads/'
+                                              }
+                                          ]
+                                      }
+                                  }
+                              }
+                          ]
+                      }
+                      
+                      s3.put_bucket_notification_configuration(
+                          Bucket=bucket_name,
+                          NotificationConfiguration=notification_config
+                      )
+                      
+                  elif request_type == 'Delete':
+                      # Remove notification configuration
+                      s3.put_bucket_notification_configuration(
+                          Bucket=bucket_name,
+                          NotificationConfiguration={}
+                      )
+                  
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+                  
+              except Exception as e:
+                  print(f"Error: {str(e)}")
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {'Error': str(e)})
+
+  S3BucketNotification:
+    Type: Custom::S3BucketNotification
+    DependsOn:
+      - S3DD214TriggerFunction
+      - S3DD214TriggerFunctionPermission
+      - DD214SecureBucket
+    Properties:
+      ServiceToken: !GetAtt BucketNotificationFunction.Arn
+      BucketName: !Ref DD214SecureBucket
+      LambdaArn: !GetAtt S3DD214TriggerFunction.Arn
+
+Outputs:
+  StackName:
+    Description: CloudFormation Stack Name
+    Value: !Ref AWS::StackName
+
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${ExistingApiGatewayId}.execute-api.${AWS::Region}.amazonaws.com/prod'
+
+  CommonLayerArn:
+    Description: ARN of the common dependencies layer
+    Value: !Ref CommonDependenciesLayer
+    Export:
+      Name: !Sub '${AWS::StackName}-CommonLayerArn'
+
+  RecommendFunctionArn:
+    Description: ARN of the Recommend Lambda function
+    Value: !GetAtt RecommendFunction.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-RecommendFunctionArn'
+
+  DD214ProcessingStateMachineArn:
+    Description: ARN of the DD214 processing state machine
+    Value: !Ref DD214ProcessingStateMachine
+    Export:
+      Name: !Sub '${AWS::StackName}-DD214ProcessingStateMachineArn'

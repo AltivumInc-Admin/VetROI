@@ -131,7 +131,7 @@ def extract_branch(data: Dict[str, Any]) -> str:
     if not branch_text:
         return 'unknown'
     
-    branch_text = str(branch_text).lower()
+    branch_text = str(branch_text or '').lower()
     
     if 'army' in branch_text:
         return 'army'
@@ -225,7 +225,7 @@ def parse_decorations(decorations_text: str) -> List[str]:
         'expert marksmanship', 'sharpshooter'
     ]
     
-    text_lower = decorations_text.lower()
+    text_lower = str(decorations_text or '').lower()
     for medal in medal_patterns:
         if medal in text_lower:
             decorations.append(medal.title())
@@ -247,7 +247,7 @@ def parse_military_education(education_text: str) -> List[str]:
         'technical school', 'c school', 'a school'
     ]
     
-    text_lower = education_text.lower()
+    text_lower = str(education_text or '').lower()
     for school in school_patterns:
         if school in text_lower:
             education.append(school.title())
@@ -293,8 +293,8 @@ def extract_technical_skills(data: Dict[str, Any]) -> List[str]:
     """Extract technical skills from MOS and training"""
     skills = []
     
-    mos = data.get('primary_specialty', '').lower()
-    education = data.get('military_education', '').lower()
+    mos = str(data.get('primary_specialty', '') or '').lower()
+    education = str(data.get('military_education', '') or '').lower()
     
     # Technical skill patterns
     tech_patterns = {
@@ -319,7 +319,7 @@ def extract_technical_skills(data: Dict[str, Any]) -> List[str]:
 def infer_security_clearance(data: Dict[str, Any]) -> str:
     """Infer likely security clearance level from MOS"""
     
-    mos = data.get('primary_specialty', '').lower()
+    mos = str(data.get('primary_specialty', '') or '').lower()
     
     # High clearance indicators
     ts_indicators = ['intel', 'crypto', 'signal', 'cyber', 'special forces']

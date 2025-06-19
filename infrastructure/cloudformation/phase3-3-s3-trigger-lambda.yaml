@@ -1,0 +1,232 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Phase 3.3 - S3 Trigger Lambda Function'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: test
+    AllowedValues:
+      - test
+      - production
+    Description: Deployment environment
+
+  LambdaLayerArn:
+    Type: String
+    Default: arn:aws:lambda:us-east-2:205930636302:layer:VetROI-Dependencies:1
+    Description: ARN of the Lambda layer with dependencies
+
+  StateMachineArn:
+    Type: String
+    Default: arn:aws:states:us-east-2:205930636302:stateMachine:VetROI-DD214-Processing
+    Description: ARN of the DD214 processing state machine
+
+Resources:
+  # IAM Role for S3 Trigger Lambda
+  S3TriggerLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'VetROI-S3Trigger-Role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3TriggerPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # DynamoDB permissions
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                Resource:
+                  - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/VetROI_DD214_Processing'
+              # Step Functions permissions
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                Resource: !Ref StateMachineArn
+              # S3 permissions (for reading event data)
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - 'arn:aws:s3:::vetroi-dd214-*/*'
+
+  # S3 Trigger Lambda Function
+  S3TriggerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'VetROI-S3-DD214-Trigger-${Environment}'
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt S3TriggerLambdaRole.Arn
+      Timeout: 60
+      MemorySize: 256
+      Layers:
+        - !Ref LambdaLayerArn
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref StateMachineArn
+          TABLE_NAME: VetROI_DD214_Processing
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import os
+          from datetime import datetime
+          
+          # Initialize AWS clients
+          stepfunctions = boto3.client('stepfunctions')
+          dynamodb = boto3.resource('dynamodb')
+          
+          # Environment variables
+          STATE_MACHINE_ARN = os.environ.get('STATE_MACHINE_ARN')
+          TABLE_NAME = os.environ.get('TABLE_NAME')
+          
+          def lambda_handler(event, context):
+              """
+              Triggered by S3 upload events to start DD214 processing
+              """
+              print(f"Event: {json.dumps(event)}")
+              
+              for record in event.get('Records', []):
+                  # Only process ObjectCreated events
+                  if not record['eventName'].startswith('ObjectCreated'):
+                      continue
+                      
+                  bucket = record['s3']['bucket']['name']
+                  key = record['s3']['object']['key']
+                  
+                  # Only process files in the users/ folder with PDF extension
+                  if not key.startswith('users/') or not key.endswith('.pdf'):
+                      print(f"Skipping non-DD214 file: {key}")
+                      continue
+                      
+                  # Extract document ID from key
+                  # Format: users/{user_id}/original/{timestamp}_{document_id}.pdf
+                  try:
+                      parts = key.split('/')
+                      if len(parts) >= 3:
+                          filename = parts[-1]  # e.g., "20240617_123456_uuid.pdf"
+                          # Try to extract document ID from filename
+                          if '_' in filename:
+                              document_id = filename.split('_')[-1].split('.')[0]
+                          else:
+                              document_id = filename.split('.')[0]
+                      else:
+                          print(f"Invalid key format: {key}")
+                          continue
+                  except Exception as e:
+                      print(f"Error parsing key {key}: {str(e)}")
+                      continue
+                  
+                  # Update DynamoDB status
+                  table = dynamodb.Table(TABLE_NAME)
+                  
+                  # Check if record already exists
+                  try:
+                      table.put_item(
+                          Item={
+                              'document_id': document_id,
+                              'status': 'processing',
+                              'upload_bucket': bucket,
+                              'upload_key': key,
+                              'processing_started_at': datetime.utcnow().isoformat(),
+                              'created_at': datetime.utcnow().isoformat()
+                          }
+                      )
+                  except Exception as e:
+                      print(f"Error updating DynamoDB: {str(e)}")
+                      # Update existing record
+                      table.update_item(
+                          Key={'document_id': document_id},
+                          UpdateExpression='SET #status = :status, processing_started_at = :timestamp',
+                          ExpressionAttributeNames={'#status': 'status'},
+                          ExpressionAttributeValues={
+                              ':status': 'processing',
+                              ':timestamp': datetime.utcnow().isoformat()
+                          }
+                      )
+                  
+                  # Start Step Functions execution
+                  execution_input = {
+                      'documentId': document_id,
+                      'bucket': bucket,
+                      'key': key,
+                      'uploadTime': datetime.utcnow().isoformat()
+                  }
+                  
+                  try:
+                      response = stepfunctions.start_execution(
+                          stateMachineArn=STATE_MACHINE_ARN,
+                          name=f'dd214-{document_id}-{int(datetime.utcnow().timestamp())}',
+                          input=json.dumps(execution_input)
+                      )
+                      
+                      print(f"Started Step Functions execution: {response['executionArn']}")
+                      
+                      # Update DynamoDB with execution ARN
+                      table.update_item(
+                          Key={'document_id': document_id},
+                          UpdateExpression='SET execution_arn = :arn',
+                          ExpressionAttributeValues={
+                              ':arn': response['executionArn']
+                          }
+                      )
+                      
+                  except Exception as e:
+                      print(f"Error starting Step Functions: {str(e)}")
+                      # Update status to error
+                      table.update_item(
+                          Key={'document_id': document_id},
+                          UpdateExpression='SET #status = :status, #error = :error',
+                          ExpressionAttributeNames={
+                              '#status': 'status',
+                              '#error': 'error_message'
+                          },
+                          ExpressionAttributeValues={
+                              ':status': 'error',
+                              ':error': str(e)
+                          }
+                      )
+                      raise
+              
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Processing started')
+              }
+
+  # CloudWatch Log Group
+  S3TriggerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/VetROI-S3-DD214-Trigger-${Environment}'
+      RetentionInDays: 30
+
+Outputs:
+  S3TriggerLambdaArn:
+    Description: ARN of the S3 trigger Lambda function
+    Value: !GetAtt S3TriggerLambda.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-S3TriggerLambdaArn'
+
+  S3TriggerLambdaName:
+    Description: Name of the S3 trigger Lambda function
+    Value: !Ref S3TriggerLambda
+    Export:
+      Name: !Sub '${AWS::StackName}-S3TriggerLambdaName'
+
+  S3TriggerRoleArn:
+    Description: ARN of the S3 trigger Lambda role
+    Value: !GetAtt S3TriggerLambdaRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-S3TriggerRoleArn'

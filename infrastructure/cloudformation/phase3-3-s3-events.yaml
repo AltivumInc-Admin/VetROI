@@ -1,0 +1,201 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Phase 3.3 - S3 Event Notifications for DD214 Processing'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: test
+    AllowedValues:
+      - test
+      - production
+    Description: Deployment environment
+
+  S3BucketName:
+    Type: String
+    Default: vetroi-dd214-secure
+    Description: S3 bucket name for DD214 uploads
+
+  StateMachineArn:
+    Type: String
+    Default: arn:aws:states:us-east-2:205930636302:stateMachine:VetROI-DD214-Processing
+    Description: ARN of the DD214 processing state machine
+
+  TriggerLambdaArn:
+    Type: String
+    Default: arn:aws:lambda:us-east-2:205930636302:function:VetROI_S3_DD214_Trigger
+    Description: ARN of the S3 trigger Lambda function
+
+Resources:
+  # Lambda Permission for S3 to invoke the trigger function
+  S3TriggerLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref TriggerLambdaArn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub 'arn:aws:s3:::${S3BucketName}'
+
+  # S3 Bucket Notification Configuration
+  # Note: This creates a custom resource since CloudFormation doesn't support
+  # modifying existing bucket notifications directly
+  S3NotificationConfiguration:
+    Type: Custom::S3BucketNotification
+    Properties:
+      ServiceToken: !GetAtt S3NotificationLambda.Arn
+      Bucket: !Ref S3BucketName
+      LambdaConfigurations:
+        - Id: DD214ProcessingTrigger
+          LambdaFunctionArn: !Ref TriggerLambdaArn
+          Events:
+            - s3:ObjectCreated:*
+          Filter:
+            Key:
+              FilterRules:
+                - Name: Prefix
+                  Value: users/
+                - Name: Suffix
+                  Value: .pdf
+
+  # Custom Lambda for managing S3 notifications
+  S3NotificationLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'VetROI-S3Notification-Role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3NotificationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketNotification
+                  - s3:PutBucketNotification
+                Resource:
+                  - !Sub 'arn:aws:s3:::${S3BucketName}'
+              - Effect: Allow
+                Action:
+                  - lambda:AddPermission
+                  - lambda:RemovePermission
+                Resource: !Ref TriggerLambdaArn
+
+  S3NotificationLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'VetROI-S3Notification-Manager-${Environment}'
+      Runtime: python3.12
+      Handler: index.lambda_handler
+      Role: !GetAtt S3NotificationLambdaRole.Arn
+      Timeout: 300
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import cfnresponse
+          import traceback
+          
+          s3 = boto3.client('s3')
+          
+          def lambda_handler(event, context):
+              try:
+                  print(f"Event: {json.dumps(event)}")
+                  
+                  request_type = event['RequestType']
+                  properties = event['ResourceProperties']
+                  bucket = properties['Bucket']
+                  lambda_configs = properties.get('LambdaConfigurations', [])
+                  
+                  if request_type in ['Create', 'Update']:
+                      # Get current notification configuration
+                      try:
+                          current_config = s3.get_bucket_notification_configuration(Bucket=bucket)
+                      except s3.exceptions.ClientError as e:
+                          if e.response['Error']['Code'] == 'NoSuchConfiguration':
+                              current_config = {}
+                          else:
+                              raise
+                      
+                      # Prepare new configuration
+                      new_config = current_config.copy()
+                      new_config['LambdaConfigurations'] = lambda_configs
+                      
+                      # Set the new configuration
+                      s3.put_bucket_notification_configuration(
+                          Bucket=bucket,
+                          NotificationConfiguration=new_config
+                      )
+                      
+                      print(f"Successfully configured S3 notifications for bucket {bucket}")
+                      
+                  elif request_type == 'Delete':
+                      # Get current configuration
+                      try:
+                          current_config = s3.get_bucket_notification_configuration(Bucket=bucket)
+                          # Remove our Lambda configurations
+                          lambda_configs = current_config.get('LambdaConfigurations', [])
+                          # Filter out configurations that match our function
+                          filtered_configs = [
+                              config for config in lambda_configs
+                              if config.get('Id') != 'DD214ProcessingTrigger'
+                          ]
+                          current_config['LambdaConfigurations'] = filtered_configs
+                          
+                          s3.put_bucket_notification_configuration(
+                              Bucket=bucket,
+                              NotificationConfiguration=current_config
+                          )
+                          print(f"Successfully removed S3 notifications for bucket {bucket}")
+                      except Exception as e:
+                          print(f"Error removing notification: {str(e)}")
+                          # Don't fail on delete
+                  
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, {
+                      'Message': f'S3 notification configuration updated for {bucket}'
+                  })
+                  
+              except Exception as e:
+                  print(f"Error: {str(e)}")
+                  print(traceback.format_exc())
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {
+                      'Error': str(e)
+                  })
+
+Outputs:
+  S3BucketName:
+    Description: S3 bucket configured for DD214 uploads
+    Value: !Ref S3BucketName
+    Export:
+      Name: !Sub '${AWS::StackName}-S3Bucket'
+
+  TriggerLambdaArn:
+    Description: ARN of the S3 trigger Lambda function
+    Value: !Ref TriggerLambdaArn
+    Export:
+      Name: !Sub '${AWS::StackName}-TriggerLambdaArn'
+
+  NotificationConfiguration:
+    Description: S3 notification configuration status
+    Value: !Sub 'Configured for ${S3BucketName} -> ${TriggerLambdaArn}'
+    Export:
+      Name: !Sub '${AWS::StackName}-NotificationStatus'
+
+  TestUploadCommand:
+    Description: Command to test the S3 trigger
+    Value: !Sub |
+      # Upload a test file to trigger processing
+      aws s3 cp test-dd214.pdf s3://${S3BucketName}/users/test-user/original/$(date +%Y%m%d_%H%M%S)_test-doc-id.pdf
+      
+      # Check DynamoDB for processing status
+      aws dynamodb get-item --table-name VetROI_DD214_Processing --key '{"document_id":{"S":"test-doc-id"}}' --region us-east-2
+      
+      # Check Step Functions execution
+      aws stepfunctions list-executions --state-machine-arn ${StateMachineArn} --region us-east-2

@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Phase 2 - Lambda Functions Only (No resource imports)'
+
+Parameters:
+  DeploymentBucket:
+    Type: String
+    Default: vetroi-cloudformation-deploys-20250619
+    Description: S3 bucket containing Lambda deployment packages
+
+Resources:
+  # Lambda Layer for shared dependencies
+  CommonDependenciesLayer:
+    Type: AWS::Lambda::LayerVersion
+    Properties:
+      LayerName: VetROI-CommonDependencies
+      Description: Common dependencies for VetROI Lambda functions
+      Content:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: layers/common-dependencies.zip
+      CompatibleRuntimes:
+        - python3.12
+
+  # IAM Execution Role for Lambda functions
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: VetROI-LambdaExecutionRole-CF
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
+      Policies:
+        - PolicyName: VetROI-LambdaPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # DynamoDB permissions (hardcoded table names)
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/VetROI_*'
+              # S3 permissions
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - 'arn:aws:s3:::altroi-data/*'
+                  - 'arn:aws:s3:::vetroi-dd214-documents/*'
+                  - 'arn:aws:s3:::vetroi-processed-documents/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - 'arn:aws:s3:::altroi-data'
+                  - 'arn:aws:s3:::vetroi-dd214-documents'
+                  - 'arn:aws:s3:::vetroi-processed-documents'
+              # Other permissions
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource:
+                  - !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ONET-*'
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                  - bedrock-runtime:InvokeModel
+                  - bedrock-runtime:Converse
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - macie2:CreateClassificationJob
+                  - macie2:DescribeClassificationJob
+                  - macie2:GetFindings
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - textract:AnalyzeDocument
+                  - textract:DetectDocumentText
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - states:StartExecution
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - lex:RecognizeText
+                  - lexv2:RecognizeText
+                Resource: '*'
+
+  # VetROI Recommend Lambda (with CF suffix to avoid conflicts)
+  RecommendLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: VetROI_Recommend_CF
+      Description: Main recommendation engine for VetROI (CloudFormation managed)
+      Runtime: python3.12
+      Handler: lambda_function.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Code:
+        S3Bucket: !Ref DeploymentBucket
+        S3Key: lambda/VetROI_Recommend.zip
+      Timeout: 30
+      MemorySize: 1024
+      Environment:
+        Variables:
+          TABLE_NAME: VetROI_Sessions
+          DATA_BUCKET: altroi-data
+          ENABLE_S3_DATA: 'true'
+      Layers:
+        - !Ref CommonDependenciesLayer
+      Tags:
+        - Key: Application
+          Value: VetROI
+        - Key: CostCenter
+          Value: vetroi-core
+        - Key: ManagedBy
+          Value: CloudFormation
+
+Outputs:
+  LambdaLayerArn:
+    Description: ARN of the common dependencies layer
+    Value: !Ref CommonDependenciesLayer
+    
+  LambdaExecutionRoleArn:
+    Description: ARN of the Lambda execution role
+    Value: !GetAtt LambdaExecutionRole.Arn
+    
+  RecommendFunctionArn:
+    Description: ARN of the Recommend Lambda function
+    Value: !GetAtt RecommendLambda.Arn
