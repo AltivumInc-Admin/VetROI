@@ -47,9 +47,11 @@ VetROI uses AWS Lambda and serverless architecture to transform a veteran's DD21
    - Creates resume bullets & interview prep
 
 5. **Career Recommendation Engine** (`VetROI_Recommend`)
-   - O*NET API integration
+   - O*NET API integration with 2 key endpoints:
+     - `/crosswalks/military` - Translates MOS to 25+ civilian careers
+     - `/careers/{soc}/report` - Detailed data for each career selected
    - Military code to civilian job translation
-   - Real-time labor market data
+   - Real-time labor market data (salary, growth, skills, education)
 
 ### Serverless Orchestration
 ```yaml
@@ -64,6 +66,12 @@ Step Functions State Machine:
 
 ### AWS Services Used
 - **AWS Lambda** - Core compute (6 functions)
+  - `VetROI_Recommend` - O*NET API calls (2 endpoints per veteran)
+  - `VetROI_DD214_Upload` - Document upload handler
+  - `VetROI_DD214_Parser` - Text extraction
+  - `VetROI_DD214_Macie` - PII redaction
+  - `VetROI_DD214_Insights` - AI analysis
+  - `VetROI_DD214_Status` - Processing status
 - **Step Functions** - Workflow orchestration
 - **Amazon Bedrock** - AI/ML insights (Nova Lite model)
 - **Amazon Macie** - PII detection & compliance
