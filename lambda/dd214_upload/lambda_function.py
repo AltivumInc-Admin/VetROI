@@ -80,13 +80,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             Params={
                 'Bucket': BUCKET_NAME,
                 'Key': s3_key,
-                'ContentType': file_type,
-                'Metadata': {
-                    'document-id': document_id,
-                    'user-email': email or '',
-                    'upload-timestamp': datetime.utcnow().isoformat(),
-                    'original-filename': filename
-                }
+                'ContentType': file_type
             },
             ExpiresIn=300  # 5 minutes
         )

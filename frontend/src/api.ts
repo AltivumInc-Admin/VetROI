@@ -50,7 +50,7 @@ export async function getDD214PresignedUrl(
 }
 
 export async function uploadDD214ToS3(uploadUrl: string, file: File): Promise<void> {
-  // Simple PUT request with just the file
+  // Simple PUT request with just the file and content type
   await axios.put(uploadUrl, file, {
     headers: {
       'Content-Type': file.type
