@@ -367,6 +367,8 @@ TASK 1: Extract key information from this redacted DD214:
 
 TASK 2: Based on the extracted information, provide career recommendations appropriate for this veteran's experience level and qualifications.
 
+TASK 3: Generate resume-ready content that translates military experience into civilian terms.
+
 REDACTED DD214 DOCUMENT:
 {redacted_text}
 
@@ -410,8 +412,23 @@ IMPORTANT: Provide your response in the following JSON format:
     "industries": ["Industry 1", "Industry 2"],
     "associations": ["Professional association 1", "Professional association 2"],
     "companies": ["Veteran-friendly company 1", "Company 2"]
-  }}
+  }},
+  "resume_bullets": [
+    "3 powerful, quantified achievement bullets ready for a resume, translating military accomplishments to civilian terms"
+  ],
+  "civilian_bio": "A 2-3 sentence professional bio that clearly explains their military role in civilian terms, suitable for LinkedIn or resume summary",
+  "interview_questions": [
+    {{
+      "question": "Common interview question this veteran will face",
+      "suggested_answer": "How to answer it effectively, highlighting military experience"
+    }}
+  ]
 }}
+
+TASK 3: Generate resume-ready content:
+- Create 3 achievement-focused resume bullets that translate military accomplishments into civilian language
+- Write a professional bio (2-3 sentences) that explains their military role in terms civilians understand
+- Prepare them for 3 common interview questions they'll face, with suggested answers that leverage their military experience
 
 Focus on recommendations that match their actual experience level. For example:
 - E-1 to E-4: Entry to mid-level positions
@@ -431,7 +448,7 @@ Focus on recommendations that match their actual experience level. For example:
                 'content': [{'text': prompt}]
             }],
             inferenceConfig={
-                'maxTokens': 3000,
+                'maxTokens': 4000,
                 'temperature': 0.7,
                 'topP': 0.9
             }
