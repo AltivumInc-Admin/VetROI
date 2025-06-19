@@ -308,6 +308,28 @@ def handle_textract_results(event: Dict[str, Any]) -> Dict[str, Any]:
                 ':time': datetime.utcnow().isoformat()
             }
         )
+        
+        # Also update user documents table
+        try:
+            # Get user ID from processing table
+            proc_response = table.get_item(Key={'document_id': document_id})
+            if 'Item' in proc_response and 'user_id' in proc_response['Item']:
+                user_id = proc_response['Item']['user_id']
+                
+                user_docs_table = dynamodb.Table('VetROI_UserDocuments')
+                user_docs_table.update_item(
+                    Key={
+                        'userId': user_id,
+                        'documentId': document_id
+                    },
+                    UpdateExpression='SET processingStatus = :status, lastUpdated = :time',
+                    ExpressionAttributeValues={
+                        ':status': 'textract_complete',
+                        ':time': datetime.utcnow().isoformat()
+                    }
+                )
+        except Exception as e:
+            print(f"Error updating user documents table: {str(e)}")
     
     # Return complete data to Step Function (with size limit protection)
     response_data = {

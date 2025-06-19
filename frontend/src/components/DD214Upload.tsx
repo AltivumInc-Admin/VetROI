@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone'
 import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import { AuthModal } from './AuthModal'
+import { UserAgreement } from './UserAgreement'
 import '../styles/DD214Upload.css'
 
 interface DD214UploadProps {
@@ -40,11 +41,18 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     ]
   })
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showAgreement, setShowAgreement] = useState(false)
+  const [hasAcceptedAgreement, setHasAcceptedAgreement] = useState(false)
   const { isAuthenticated, user, checkAuth, signOutUser, sessionExpired, clearSessionExpired, loading } = useAuth()
 
   // Check authentication status on mount
   useEffect(() => {
     checkAuth()
+    // Check if user has previously accepted the agreement
+    const acceptedAgreement = localStorage.getItem('dd214AgreementAccepted')
+    if (acceptedAgreement === 'true') {
+      setHasAcceptedAgreement(true)
+    }
   }, [])
 
   // Handle session expiration
@@ -82,6 +90,18 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     if (!isAuthenticated) {
       console.log('Not authenticated, showing auth modal')
       setShowAuthModal(true)
+      return
+    }
+    
+    // Check if user has accepted agreement
+    if (!hasAcceptedAgreement) {
+      // Store the file temporarily to upload after agreement
+      sessionStorage.setItem('pendingFile', JSON.stringify({
+        name: acceptedFiles[0].name,
+        type: acceptedFiles[0].type,
+        size: acceptedFiles[0].size
+      }))
+      setShowAgreement(true)
       return
     }
 
@@ -133,7 +153,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         error: error instanceof Error ? error.message : 'Upload failed'
       }))
     }
-  }, [veteranId, isAuthenticated])
+  }, [veteranId, isAuthenticated, hasAcceptedAgreement])
 
   const pollProcessingStatus = async (documentId: string) => {
     const pollInterval = setInterval(async () => {
@@ -203,6 +223,26 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     // Update user attributes to mark DD214 upload intent
     // This will be handled in Phase 2
   }
+  
+  const handleAcceptAgreement = () => {
+    setHasAcceptedAgreement(true)
+    localStorage.setItem('dd214AgreementAccepted', 'true')
+    setShowAgreement(false)
+    
+    // Check if there was a pending file to upload
+    const pendingFile = sessionStorage.getItem('pendingFile')
+    if (pendingFile) {
+      // Clear the pending file
+      sessionStorage.removeItem('pendingFile')
+      // Show a message to re-upload
+      alert('Agreement accepted! Please upload your DD214 again.')
+    }
+  }
+  
+  const handleDeclineAgreement = () => {
+    setShowAgreement(false)
+    sessionStorage.removeItem('pendingFile')
+  }
 
   return (
     <div className="dd214-upload-container">
@@ -213,6 +253,12 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
           clearSessionExpired()
         }}
         onSuccess={handleAuthSuccess}
+      />
+      
+      <UserAgreement
+        isOpen={showAgreement}
+        onAccept={handleAcceptAgreement}
+        onDecline={handleDeclineAgreement}
       />
       
       <h3>Upload Your DD214</h3>

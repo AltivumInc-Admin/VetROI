@@ -93,9 +93,10 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         
         # Store initial processing record in DynamoDB
         dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table('VetROI_DD214_Processing')
         
-        table.put_item(
+        # Store in processing table
+        processing_table = dynamodb.Table('VetROI_DD214_Processing')
+        processing_table.put_item(
             Item={
                 'document_id': document_id,
                 'user_id': cognito_sub,
@@ -111,6 +112,22 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'pii_detection': {'status': 'pending'},
                     'analysis': {'status': 'pending'}
                 }
+            }
+        )
+        
+        # Also store in user documents table for tracking
+        user_docs_table = dynamodb.Table('VetROI_UserDocuments')
+        user_docs_table.put_item(
+            Item={
+                'userId': cognito_sub,
+                'documentId': document_id,
+                'uploadedAt': datetime.utcnow().isoformat(),
+                'fileName': filename,
+                'bucketName': BUCKET_NAME,
+                'fileKey': s3_key,
+                'documentType': 'DD214',
+                'processingStatus': 'pending_upload',
+                'userEmail': email
             }
         )
         
