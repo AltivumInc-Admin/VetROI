@@ -114,3 +114,8 @@ response.json
 
 # Development scripts
 deploy-*.sh
+
+# MCP Servers (local development only)
+mcp-servers/
+generated-diagrams/
+AWS MCP Servers/
