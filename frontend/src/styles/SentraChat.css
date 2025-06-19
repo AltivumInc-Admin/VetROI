@@ -425,13 +425,38 @@
   align-items: center;
   gap: 0.75rem;
   letter-spacing: 0.5px;
+  position: relative;
+  overflow: visible;
+  animation: missionPulse 3s ease-in-out infinite;
+}
+
+@keyframes missionPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4),
+                0 2px 10px rgba(0, 212, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 15px rgba(0, 212, 255, 0),
+                0 2px 20px rgba(0, 212, 255, 0.3);
+  }
 }
 
 .mission-prompt-button:hover:not(:disabled) {
   background: rgba(0, 212, 255, 0.2);
   border-color: #00d4ff;
   transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+  animation: missionPulseHover 1.5s ease-in-out infinite;
+}
+
+@keyframes missionPulseHover {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.6),
+                0 4px 25px rgba(0, 212, 255, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(0, 212, 255, 0),
+                0 4px 30px rgba(0, 212, 255, 0.5);
+  }
 }
 
 .mission-prompt-button:active:not(:disabled) {
