@@ -156,6 +156,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(false);
       setSessionExpired(false);
       setSessionWarning(false);
+      // Redirect to welcome page
+      window.location.href = '/';
     } catch (error) {
       console.error('Error signing out:', error);
       // Force local signout even if AWS signout fails
@@ -163,6 +165,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAuthenticated(false);
       setSessionExpired(false);
       setSessionWarning(false);
+      // Redirect to welcome page even on error
+      window.location.href = '/';
     }
   };
 

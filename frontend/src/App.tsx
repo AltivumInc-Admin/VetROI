@@ -23,7 +23,7 @@ interface ChatSession {
 
 function App() {
   const navigate = useNavigate()
-  const { sessionWarning } = useAuth()
+  const { sessionWarning, sessionExpired, isAuthenticated, loading: authLoading } = useAuth()
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -155,6 +155,20 @@ function App() {
       setShowSessionWarning(true)
     }
   }, [sessionWarning, showSessionWarning])
+
+  // Handle session expiration - redirect to welcome page
+  useEffect(() => {
+    if (sessionExpired) {
+      window.location.href = '/'
+    }
+  }, [sessionExpired])
+
+  // Redirect to welcome if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated && !authLoading) {
+      navigate('/')
+    }
+  }, [isAuthenticated, authLoading, navigate])
   
   const handleBackToCareerSelection = () => {
     setShowDetailedAnalysis(false)

@@ -13,8 +13,9 @@ s3_client = boto3.client('s3')
 # Environment variables
 TABLE_NAME = os.environ.get('TABLE_NAME', 'VetROI_DD214_Processing')
 INSIGHTS_TABLE = os.environ.get('INSIGHTS_TABLE', 'VetROI_CareerInsights')
-MODEL_ID = os.environ.get('MODEL_ID', 'amazon.nova-lite-v1:0')
+MODEL_ID = os.environ.get('MODEL_ID', 'us.amazon.nova-lite-v1:0')
 S3_DATA_BUCKET = os.environ.get('S3_DATA_BUCKET', 'altroi-data')
+REDACTED_BUCKET = os.environ.get('REDACTED_BUCKET', 'vetroi-dd214-redacted')
 
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """Generate AI-powered career insights from DD214 data"""
@@ -55,14 +56,20 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 else:
                     extracted_data = item['extracted_fields']
         
-        # Generate comprehensive profile
-        veteran_profile = build_veteran_profile(extracted_data)
+        # Get the redacted DD214 document
+        redacted_text = get_redacted_document(document_id)
         
-        # Fetch relevant O*NET data for the MOS
-        onet_matches = fetch_onet_matches(veteran_profile.get('mos', ''), veteran_profile.get('branch', ''))
-        
-        # Generate AI insights
-        insights = generate_ai_insights(veteran_profile, onet_matches)
+        if redacted_text:
+            # Use AI to analyze the full redacted document
+            insights = generate_ai_insights_from_dd214(redacted_text, document_id)
+        else:
+            # Fallback to old method if redacted document not available
+            veteran_profile = build_veteran_profile(extracted_data)
+            onet_matches = fetch_onet_matches(veteran_profile.get('mos', ''), veteran_profile.get('branch', ''))
+            insights = generate_ai_insights(veteran_profile, onet_matches)
+            
+        # Extract profile from insights for storage
+        veteran_profile = insights.get('extracted_profile', build_veteran_profile(extracted_data))
         
         # Store insights
         store_insights(document_id, veteran_profile, insights)
@@ -83,6 +90,16 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         print(f"Error generating insights: {str(e)}")
         update_processing_status(document_id, 'insights', 'error', str(e))
         return error_response(500, f'Failed to generate insights: {str(e)}')
+
+def get_redacted_document(document_id: str) -> str:
+    """Fetch the redacted DD214 document from S3"""
+    try:
+        redacted_key = f"redacted/{document_id}/dd214_redacted.txt"
+        response = s3_client.get_object(Bucket=REDACTED_BUCKET, Key=redacted_key)
+        return response['Body'].read().decode('utf-8')
+    except Exception as e:
+        print(f"Error fetching redacted document: {str(e)}")
+        return None
 
 def build_veteran_profile(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
     """Build comprehensive veteran profile from DD214 data"""
@@ -333,6 +350,154 @@ def fetch_onet_matches(mos: str, branch: str) -> List[Dict[str, Any]]:
         print(f"Error fetching O*NET data: {str(e)}")
         return []
 
+def generate_ai_insights_from_dd214(redacted_text: str, document_id: str) -> Dict[str, Any]:
+    """Generate AI insights by analyzing the full redacted DD214 document"""
+    
+    prompt = f"""You are an expert military career advisor analyzing a veteran's DD214 document.
+
+TASK 1: Extract key information from this redacted DD214:
+- Branch of service (e.g., ARMY, NAVY, AIR FORCE, MARINES)
+- Final rank/grade (e.g., SSG, E-6)
+- Primary MOS/Rate/AFSC and specialty title
+- Years of service (from NET ACTIVE SERVICE THIS PERIOD)
+- Combat deployments (check remarks section)
+- Decorations and medals (especially Bronze Star, Silver Star, Purple Heart)
+- Special qualifications (Airborne, Ranger tab, Special Forces tab, etc.)
+- Military education and schools completed
+
+TASK 2: Based on the extracted information, provide career recommendations appropriate for this veteran's experience level and qualifications.
+
+REDACTED DD214 DOCUMENT:
+{redacted_text}
+
+IMPORTANT: Provide your response in the following JSON format:
+{{
+  "extracted_profile": {{
+    "branch": "Service branch",
+    "rank": "Final rank",
+    "pay_grade": "Pay grade (E-1 through E-9, W-1 through W-5, O-1 through O-10)",
+    "mos": "Primary MOS code and title",
+    "years_of_service": "Total years",
+    "combat_experience": true/false,
+    "deployments": ["List of deployments"],
+    "decorations": ["List of decorations/medals"],
+    "special_qualifications": ["Tabs, badges, special skills"],
+    "military_education": ["Schools and courses completed"],
+    "clearance_level": "Estimated clearance level based on MOS"
+  }},
+  "career_recommendations": [
+    {{
+      "title": "Job Title",
+      "match_reason": "Why this matches their background",
+      "required_training": "Additional certifications needed",
+      "salary_range": "$X,000 - $Y,000",
+      "growth_outlook": "Growth percentage and outlook"
+    }}
+  ],
+  "transferable_skills": [
+    "List 5-7 key transferable skills based on their actual experience"
+  ],
+  "action_steps": [
+    "Specific action step 1",
+    "Specific action step 2",
+    "Specific action step 3"
+  ],
+  "education_priorities": [
+    "Certification or degree most relevant to their background",
+    "Secondary education priority"
+  ],
+  "networking_strategy": {{
+    "industries": ["Industry 1", "Industry 2"],
+    "associations": ["Professional association 1", "Professional association 2"],
+    "companies": ["Veteran-friendly company 1", "Company 2"]
+  }}
+}}
+
+Focus on recommendations that match their actual experience level. For example:
+- E-1 to E-4: Entry to mid-level positions
+- E-5 to E-6: Supervisory and technical specialist roles  
+- E-7 to E-9: Senior leadership and management positions
+- Special Forces/Rangers: High-skill technical or security roles
+- Medical MOS: Healthcare industry positions
+- Combat Arms with decorations: Leadership and security management roles
+"""
+
+    try:
+        # Call Bedrock
+        response = bedrock_runtime.converse(
+            modelId=MODEL_ID,
+            messages=[{
+                'role': 'user',
+                'content': [{'text': prompt}]
+            }],
+            inferenceConfig={
+                'maxTokens': 3000,
+                'temperature': 0.7,
+                'topP': 0.9
+            }
+        )
+        
+        # Extract response
+        ai_response = response['output']['message']['content'][0]['text']
+        
+        # Clean up response - remove markdown code blocks if present
+        if '```json' in ai_response:
+            ai_response = ai_response.split('```json')[1].split('```')[0].strip()
+        elif '```' in ai_response:
+            ai_response = ai_response.split('```')[1].split('```')[0].strip()
+            
+        # Parse JSON response
+        insights = json.loads(ai_response)
+        
+        # Add metadata
+        insights['generated_at'] = datetime.utcnow().isoformat()
+        insights['model_version'] = MODEL_ID
+        insights['analysis_method'] = 'full_dd214_text'
+        
+        return insights
+        
+    except json.JSONDecodeError as e:
+        print(f"Error parsing AI response as JSON: {str(e)}")
+        print(f"Raw response: {ai_response[:500]}...")
+        return generate_fallback_insights_with_profile(redacted_text)
+    except Exception as e:
+        print(f"Error calling Bedrock for DD214 analysis: {str(e)}")
+        return generate_fallback_insights_with_profile(redacted_text)
+
+def generate_fallback_insights_with_profile(redacted_text: str) -> Dict[str, Any]:
+    """Generate basic insights with simple text parsing"""
+    
+    # Simple extraction from redacted text
+    profile = {
+        'branch': 'ARMY' if 'ARMY' in redacted_text else 'Unknown',
+        'rank': 'Unknown',
+        'mos': 'Unknown',
+        'years_of_service': '0'
+    }
+    
+    # Look for specific patterns
+    if 'SSG' in redacted_text:
+        profile['rank'] = 'SSG'
+    if '18D' in redacted_text:
+        profile['mos'] = '18D - Special Forces Medical Sergeant'
+    if 'BRONZE STAR' in redacted_text:
+        profile['decorations'] = ['Bronze Star Medal']
+        
+    return {
+        'extracted_profile': profile,
+        'career_recommendations': [],
+        'transferable_skills': ['Leadership', 'Teamwork', 'Problem-solving'],
+        'action_steps': ['Update resume', 'Network with veterans', 'Apply to positions'],
+        'education_priorities': ['Relevant certification', 'Degree completion'],
+        'networking_strategy': {
+            'industries': ['Security', 'Healthcare'],
+            'associations': ['Veterans groups'],
+            'companies': ['Government contractors']
+        },
+        'generated_at': datetime.utcnow().isoformat(),
+        'analysis_method': 'fallback'
+    }
+
 def generate_ai_insights(profile: Dict[str, Any], onet_matches: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Generate AI-powered career insights using Bedrock"""
     
@@ -424,7 +589,37 @@ Please provide:
    - Professional associations to join
    - Veteran-friendly companies
 
-Format your response as structured JSON for easy parsing.
+IMPORTANT: Format your ENTIRE response as valid JSON following this exact structure:
+{
+  "career_recommendations": [
+    {
+      "title": "Job Title",
+      "match_reason": "Why this is a good match",
+      "required_training": "Additional certifications needed",
+      "salary_range": "$X - $Y",
+      "growth_outlook": "Growth percentage or description"
+    }
+  ],
+  "transferable_skills": [
+    "Skill 1",
+    "Skill 2",
+    "Skill 3"
+  ],
+  "action_steps": [
+    "Step 1",
+    "Step 2", 
+    "Step 3"
+  ],
+  "education_priorities": [
+    "Priority 1",
+    "Priority 2"
+  ],
+  "networking_strategy": {
+    "industries": ["Industry 1", "Industry 2"],
+    "associations": ["Association 1", "Association 2"],
+    "companies": ["Company 1", "Company 2"]
+  }
+}
 """
     
     return prompt
