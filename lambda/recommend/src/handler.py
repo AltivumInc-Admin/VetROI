@@ -36,14 +36,17 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     Main Lambda handler for VetROI recommendations
     """
     
-    # Handle CORS preflight requests
-    if event.get('httpMethod') == 'OPTIONS':
+    # Handle CORS preflight requests (HTTP API v2 format)
+    request_context = event.get('requestContext', {})
+    http_method = request_context.get('http', {}).get('method') or event.get('httpMethod')
+    
+    if http_method == 'OPTIONS':
         return {
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, X-Api-Key',
                 'Access-Control-Max-Age': '86400'
             },
             'body': ''
