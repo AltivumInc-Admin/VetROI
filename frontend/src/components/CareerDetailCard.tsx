@@ -15,7 +15,7 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
   userState = 'CA',
   relocationState 
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
   
   if (!socData) {
     return <div className="career-detail-card loading">Loading career data...</div>
