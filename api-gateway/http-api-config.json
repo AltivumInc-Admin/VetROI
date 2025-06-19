@@ -1,0 +1,28 @@
+{
+    "ApiEndpoint": "https://jg5fae61lj.execute-api.us-east-2.amazonaws.com",
+    "ApiId": "jg5fae61lj",
+    "ApiKeySelectionExpression": "$request.header.x-api-key",
+    "CorsConfiguration": {
+        "AllowHeaders": [
+            "*"
+        ],
+        "AllowMethods": [
+            "*"
+        ],
+        "AllowOrigins": [
+            "*"
+        ],
+        "MaxAge": 86400
+    },
+    "CreatedDate": "2025-06-12T05:33:38+00:00",
+    "DisableExecuteApiEndpoint": false,
+    "IpAddressType": "ipv4",
+    "Name": "VetROI-API",
+    "ProtocolType": "HTTP",
+    "RouteSelectionExpression": "$request.method $request.path",
+    "Tags": {
+        "CostCenter": "DD214Processing",
+        "Project": "VetROI",
+        "Environment": "Production"
+    }
+}

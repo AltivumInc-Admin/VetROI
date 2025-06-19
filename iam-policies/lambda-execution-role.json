@@ -1,0 +1,26 @@
+{
+    "Role": {
+        "Path": "/",
+        "RoleName": "VetROI-Lambda-ExecutionRole",
+        "RoleId": "AROAS74TMEQHFGO2GYX64",
+        "Arn": "arn:aws:iam::205930636302:role/VetROI-Lambda-ExecutionRole",
+        "CreateDate": "2025-06-12T05:24:27+00:00",
+        "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "lambda.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        },
+        "MaxSessionDuration": 3600,
+        "RoleLastUsed": {
+            "LastUsedDate": "2025-06-19T13:42:17+00:00",
+            "Region": "us-east-2"
+        }
+    }
+}

@@ -1,0 +1,264 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Phase 3.6 - Amazon Lex Bot Configuration'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: test
+    AllowedValues:
+      - test
+      - production
+    Description: Deployment environment
+
+Resources:
+  # Lex Bot Role
+  LexBotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub 'VetROI-LexBot-Role-${Environment}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lexv2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonLexRunBotsOnly
+      Policies:
+        - PolicyName: LexBotPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              # CloudWatch Logs permissions
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !Sub 'arn:aws:logs:us-east-1:${AWS::AccountId}:*'
+              # Lambda invocation permissions
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource:
+                  - !Sub 'arn:aws:lambda:us-east-2:${AWS::AccountId}:function:VetROI_*'
+              # Bedrock permissions for AI responses
+              - Effect: Allow
+                Action:
+                  - bedrock:InvokeModel
+                Resource:
+                  - !Sub 'arn:aws:bedrock:us-east-1::foundation-model/amazon.nova-lite-v1:0'
+
+  # Lex V2 Bot
+  SentraCareerBot:
+    Type: AWS::Lex::Bot
+    Properties:
+      Name: !Sub 'SentraCareerBot-${Environment}'
+      Description: 'The purpose of Sentra here is to provide veterans transition into the civilian workforce with the help and resources they need to integrate into society and establish meaningful careers highlighting a good return on their career investment. VetROI™'
+      RoleArn: !GetAtt LexBotRole.Arn
+      DataPrivacy:
+        ChildDirected: false
+      IdleSessionTTLInSeconds: 300
+      BotTags:
+        - Key: Application
+          Value: VetROI
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: ManagedBy
+          Value: CloudFormation
+      TestBotAliasTags:
+        - Key: Type
+          Value: TestAlias
+      BotLocales:
+        - LocaleId: en_US
+          Description: 'English US locale for Sentra Career Bot'
+          NluConfidenceThreshold: 0.40
+          VoiceSettings:
+            VoiceId: Joanna
+          SlotTypes:
+            - SlotTypeName: CareerFieldType
+              Description: 'Types of career fields veterans might be interested in'
+              SlotTypeValues:
+                - SampleValue:
+                    Value: technology
+                  Synonyms:
+                    - SynonymValue: tech
+                    - SynonymValue: IT
+                    - SynonymValue: software
+                - SampleValue:
+                    Value: healthcare
+                  Synonyms:
+                    - SynonymValue: medical
+                    - SynonymValue: health
+                - SampleValue:
+                    Value: logistics
+                  Synonyms:
+                    - SynonymValue: supply chain
+                    - SynonymValue: operations
+                - SampleValue:
+                    Value: security
+                  Synonyms:
+                    - SynonymValue: law enforcement
+                    - SynonymValue: protective services
+              ValueSelectionSetting:
+                ResolutionStrategy: TOP_RESOLUTION
+            - SlotTypeName: MilitaryBranchType
+              Description: 'Military service branches'
+              SlotTypeValues:
+                - SampleValue:
+                    Value: Army
+                - SampleValue:
+                    Value: Navy
+                - SampleValue:
+                    Value: Air Force
+                - SampleValue:
+                    Value: Marines
+                - SampleValue:
+                    Value: Coast Guard
+                - SampleValue:
+                    Value: Space Force
+              ValueSelectionSetting:
+                ResolutionStrategy: TOP_RESOLUTION
+          Intents:
+            - IntentName: GetCareerAdvice
+              Description: 'Veteran seeking career transition advice'
+              SampleUtterances:
+                - Utterance: I need help finding a civilian job
+                - Utterance: What careers match my military experience
+                - Utterance: How do I translate my MOS to civilian jobs
+                - Utterance: I'm transitioning out and need career guidance
+                - Utterance: What jobs are good for veterans
+              IntentConfirmationSetting:
+                PromptSpecification:
+                  MessageGroupsList:
+                    - Message:
+                        PlainTextMessage:
+                          Value: Would you like me to help you explore career options based on your military experience?
+                  MaxRetries: 2
+                DeclinationResponse:
+                  MessageGroupsList:
+                    - Message:
+                        PlainTextMessage:
+                          Value: No problem. Is there anything else I can help you with regarding your transition?
+              IntentClosingSetting:
+                ClosingResponse:
+                  MessageGroupsList:
+                    - Message:
+                        PlainTextMessage:
+                          Value: I've provided some career guidance based on your military experience. Remember, your skills are valuable in the civilian workforce!
+            - IntentName: UploadDD214
+              Description: 'Veteran wants to upload DD214 for analysis'
+              SampleUtterances:
+                - Utterance: I want to upload my DD214
+                - Utterance: Can I share my military records
+                - Utterance: How do I upload my discharge papers
+                - Utterance: I have my DD214 ready
+              FulfillmentCodeHook:
+                Enabled: true
+            - IntentName: CheckProcessingStatus
+              Description: 'Check DD214 processing status'
+              SampleUtterances:
+                - Utterance: What's the status of my DD214
+                - Utterance: Is my document processed yet
+                - Utterance: Check my upload status
+              Slots:
+                - SlotName: documentId
+                  Description: 'Document ID for status check'
+                  SlotTypeName: AMAZON.AlphaNumeric
+                  ValueElicitationSetting:
+                    SlotConstraint: Required
+                    PromptSpecification:
+                      MessageGroupsList:
+                        - Message:
+                            PlainTextMessage:
+                              Value: I'll need your document ID to check the status. Do you have it?
+                      MaxRetries: 2
+            - IntentName: AMAZON.FallbackIntent
+              Description: 'Default fallback intent'
+              ParentIntentSignature: AMAZON.FallbackIntent
+              FulfillmentCodeHook:
+                Enabled: true
+
+  # Bot Version
+  SentraCareerBotVersion:
+    Type: AWS::Lex::BotVersion
+    Properties:
+      BotId: !Ref SentraCareerBot
+      BotVersionLocaleSpecification:
+        - LocaleId: en_US
+          BotVersionLocaleDetails:
+            SourceBotVersion: DRAFT
+      Description: !Sub 'Version 1 - ${Environment}'
+
+  # Bot Alias for Production Use
+  SentraCareerBotAlias:
+    Type: AWS::Lex::BotAlias
+    Properties:
+      BotId: !Ref SentraCareerBot
+      BotAliasName: !Sub 'Production-${Environment}'
+      BotVersion: !GetAtt SentraCareerBotVersion.BotVersion
+      BotAliasLocaleSettings:
+        - LocaleId: en_US
+          BotAliasLocaleSettingsItem:
+            Enabled: true
+            CodeHookSpecification:
+              LambdaCodeHook:
+                CodeHookInterfaceVersion: '1.0'
+                LambdaArn: !Sub 'arn:aws:lambda:us-east-2:${AWS::AccountId}:function:VetROI_Recommend'
+      ConversationLogSettings:
+        TextLogSettings:
+          - Enabled: true
+            Destination:
+              CloudWatch:
+                CloudWatchLogGroupArn: !GetAtt LexConversationLogGroup.Arn
+                LogPrefix: !Sub 'lex-conversations/${Environment}'
+
+  # CloudWatch Log Group for Lex Conversations
+  LexConversationLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lex/conversations/sentra-career-bot-${Environment}'
+      RetentionInDays: 30
+
+  # Lambda Permission for Lex to invoke
+  LexInvokeLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: VetROI_Recommend
+      Action: lambda:InvokeFunction
+      Principal: lexv2.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub 'arn:aws:lex:us-east-1:${AWS::AccountId}:bot-alias/${SentraCareerBot}/*'
+
+Outputs:
+  BotId:
+    Description: Lex Bot ID
+    Value: !Ref SentraCareerBot
+    Export:
+      Name: !Sub '${AWS::StackName}-BotId'
+
+  BotAliasId:
+    Description: Lex Bot Alias ID
+    Value: !Ref SentraCareerBotAlias
+    Export:
+      Name: !Sub '${AWS::StackName}-BotAliasId'
+
+  BotName:
+    Description: Lex Bot Name
+    Value: !Sub 'SentraCareerBot-${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-BotName'
+
+  WebIntegrationURL:
+    Description: URL for web integration
+    Value: !Sub 'https://lex-runtime.us-east-1.amazonaws.com/bot/${SentraCareerBot}/alias/${SentraCareerBotAlias}/user/userId/content'
+
+  IntegrationInstructions:
+    Description: How to integrate with your frontend
+    Value: |
+      To integrate this Lex bot with your frontend:
+      1. Use AWS SDK for JavaScript (aws-sdk or @aws-sdk/client-lex-runtime-v2)
+      2. Configure credentials for us-east-1 region
+      3. Use the Bot ID and Alias ID from outputs
+      4. Send messages using RecognizeText API

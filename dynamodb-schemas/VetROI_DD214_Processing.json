@@ -1,0 +1,70 @@
+{
+    "Table": {
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "document_id",
+                "AttributeType": "S"
+            },
+            {
+                "AttributeName": "user_id",
+                "AttributeType": "S"
+            }
+        ],
+        "TableName": "VetROI_DD214_Processing",
+        "KeySchema": [
+            {
+                "AttributeName": "document_id",
+                "KeyType": "HASH"
+            }
+        ],
+        "TableStatus": "ACTIVE",
+        "CreationDateTime": "2025-06-16T21:22:26.681000-05:00",
+        "ProvisionedThroughput": {
+            "NumberOfDecreasesToday": 0,
+            "ReadCapacityUnits": 0,
+            "WriteCapacityUnits": 0
+        },
+        "TableSizeBytes": 28159,
+        "ItemCount": 11,
+        "TableArn": "arn:aws:dynamodb:us-east-2:205930636302:table/VetROI_DD214_Processing",
+        "TableId": "e4854dda-1c27-4aa6-8cfe-8dadcd756f9a",
+        "BillingModeSummary": {
+            "BillingMode": "PAY_PER_REQUEST",
+            "LastUpdateToPayPerRequestDateTime": "2025-06-16T21:22:26.681000-05:00"
+        },
+        "GlobalSecondaryIndexes": [
+            {
+                "IndexName": "UserIdIndex",
+                "KeySchema": [
+                    {
+                        "AttributeName": "user_id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "ALL"
+                },
+                "IndexStatus": "ACTIVE",
+                "ProvisionedThroughput": {
+                    "NumberOfDecreasesToday": 0,
+                    "ReadCapacityUnits": 0,
+                    "WriteCapacityUnits": 0
+                },
+                "IndexSizeBytes": 28159,
+                "ItemCount": 11,
+                "IndexArn": "arn:aws:dynamodb:us-east-2:205930636302:table/VetROI_DD214_Processing/index/UserIdIndex",
+                "WarmThroughput": {
+                    "ReadUnitsPerSecond": 12000,
+                    "WriteUnitsPerSecond": 4000,
+                    "Status": "ACTIVE"
+                }
+            }
+        ],
+        "DeletionProtectionEnabled": false,
+        "WarmThroughput": {
+            "ReadUnitsPerSecond": 12000,
+            "WriteUnitsPerSecond": 4000,
+            "Status": "ACTIVE"
+        }
+    }
+}

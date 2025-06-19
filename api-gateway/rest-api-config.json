@@ -1,0 +1,16 @@
+{
+    "id": "wzj49zuaaa",
+    "name": "VetROI_DD214_API",
+    "description": "API for DD214 document processing",
+    "createdDate": "2025-06-16T21:30:38-05:00",
+    "apiKeySource": "HEADER",
+    "endpointConfiguration": {
+        "types": [
+            "EDGE"
+        ],
+        "ipAddressType": "ipv4"
+    },
+    "tags": {},
+    "disableExecuteApiEndpoint": false,
+    "rootResourceId": "6sur2b191i"
+}

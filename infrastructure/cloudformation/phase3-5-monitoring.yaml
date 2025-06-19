@@ -1,0 +1,390 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'VetROI Phase 3.5 - Monitoring and Alarms'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: test
+    AllowedValues:
+      - test
+      - production
+    Description: Deployment environment
+
+  EmailAddress:
+    Type: String
+    Default: christian.perez0321@gmail.com
+    Description: Email address for alarm notifications
+
+  ApiId:
+    Type: String
+    Default: jg5fae61lj
+    Description: HTTP API Gateway ID
+
+Resources:
+  # SNS Topic for Alarms
+  AlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub 'VetROI-Alarms-${Environment}'
+      DisplayName: VetROI System Alarms
+      Subscription:
+        - Endpoint: !Ref EmailAddress
+          Protocol: email
+
+  # Lambda Function Alarms
+  RecommendLambdaErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-Recommend-Errors-${Environment}'
+      AlarmDescription: Alerts when Recommend Lambda has errors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: VetROI_Recommend
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  RecommendLambdaThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-Recommend-Throttles-${Environment}'
+      AlarmDescription: Alerts when Recommend Lambda is throttled
+      MetricName: Throttles
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: VetROI_Recommend
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  DD214ProcessorErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-DD214-Processor-Errors-${Environment}'
+      AlarmDescription: Alerts when DD214 Processor Lambda has errors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: VetROI_DD214_Processor
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  DD214InsightsErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-DD214-Insights-Errors-${Environment}'
+      AlarmDescription: Alerts when DD214 Insights Lambda has errors
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 3
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: FunctionName
+          Value: VetROI_DD214_Insights
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  # API Gateway Alarms
+  API4XXErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-API-4XX-Errors-${Environment}'
+      AlarmDescription: Alerts on high rate of 4XX errors
+      MetricName: 4xx
+      Namespace: AWS/ApiGateway
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 50
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref ApiId
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  API5XXErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-API-5XX-Errors-${Environment}'
+      AlarmDescription: Alerts on any 5XX errors
+      MetricName: 5xx
+      Namespace: AWS/ApiGateway
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref ApiId
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  APILatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-API-High-Latency-${Environment}'
+      AlarmDescription: Alerts when API latency is high
+      MetricName: Latency
+      Namespace: AWS/ApiGateway
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 2000  # 2 seconds
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: ApiId
+          Value: !Ref ApiId
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  # DynamoDB Alarms
+  SessionsTableThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-Sessions-Table-Throttles-${Environment}'
+      AlarmDescription: Alerts when Sessions table is throttled
+      MetricName: UserErrors
+      Namespace: AWS/DynamoDB
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: TableName
+          Value: VetROI_Sessions
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  DD214ProcessingTableThrottleAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-DD214-Table-Throttles-${Environment}'
+      AlarmDescription: Alerts when DD214 Processing table is throttled
+      MetricName: UserErrors
+      Namespace: AWS/DynamoDB
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 10
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: TableName
+          Value: VetROI_DD214_Processing
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  # Step Functions Alarms
+  DD214StepFunctionFailureAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-DD214-StepFunction-Failures-${Environment}'
+      AlarmDescription: Alerts when DD214 processing workflow fails
+      MetricName: ExecutionsFailed
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 2
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: StateMachineArn
+          Value: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI-DD214-Processing'
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  DD214StepFunctionTimeoutAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub 'VetROI-DD214-StepFunction-Timeouts-${Environment}'
+      AlarmDescription: Alerts when DD214 processing times out
+      MetricName: ExecutionsTimedOut
+      Namespace: AWS/States
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanThreshold
+      Dimensions:
+        - Name: StateMachineArn
+          Value: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI-DD214-Processing'
+      AlarmActions:
+        - !Ref AlarmTopic
+      TreatMissingData: notBreaching
+
+  # CloudWatch Dashboard
+  VetROIDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub 'VetROI-Overview-${Environment}'
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/Lambda", "Invocations", { "stat": "Sum" } ],
+                  [ ".", "Errors", { "stat": "Sum" } ],
+                  [ ".", "Throttles", { "stat": "Sum" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "title": "Lambda Functions Overview",
+                "period": 300
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 0,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/ApiGateway", "Count", { "id": "m1", "stat": "Sum", "label": "API Calls" } ],
+                  [ ".", "4xx", { "id": "m2", "stat": "Sum", "label": "4XX Errors" } ],
+                  [ ".", "5xx", { "id": "m3", "stat": "Sum", "label": "5XX Errors" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "title": "API Gateway Metrics",
+                "period": 300,
+                "yAxis": {
+                  "left": {
+                    "min": 0
+                  }
+                }
+              }
+            },
+            {
+              "type": "metric",
+              "x": 0,
+              "y": 6,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/DynamoDB", "ConsumedReadCapacityUnits", "TableName", "VetROI_Sessions", { "stat": "Sum" } ],
+                  [ ".", "ConsumedWriteCapacityUnits", ".", ".", { "stat": "Sum" } ],
+                  [ ".", "UserErrors", ".", ".", { "stat": "Sum" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "title": "DynamoDB Sessions Table",
+                "period": 300
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12,
+              "y": 6,
+              "width": 12,
+              "height": 6,
+              "properties": {
+                "metrics": [
+                  [ "AWS/States", "ExecutionsStarted", "StateMachineArn", "arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI-DD214-Processing", { "stat": "Sum" } ],
+                  [ ".", "ExecutionsSucceeded", ".", ".", { "stat": "Sum" } ],
+                  [ ".", "ExecutionsFailed", ".", ".", { "stat": "Sum" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "title": "DD214 Processing Workflow",
+                "period": 300
+              }
+            }
+          ]
+        }
+
+  # Custom Metrics Log Groups
+  ApplicationLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/application/vetroi-${Environment}'
+      RetentionInDays: 30
+
+  # Metric Filters for Custom Alarms
+  DD214ProcessingSuccessMetric:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: /aws/lambda/VetROI_DD214_Insights
+      FilterPattern: 'insights generation complete'
+      MetricTransformations:
+        - MetricName: DD214ProcessingSuccess
+          MetricNamespace: VetROI/DD214
+          MetricValue: "1"
+          DefaultValue: 0
+
+  DD214ProcessingErrorMetric:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: /aws/lambda/VetROI_DD214_Insights
+      FilterPattern: 'ERROR'
+      MetricTransformations:
+        - MetricName: DD214ProcessingError
+          MetricNamespace: VetROI/DD214
+          MetricValue: "1"
+          DefaultValue: 0
+
+Outputs:
+  AlarmTopicArn:
+    Description: SNS Topic ARN for alarm notifications
+    Value: !Ref AlarmTopic
+    Export:
+      Name: !Sub '${AWS::StackName}-AlarmTopicArn'
+
+  DashboardURL:
+    Description: CloudWatch Dashboard URL
+    Value: !Sub 'https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards:name=VetROI-Overview-${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-DashboardURL'
+
+  MonitoringStatus:
+    Description: Monitoring configuration status
+    Value: !Sub |
+      Monitoring configured for:
+      - Lambda Functions: Errors, Throttles
+      - API Gateway: 4XX, 5XX, Latency
+      - DynamoDB: Throttles, Errors
+      - Step Functions: Failures, Timeouts
+      - Email Notifications: ${EmailAddress}

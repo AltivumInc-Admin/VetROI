@@ -1,0 +1,64 @@
+{
+  "mcpServers": {
+    "cost-analysis": {
+      "type": "stdio",
+      "command": "python3",
+      "args": [
+        "-m",
+        "cost_analysis_mcp_server"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/christianperez/Desktop/AWS MCP Servers/cost-analysis-mcp-server"
+      },
+      "workingDirectory": "/Users/christianperez/Desktop/AWS MCP Servers/cost-analysis-mcp-server"
+    },
+    "aws-diagram": {
+      "type": "stdio",
+      "command": "python3",
+      "args": [
+        "-m",
+        "aws_diagram_mcp_server"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/christianperez/Desktop/AWS MCP Servers/aws-diagram-mcp-server"
+      },
+      "workingDirectory": "/Users/christianperez/Desktop/AWS MCP Servers/aws-diagram-mcp-server"
+    },
+    "bedrock-kb-retrieval": {
+      "type": "stdio",
+      "command": "python3",
+      "args": [
+        "-m",
+        "bedrock_kb_retrieval_mcp_server"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/christianperez/Desktop/AWS MCP Servers/bedrock-kb-retrieval-mcp-server"
+      },
+      "workingDirectory": "/Users/christianperez/Desktop/AWS MCP Servers/bedrock-kb-retrieval-mcp-server"
+    },
+    "git-repo-research": {
+      "type": "stdio",
+      "command": "python3",
+      "args": [
+        "-m",
+        "git_repo_research_mcp_server"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/christianperez/Desktop/AWS MCP Servers/git-repo-research-mcp-server"
+      },
+      "workingDirectory": "/Users/christianperez/Desktop/AWS MCP Servers/git-repo-research-mcp-server"
+    },
+    "syntheticdata": {
+      "type": "stdio",
+      "command": "python3",
+      "args": [
+        "-m",
+        "syntheticdata_mcp_server"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/christianperez/Desktop/AWS MCP Servers/syntheticdata-mcp-server"
+      },
+      "workingDirectory": "/Users/christianperez/Desktop/AWS MCP Servers/syntheticdata-mcp-server"
+    }
+  }
+}

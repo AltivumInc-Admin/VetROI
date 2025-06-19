@@ -1,0 +1,81 @@
+{
+    "Items": [
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "07ssfyn",
+            "RouteKey": "OPTIONS /prod/recommend",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "2k6oz58",
+            "RouteKey": "POST /sentra/conversation",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "6ohqtb2",
+            "RouteKey": "POST /recommend",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "hplhfp7",
+            "RouteKey": "OPTIONS /sentra/conversation",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "lfkdb51",
+            "RouteKey": "OPTIONS /recommend",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "s8zkdpc",
+            "RouteKey": "GET /{proxy+}",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "wf8l7l6",
+            "RouteKey": "POST /prod/recommend",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "wuo7vyh",
+            "RouteKey": "GET /prod/career/{socCode}",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "x18g10i",
+            "RouteKey": "OPTIONS /prod/sentra/conversation",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "xl9behf",
+            "RouteKey": "OPTIONS /prod/career/{socCode}",
+            "Target": "integrations/5gdnz8n"
+        },
+        {
+            "ApiKeyRequired": false,
+            "AuthorizationType": "NONE",
+            "RouteId": "yk6o529",
+            "RouteKey": "POST /prod/sentra/conversation",
+            "Target": "integrations/5gdnz8n"
+        }
+    ]
+}

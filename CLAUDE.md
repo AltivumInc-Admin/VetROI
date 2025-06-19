@@ -229,4 +229,304 @@ curl https://jg5fae61lj.execute-api.us-east-2.amazonaws.com/prod/career/29-1141.
 
 ---
 
-*Last Updated: June 16, 2025 - After successful Phase 1 & 2 implementation*
+## ✅ Phase 2: DD214 Processing & AI Insights (COMPLETED - June 19, 2025)
+
+### DD214 Upload & Processing Pipeline
+Complete automated pipeline for DD214 document processing with PII protection and AI-powered career insights.
+
+#### User Flow
+1. **Secure Upload**
+   - Authenticated users upload DD214 PDF
+   - Pre-signed S3 URLs for direct upload
+   - File stored in `vetroi-dd214-secure` bucket
+
+2. **Automated Processing** (2.5 minutes end-to-end)
+   - S3 trigger starts Step Function workflow
+   - Textract OCR extracts text and fields
+   - Macie scans for PII (SSN, DoD ID, Address, DOB)
+   - Document redaction creates safe version
+   - AI generates personalized career insights
+
+3. **Results Delivery**
+   - Processing status available via API
+   - Redacted document accessible
+   - AI career recommendations based on actual military experience
+   - Resume bullets, interview prep, networking strategy
+
+#### Infrastructure Components
+```
+DD214 Processing Pipeline:
+├── S3 Buckets:
+│   ├── vetroi-dd214-secure (encrypted uploads)
+│   └── vetroi-dd214-redacted (PII-removed versions)
+├── Step Function: VetROI-DD214-Processing
+│   ├── StartTextractJob → OCR processing
+│   ├── ProcessTextractResults → Field extraction
+│   ├── StartMacieScan → PII detection
+│   ├── RedactDocument → Remove sensitive data
+│   ├── GenerateInsights → AI career analysis
+│   └── UpdateDynamoDB → Status tracking
+├── Lambda Functions:
+│   ├── VetROI_DD214_GenerateUploadURL
+│   ├── VetROI_DD214_GetStatus
+│   ├── VetROI_DD214_Processor
+│   ├── VetROI_DD214_Macie
+│   ├── VetROI_DD214_Insights
+│   └── VetROI_S3_DD214_Trigger
+├── DynamoDB: VetROI_DD214_Processing
+└── Cognito: VetROI-DD214-Users (authentication)
+```
+
+#### API Endpoints (All Working)
+1. **POST /dd214/upload-url** - Generate secure upload URL (requires auth)
+2. **GET /dd214/status/{documentId}** - Check processing status
+3. **GET /dd214/insights/{documentId}** - Get AI career insights
+4. **GET /dd214/redacted/{documentId}** - Access redacted document
+
+#### Key Features
+- **PII Protection**: Automatic detection and redaction of sensitive information
+- **AI Career Insights**: Personalized recommendations based on MOS, rank, experience
+- **Cost Efficient**: ~$0.25 per document processed
+- **Secure**: End-to-end encryption, authenticated uploads
+
+#### Critical Lambda Functions
+- **VetROI_Recommend** (`lambda_function.lambda_handler`)
+  - MUST use the handler that routes both `/recommend` and `/career/{socCode}`
+  - Contains critical routing logic to prevent "broken app" issues
+- **VetROI_DD214_Macie** 
+  - Must retrieve `extracted_text` from DynamoDB, not S3
+  - Prevents "Unable to retrieve document text" errors
+- **VetROI_DD214_Insights**
+  - Requires null-safe string operations (`str(field or '').lower()`)
+  - Uses actual DD214 data to prevent AI hallucination
+
+---
+
+## 🏗️ CloudFormation Migration (COMPLETED - June 19, 2025)
+
+### Infrastructure as Code Implementation
+Comprehensive CloudFormation templates for disaster recovery and environment replication.
+
+#### Phase 1: Data Resources ✅
+- Imported existing S3 buckets and DynamoDB tables
+- Preserved all production data and configurations
+- Stack: `vetroi-resources-import`
+
+#### Phase 2: Lambda & IAM ✅
+- Created Lambda dependency layer (41MB)
+- Deployed Lambda functions with proper IAM roles
+- Stack: `vetroi-lambda-test`
+
+#### Phase 3: API & Event Integration ✅
+- **3.1**: API Gateway configuration
+- **3.2**: Step Functions for DD214 processing
+- **3.3**: S3 event notifications
+- **3.4**: Lambda API integrations
+- **3.5**: CloudWatch monitoring & alarms
+- Stacks: `vetroi-api-test`, `vetroi-stepfunctions-test`, `vetroi-lambda-integrations-v2`, `vetroi-monitoring-v2`
+
+### Migration Journey & Fixes
+During the CloudFormation migration, several critical issues were identified and resolved:
+
+1. **CORS Error Fix**: Updated Lambda handler to support HTTP API v2 event format
+2. **Career Endpoint Fix**: Deployed correct routing logic for `/career/{socCode}` endpoint
+3. **Lambda Import Errors**: Removed `aws_xray_sdk` dependencies, created proper layer
+4. **Step Function JSONPath**: Fixed parameter passing for RedactDocument and GenerateInsights
+5. **AI Hallucination Fix**: Updated Macie Lambda to retrieve text from DynamoDB instead of S3
+
+### What's In CloudFormation
+```
+✅ Managed by CloudFormation:
+├── Lambda Functions (with dependencies)
+├── API Gateway (all endpoints)
+├── DynamoDB Tables (imported)
+├── S3 Buckets (imported)
+├── Step Functions (DD214 workflow)
+├── IAM Roles & Policies
+├── CloudWatch Alarms & Dashboard
+└── Monitoring & Logging
+
+❌ NOT in CloudFormation (by design):
+├── Cognito (has user data, manual)
+├── Amplify (GitHub integration, manual)
+└── Lex Bot (us-east-1, manual)
+```
+
+### Monitoring & Observability
+- **CloudWatch Dashboard**: Real-time system health
+- **Email Alerts**: christian.perez0321@gmail.com
+- **Metrics Tracked**: API errors, Lambda performance, DynamoDB throttling
+- **Custom Alarms**: DD214 processing failures, high latency
+
+---
+
+## 🤖 AI Integration Status
+
+### Amazon Lex - SentraCareerBot ✅
+- **Bot ID**: IV2NSREVFS (us-east-1)
+- **Purpose**: Conversational career guidance
+- **Status**: Available and integrated with UI
+- **Cross-Region**: Lex (us-east-1) → Lambda (us-east-2)
+
+### Amazon Bedrock ✅
+- **Model**: Amazon Nova Lite v1
+- **Used For**: DD214 insights generation
+- **Integration**: Direct API calls from Lambda
+- **Response Quality**: Excellent career recommendations
+
+---
+
+## 📊 Cost Analysis & Tracking
+
+### DD214 Processing Costs
+Per document processed:
+- Textract: $0.015
+- Macie: $0.040
+- Lambda: $0.087
+- Bedrock: $0.100
+- Storage: $0.005
+- **Total**: ~$0.25 per DD214
+
+### Monthly Projections
+- 100 documents: $25
+- 1,000 documents: $250
+- 10,000 documents: $2,500
+
+### Cost Tracking Implementation (June 19, 2025)
+- **Resource Tagging**: All DD214-related resources tagged with `CostCenter: DD214Processing`
+- **Tag-Based Billing**: Enabled in AWS Cost Allocation Tags
+- **Cost Explorer Views**: Custom reports for DD214 processing costs
+- **Python Script**: `scripts/track_dd214_costs.py` for automated reporting
+- **CloudFormation**: `infrastructure/cost-tracking.yaml` for policy enforcement
+
+---
+
+## 🔧 Development Workflow
+
+### Code Management
+```
+GitHub Repository
+├── /frontend → Amplify (auto-deploy on push)
+├── /lambda → Lambda functions (manual deploy)
+├── /infrastructure/cloudformation → IaC templates
+└── All changes tracked in Git
+```
+
+### Deployment Process
+1. **Frontend**: Git push → Amplify auto-builds → Live
+2. **Backend**: Git push → Manual CloudFormation update
+3. **Database**: CloudFormation manages structure, not data
+
+### Git & CloudFormation Workflow
+- **Git Repository**: Version control for all code and CloudFormation templates
+- **CloudFormation**: Infrastructure deployment (separate from Git)
+- **Key Understanding**: Pushing to Git does NOT auto-deploy CloudFormation
+- **Production Safety**: Current app continues working regardless of Git commits
+
+### Environment Variables
+- Stored in respective services (Amplify, Lambda)
+- Secrets in AWS Secrets Manager
+- No hardcoded credentials
+
+---
+
+## 🚨 Critical Notes
+
+### Production Stability
+- **Working Production**: All services operational
+- **CloudFormation**: Templates ready but not required for operation
+- **No Breaking Changes**: CF deployment is optional
+
+### Known Issues & Fixes Applied
+1. **DD214 Insights Error**: Fixed null handling in `.lower()` calls
+2. **Redaction Issue**: Fixed DynamoDB text retrieval
+3. **Import Errors**: Removed X-Ray SDK dependencies
+4. **Step Function**: Fixed JSONPath parameter issues
+5. **CORS Preflight Error**: Fixed by updating Lambda to handle HTTP API v2 format
+6. **Career Detail Broken**: Fixed by deploying correct handler with routing logic
+7. **AI Hallucination**: Fixed by ensuring Macie Lambda retrieves actual DD214 text
+
+### Best Practices
+1. Test all Lambda changes locally first
+2. Use CloudFormation for new resources
+3. Keep Cognito/Amplify manual (user data)
+4. Monitor costs via tagging
+
+---
+
+## 📈 Next Steps & Roadmap
+
+### Immediate Priorities
+1. ✅ Production monitoring active
+2. ✅ Cost tracking implemented
+3. ⏳ Sentra AI chat enhancement
+4. ⏳ User dashboard features
+
+### Future Enhancements
+- PDF generation for redacted DD214s
+- Batch processing capabilities
+- Enterprise accounts
+- Advanced analytics
+- Mobile app
+
+### Technical Debt
+- Complete CI/CD pipeline setup
+- Automated testing framework
+- Performance optimization
+- Multi-region deployment
+
+---
+
+## 📋 Infrastructure Inventory (June 19, 2025)
+
+### Complete AWS Resource List
+
+#### Lambda Functions (12)
+1. **VetROI_Recommend** - Career recommendations & O*NET integration
+2. **VetROI_DD214_GenerateUploadURL** - Pre-signed S3 URLs
+3. **VetROI_DD214_GetStatus** - Processing status check
+4. **VetROI_DD214_GetInsights** - AI career insights retrieval
+5. **VetROI_DD214_GetRedacted** - Redacted document access
+6. **VetROI_DD214_Processor** - Textract OCR processing
+7. **VetROI_DD214_Macie** - PII detection & redaction
+8. **VetROI_DD214_Insights** - AI insights generation
+9. **VetROI_S3_DD214_Trigger** - S3 event handler
+10. **VetROI_ONET_Refresh** - O*NET data updates
+11. **VetROI_DATA** - Data pipeline
+12. **VetROI-BucketNotification-Function** - CloudFormation custom resource
+
+#### DynamoDB Tables (5)
+1. **VetROI_Sessions** - User session data
+2. **VetROI_DD214_Processing** - DD214 processing status
+3. **VetROI_CareerInsights** - AI-generated insights
+4. **VetROI_Conversations** - Chat history
+5. **VetROI_UserDocuments** - Document metadata
+
+#### S3 Buckets (5)
+1. **altroi-data** - O*NET career data lake
+2. **vetroi-dd214-secure** - Encrypted DD214 uploads
+3. **vetroi-dd214-redacted** - PII-removed documents
+4. **vetroi-lambda-artifacts-****** - Lambda deployment packages
+5. **amplify-vetroi-****** - Amplify hosting
+
+#### API Gateway (2)
+1. **jg5fae61lj** - HTTP API (Production)
+2. **wzj49zuaaa** - REST API (Legacy)
+
+#### Step Functions (3)
+1. **VetROI-DD214-Processing** - DD214 workflow
+2. **VetROI_DATA** - Data refresh pipeline
+3. **VetROI_ONET_Refresh_prod** - Scheduled O*NET updates
+
+#### Other Services
+- **Cognito User Pool**: us-east-2_zVjrLf0jA
+- **Cognito Identity Pool**: us-east-2:10f0038f-acb9-44c2-a433-c9aa12185217
+- **Amplify App**: d34razwlkdgpdv
+- **CloudFront Distribution**: vetroi.altivum.ai
+- **Lex Bot**: SentraCareerBot (us-east-1)
+- **Secrets Manager**: ONET credentials
+- **SNS Topic**: vetroi-monitoring-alerts
+
+---
+
+*Last Updated: June 19, 2025 - After CloudFormation migration, DD214 processing implementation, and comprehensive cost tracking setup*

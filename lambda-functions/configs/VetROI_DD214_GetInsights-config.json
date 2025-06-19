@@ -1,0 +1,44 @@
+{
+    "FunctionName": "VetROI_DD214_GetInsights",
+    "FunctionArn": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_GetInsights",
+    "Runtime": "python3.12",
+    "Role": "arn:aws:iam::205930636302:role/VetROI-Lambda-ExecutionRole",
+    "Handler": "lambda_function.lambda_handler",
+    "CodeSize": 1564,
+    "Description": "",
+    "Timeout": 30,
+    "MemorySize": 256,
+    "LastModified": "2025-06-19T07:43:24.030+0000",
+    "CodeSha256": "1+ZXjLYVuV2p8jxngiGsrEAmFeSm915iDRDzsr0Qcow=",
+    "Version": "$LATEST",
+    "Environment": {
+        "Variables": {
+            "INSIGHTS_TABLE": "VetROI_CareerInsights",
+            "PROCESSING_TABLE": "VetROI_DD214_Processing"
+        }
+    },
+    "TracingConfig": {
+        "Mode": "PassThrough"
+    },
+    "RevisionId": "f3534db0-da69-463f-bdd2-b0bbf4103424",
+    "State": "Active",
+    "LastUpdateStatus": "Successful",
+    "PackageType": "Zip",
+    "Architectures": [
+        "x86_64"
+    ],
+    "EphemeralStorage": {
+        "Size": 512
+    },
+    "SnapStart": {
+        "ApplyOn": "None",
+        "OptimizationStatus": "Off"
+    },
+    "RuntimeVersionConfig": {
+        "RuntimeVersionArn": "arn:aws:lambda:us-east-2::runtime:b5ce413242a9b8ef00a46980d4de4b943c0679481f66d34d1a1dd06ad4e16fe8"
+    },
+    "LoggingConfig": {
+        "LogFormat": "Text",
+        "LogGroup": "/aws/lambda/VetROI_DD214_GetInsights"
+    }
+}
