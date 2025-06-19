@@ -23,48 +23,48 @@ export const UserAgreement: React.FC<UserAgreementProps> = ({ isOpen, onAccept, 
             <h3>📋 Your DD214 Data</h3>
             <p>By uploading your DD214, you acknowledge and agree to the following:</p>
             <ul>
-              <li>Your DD214 will be securely uploaded and stored using AWS encryption</li>
-              <li>Personal Identifiable Information (PII) such as SSN will be automatically redacted</li>
-              <li>Your military service data will be used to provide personalized career recommendations</li>
-              <li>We maintain your document for the duration of your account unless you request deletion</li>
+              <li>Your file will be securely stored using <strong>AES-256 encryption</strong> (at rest) and <strong>TLS 1.2+ encryption</strong> (in transit) via AWS infrastructure.</li>
+              <li>Any <strong>Personally Identifiable Information (PII)</strong>, including your Social Security Number, will be <strong>automatically redacted</strong> before further processing.</li>
+              <li>Your military service data will be used solely to generate <strong>personalized career recommendations</strong> through the VetROI™ platform.</li>
+              <li>Your document will be retained <strong>only while your account remains active</strong>, or until you request permanent deletion.</li>
             </ul>
           </div>
 
           <div className="agreement-section">
             <h3>🔒 Data Security & Privacy</h3>
             <ul>
-              <li><strong>Encryption:</strong> All documents are encrypted at rest and in transit</li>
-              <li><strong>Access Control:</strong> Only you can access your uploaded documents</li>
-              <li><strong>No Sharing:</strong> We will never sell or share your personal data with third parties</li>
-              <li><strong>Compliance:</strong> We follow industry best practices for data protection</li>
+              <li><strong>Encryption:</strong> All documents are encrypted in transit and at rest.</li>
+              <li><strong>Access Control:</strong> Only you can access your uploaded documents unless explicitly authorized.</li>
+              <li><strong>Zero Sharing Policy:</strong> We never sell, share, or monetize your personal data.</li>
+              <li><strong>Compliance:</strong> We follow NIST 800-53 aligned best practices for data protection.</li>
             </ul>
           </div>
 
           <div className="agreement-section">
             <h3>🗑️ Your Rights</h3>
             <ul>
-              <li><strong>Data Access:</strong> You can request a copy of all your stored data at any time</li>
-              <li><strong>Data Deletion:</strong> You can request complete deletion of your account and all associated data</li>
-              <li><strong>Data Portability:</strong> Export your career analysis results anytime</li>
-              <li><strong>Opt-Out:</strong> You can choose not to upload your DD214 and still use basic features</li>
+              <li><strong>Access:</strong> Request a copy of all your stored data at any time.</li>
+              <li><strong>Deletion:</strong> Request full deletion of your DD214 and associated records at any time.</li>
+              <li><strong>Portability:</strong> Download your career analysis results at your discretion.</li>
+              <li><strong>Consent Choice:</strong> You can choose not to upload your DD214 and still access basic platform features.</li>
             </ul>
           </div>
 
           <div className="agreement-section">
             <h3>📊 How We Use Your Data</h3>
             <ul>
-              <li>Generate personalized career matches based on your military experience</li>
-              <li>Provide salary and job market insights specific to your skills</li>
-              <li>Improve our algorithms using anonymized, aggregated data</li>
-              <li>Never for marketing or advertising purposes</li>
+              <li>Match your service background to civilian careers using semantic and statistical inference.</li>
+              <li>Provide job market insights including salary projections and growth forecasts.</li>
+              <li>Improve VetROI™ algorithms using <strong>anonymized and aggregated</strong> career data.</li>
+              <li>Never use your data for marketing, retargeting, or advertising.</li>
             </ul>
           </div>
 
           <div className="agreement-notice">
             <p>
-              <strong>Data Retention:</strong> Your DD214 data will be retained for as long as your account 
-              is active. If you don't log in for 12 months, we'll send you a reminder before any action 
-              is taken. You can request immediate deletion at any time by contacting support.
+              <strong>📅 Data Retention Policy:</strong> Your DD214 is retained <strong>only while your account is active.</strong> 
+              If your account is inactive for 12 months, we'll notify you before any data is deleted. 
+              You may request immediate deletion at any time by contacting us at <strong>support@altivum.io</strong>.
             </p>
           </div>
         </div>
