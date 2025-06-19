@@ -1,0 +1,243 @@
+VetROI™ ACTIVE COMPONENTS INVENTORY
+===================================
+Generated: June 19, 2025
+Purpose: Complete inventory of all VetROI components for X-Ray implementation
+
+===========================================
+LAMBDA FUNCTIONS (9 Active)
+===========================================
+
+Core Application Functions:
+--------------------------
+1. VetROI_Recommend
+   - Main career recommendation engine
+   - Integrates with O*NET API for military-to-civilian career matching
+   - Handles /recommend endpoint (POST) - translates MOS to 25 careers
+   - Handles /career/{socCode} endpoint (GET) - detailed career data
+   - Memory: 1024MB, Timeout: 30s
+   - External API calls to O*NET Web Services
+
+2. VetROI_Sentra_Conversation
+   - AI-powered career counselor chat interface
+   - Uses Amazon Bedrock (Claude 3.5 Sonnet) for conversations
+   - Maintains conversation history in DynamoDB
+   - Handles /sentra/conversation endpoint (POST)
+   - Memory: 2048MB, Timeout: 30s
+
+DD214 Processing Pipeline Functions:
+-----------------------------------
+3. VetROI_DD214_Parser
+   - Main DD214 document processor and orchestrator
+   - Called multiple times by Step Functions with different operations:
+     * validate: Validates document exists in S3
+     * textract_complete: Processes Textract results
+     * enhance_profile: Combines all data and calls Bedrock for AI insights
+   - Memory: 2048MB, Timeout: 60s
+
+4. VetROI_DD214_UploadTrigger
+   - S3 event-triggered function
+   - Initiates Step Functions execution when DD214 uploaded
+   - Extracts document ID from S3 key
+   - Memory: 512MB, Timeout: 30s
+
+5. VetROI_DD214_PresignedUrl
+   - Generates secure presigned URLs for DD214 uploads
+   - Handles /dd214/presigned-url endpoint (POST)
+   - Creates unique document IDs and S3 paths
+   - Memory: 512MB, Timeout: 10s
+
+6. VetROI_DD214_Status
+   - Checks DD214 processing status from Step Functions
+   - Handles /dd214/status/{documentId} endpoint (GET)
+   - Returns processing state and results
+   - Memory: 512MB, Timeout: 10s
+
+7. VetROI_Macie_Handler
+   - Manages Amazon Macie PII scanning operations
+   - Three operations:
+     * scan: Creates Macie classification job
+     * process_findings: Checks job status and retrieves findings
+     * redact: Creates redacted version of document
+   - Memory: 1024MB, Timeout: 300s (5 min)
+
+Data Management Functions:
+-------------------------
+8. VetROI_ONET_Refresh
+   - Refreshes O*NET career data cache nightly
+   - Downloads and processes career data from O*NET
+   - Stores in S3 cache bucket
+   - Memory: 1024MB, Timeout: 900s (15 min)
+
+9. SharedLibrariesLayer
+   - Common Python dependencies for all functions
+   - Includes: boto3, requests, aws-lambda-powertools
+
+===========================================
+S3 BUCKETS (3 Active)
+===========================================
+
+1. vetroi-dd214-uploads-{AccountId}
+   - Stores original DD214 documents
+   - KMS encryption enabled
+   - 90-day lifecycle policy for automatic deletion
+   - S3 event notifications trigger Lambda
+   - Macie scanning enabled for PII detection
+
+2. vetroi-onet-cache-{AccountId}
+   - Caches O*NET career data
+   - AES256 encryption
+   - Stores 1,139 career profiles
+   - Refreshed nightly by Lambda
+
+3. altroi-data
+   - O*NET data lake (referenced in code)
+   - Structure:
+     * /soc-details/{soc}.json - Detailed career information
+     * /master-soc-list/ - Complete SOC code list
+     * /military-crosswalk/ - Military to civilian mappings
+
+===========================================
+DYNAMODB TABLES (2 Active)
+===========================================
+
+1. VetROI_Sessions
+   - Main session and profile storage
+   - Schema:
+     * Partition Key: session_id (String)
+     * Sort Key: timestamp (Number)
+   - Features:
+     * DynamoDB Streams enabled
+     * Point-in-time recovery
+     * On-demand billing
+   - Stores: User sessions, veteran profiles, career selections
+
+2. VetROI_Sentra_Conversations
+   - AI conversation history storage
+   - Schema:
+     * Partition Key: conversationId (String)
+   - Features:
+     * TTL enabled for automatic cleanup
+     * On-demand billing
+   - Stores: Sentra AI chat history
+
+===========================================
+STEP FUNCTIONS STATE MACHINE (1 Active)
+===========================================
+
+VetROI-DD214-Processing
+   - Orchestrates complete DD214 processing pipeline
+   - States in order:
+     1. ValidateDocument - Lambda: VetROI_DD214_Parser
+     2. StartTextractJob - AWS SDK: Textract
+     3. WaitForTextract - Wait state (30s)
+     4. GetTextractStatus - AWS SDK: Textract
+     5. CheckTextractComplete - Choice state
+     6. ProcessTextractResults - Lambda: VetROI_DD214_Parser
+     7. RunMacieScan - Lambda: VetROI_Macie_Handler
+     8. WaitForMacieScan - Wait state (10s)
+     9. CheckMacieStatus - Lambda: VetROI_Macie_Handler
+     10. IsMacieScanComplete - Choice state
+     11. RedactPIIIfNeeded - Choice state
+     12. RedactPII - Lambda: VetROI_Macie_Handler (conditional)
+     13. AnalyzeWithComprehend - Parallel state:
+         * DetectEntities - AWS SDK: Comprehend
+         * DetectKeyPhrases - AWS SDK: Comprehend
+         * DetectSentiment - AWS SDK: Comprehend
+     14. EnhanceWithAI - Lambda: VetROI_DD214_Parser
+     15. StoreEnhancedProfile - AWS SDK: DynamoDB
+     16. NotifyCompletion - AWS SDK: SNS
+     17. Success/Failed - End states
+
+===========================================
+API GATEWAY
+===========================================
+
+VetROI-API (REST API)
+   - Stage: prod
+   - Base URL: https://{api-id}.execute-api.us-east-2.amazonaws.com/prod
+   - Endpoints:
+     * POST /recommend - Career recommendations (VetROI_Recommend)
+     * GET /career/{socCode} - Career details (VetROI_Recommend)
+     * POST /dd214/presigned-url - Upload URL (VetROI_DD214_PresignedUrl)
+     * GET /dd214/status/{documentId} - Status check (VetROI_DD214_Status)
+     * POST /sentra/conversation - AI chat (VetROI_Sentra_Conversation)
+   - Features:
+     * CORS enabled
+     * X-Ray tracing enabled
+     * API key authentication (optional)
+
+===========================================
+OTHER AWS SERVICES
+===========================================
+
+1. AWS Secrets Manager
+   - VetROI/ONet/ApiCredentials - O*NET API credentials
+
+2. Amazon SNS
+   - VetROI-DD214-Notifications - Processing completion notifications
+
+3. Amazon Macie
+   - PII detection for DD214 documents
+   - Custom identifiers configured
+   - Classification jobs for each document
+
+4. AWS Textract
+   - Document analysis for DD214s
+   - Extracts forms and tables
+   - Asynchronous processing with job polling
+
+5. Amazon Comprehend
+   - NLP analysis of DD214 content
+   - Operations: DetectEntities, DetectKeyPhrases, DetectSentiment
+
+6. Amazon Bedrock
+   - Model: anthropic.claude-3-5-sonnet-20241022-v2:0
+   - Used for:
+     * Sentra AI career counselor
+     * DD214 profile enhancement
+
+7. CloudWatch Logs
+   - Log groups with 30-day retention:
+     * /aws/lambda/VetROI_Recommend
+     * /aws/lambda/VetROI_DD214_Parser
+     * /aws/lambda/VetROI_Macie_Handler
+     * /aws/lambda/VetROI_Sentra_Conversation
+     * All other Lambda functions
+
+===========================================
+COMPONENT INTERACTION FLOW
+===========================================
+
+Main Career Recommendation Flow:
+1. User → API Gateway → VetROI_Recommend → O*NET API
+2. O*NET API → VetROI_Recommend → DynamoDB (Sessions)
+3. DynamoDB → API Gateway → User
+
+DD214 Processing Flow:
+1. User → API Gateway → VetROI_DD214_PresignedUrl → S3 presigned URL
+2. User uploads → S3 → VetROI_DD214_UploadTrigger
+3. UploadTrigger → Step Functions → Full pipeline (see above)
+4. Step Functions → DynamoDB → SNS → User notification
+
+AI Counselor Flow:
+1. User → API Gateway → VetROI_Sentra_Conversation
+2. Lambda → DynamoDB (get history) → Bedrock (AI)
+3. Bedrock → Lambda → DynamoDB (save) → API Gateway → User
+
+===========================================
+NOTES FOR X-RAY IMPLEMENTATION
+===========================================
+
+Critical Paths to Instrument:
+1. O*NET API calls (external HTTP)
+2. Step Functions orchestration
+3. Bedrock AI calls
+4. Textract/Macie/Comprehend service calls
+5. DynamoDB operations
+6. S3 operations
+
+High-Value Tracing Points:
+- DD214 processing time per stage
+- O*NET API response times
+- AI inference latency
+- Cost-heavy operations (Textract, Bedrock)

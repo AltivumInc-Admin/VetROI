@@ -4,6 +4,14 @@ import os
 from typing import Dict, Any, List
 from datetime import datetime
 import re
+from aws_xray_sdk.core import patch_all
+from aws_lambda_powertools import Logger, Tracer
+
+# Enable X-Ray tracing for all AWS SDK calls
+patch_all()
+
+logger = Logger()
+tracer = Tracer()
 
 macie = boto3.client('macie2')
 s3 = boto3.client('s3')
@@ -23,11 +31,17 @@ PII_PATTERNS = {
     'ADDRESS': r'\b\d{1,5}\s+[A-Za-z\s]+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Circle|Cir|Plaza|Pl)\b'
 }
 
+@tracer.capture_lambda_handler
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Handle Macie operations for DD214 processing
     """
     operation = event.get('operation', 'scan')
+    
+    # Add X-Ray annotations
+    tracer.put_annotation("operation", operation)
+    if 'documentId' in event:
+        tracer.put_annotation("document_id", event['documentId'])
     
     if operation == 'setup':
         return setup_macie_for_dd214()

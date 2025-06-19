@@ -6,6 +6,14 @@ import uuid
 from datetime import datetime
 import re
 from decimal import Decimal
+from aws_xray_sdk.core import patch_all
+from aws_lambda_powertools import Logger, Tracer
+
+# Enable X-Ray tracing for all AWS SDK calls
+patch_all()
+
+logger = Logger()
+tracer = Tracer()
 
 # Initialize AWS clients
 s3_client = boto3.client('s3')
@@ -111,6 +119,7 @@ def count_data_points(extracted_data: Dict[str, Any]) -> int:
                 count += 1
     return count
 
+@tracer.capture_lambda_handler
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Main handler for DD214 processing pipeline
@@ -119,6 +128,11 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     # Determine which step we're in
     step_type = event.get('stepType', 'initial')
+    
+    # Add X-Ray annotations
+    tracer.put_annotation("step_type", step_type)
+    if 'documentId' in event:
+        tracer.put_annotation("document_id", event['documentId'])
     
     # Handle S3 trigger
     if 'Records' in event and event['Records'][0].get('s3'):
@@ -134,6 +148,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     else:
         raise ValueError(f"Unknown step type: {step_type}")
 
+@tracer.capture_method
 def handle_document_validation(event: Dict[str, Any]) -> Dict[str, Any]:
     """
     Validate document for processing

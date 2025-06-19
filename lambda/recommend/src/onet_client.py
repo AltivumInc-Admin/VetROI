@@ -96,9 +96,24 @@ class ONetClient:
             
             logger.info(f"Calling O*NET API: {url} with params: {params}")
             
+            # Add X-Ray annotations for O*NET API call
+            tracer.put_annotation("onet_endpoint", "military_crosswalk")
+            tracer.put_annotation("military_code", military_code)
+            tracer.put_annotation("branch", branch)
+            
             # O*NET requires Accept header for JSON
             headers = {'Accept': 'application/json'}
-            response = self.session.get(url, params=params, headers=headers)
+            
+            # Make the API call with X-Ray subsegment
+            with tracer.provider.in_subsegment('onet_military_crosswalk') as subsegment:
+                subsegment.put_metadata('url', url)
+                subsegment.put_metadata('params', params)
+                
+                response = self.session.get(url, params=params, headers=headers)
+                
+                subsegment.put_metadata('status_code', response.status_code)
+                subsegment.put_metadata('response_time_ms', response.elapsed.total_seconds() * 1000)
+            
             logger.info(f"O*NET Response status: {response.status_code}")
             
             response.raise_for_status()
@@ -136,7 +151,17 @@ class ONetClient:
         try:
             # Get occupation details
             url = f"{self.base_url}/occupations/{soc_code}"
-            response = self.session.get(url)
+            
+            # Add X-Ray subsegment for occupation details call
+            with tracer.provider.in_subsegment('onet_occupation_details') as subsegment:
+                subsegment.put_metadata('soc_code', soc_code)
+                subsegment.put_metadata('url', url)
+                
+                response = self.session.get(url)
+                
+                subsegment.put_metadata('status_code', response.status_code)
+                subsegment.put_metadata('response_time_ms', response.elapsed.total_seconds() * 1000)
+            
             response.raise_for_status()
             
             occupation_data = response.json()

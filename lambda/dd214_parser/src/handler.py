@@ -5,6 +5,10 @@ from typing import Dict, Any
 import boto3
 from aws_lambda_powertools import Logger, Tracer
 from aws_lambda_powertools.logging import correlation_paths
+from aws_xray_sdk.core import patch_all
+
+# Patch all AWS SDK clients for X-Ray tracing
+patch_all()
 
 logger = Logger()
 tracer = Tracer()

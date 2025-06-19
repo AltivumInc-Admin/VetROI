@@ -415,6 +415,8 @@ Resources:
         NotificationTopicArn: !Ref DD214NotificationTopic
         DD214BucketName: !Ref DD214UploadBucket
         MacieHandlerFunction: !GetAtt MacieHandlerFunction.Arn
+      Tracing:
+        Enabled: true
       Policies:
         - LambdaInvokePolicy:
             FunctionName: !Ref DD214ParserFunction
@@ -432,6 +434,8 @@ Resources:
                 - comprehend:*
                 - bedrock:InvokeModel
                 - sns:Publish
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
               Resource: '*'
 
   # Sentra Conversation Table

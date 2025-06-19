@@ -10,6 +10,10 @@ from aws_lambda_powertools import Logger, Tracer, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 from aws_lambda_powertools.logging import correlation_paths
 from pydantic import BaseModel, Field, validator
+from aws_xray_sdk.core import patch_all
+
+# Patch all AWS SDK calls and HTTP calls for X-Ray tracing
+patch_all()
 
 from .models import VeteranRequest, RecommendationResponse, Career
 from .onet_client import ONetClient

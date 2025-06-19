@@ -4,6 +4,14 @@ import os
 from typing import Dict, Any
 from datetime import datetime
 import urllib.parse
+from aws_xray_sdk.core import patch_all
+from aws_lambda_powertools import Logger, Tracer
+
+# Enable X-Ray tracing
+patch_all()
+
+logger = Logger()
+tracer = Tracer()
 
 stepfunctions = boto3.client('stepfunctions')
 dynamodb = boto3.resource('dynamodb')
@@ -11,11 +19,12 @@ dynamodb = boto3.resource('dynamodb')
 STATE_MACHINE_ARN = os.environ.get('STATE_MACHINE_ARN')
 TABLE_NAME = os.environ.get('TABLE_NAME')
 
+@tracer.capture_lambda_handler
 def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     """
     Triggered by S3 upload to start DD214 processing pipeline
     """
-    print(f"Received S3 event: {json.dumps(event)}")
+    logger.info(f"Received S3 event: {json.dumps(event)}")
     
     try:
         # Extract S3 event details
@@ -24,13 +33,17 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             bucket = record['s3']['bucket']['name']
             key = urllib.parse.unquote_plus(record['s3']['object']['key'])
             
-            print(f"Processing file: s3://{bucket}/{key}")
+            logger.info(f"Processing file: s3://{bucket}/{key}")
+            
+            # Add X-Ray annotations
+            tracer.put_annotation("bucket", bucket)
+            tracer.put_annotation("file_key", key)
             
             # Extract document ID from S3 key
             # Expected format: uploads/{veteranId}/{timestamp}-{documentId}/{filename}
             key_parts = key.split('/')
             if len(key_parts) < 4:
-                print(f"Invalid key format: {key}")
+                logger.error(f"Invalid key format: {key}")
                 continue
                 
             # Extract IDs from the path
@@ -38,7 +51,11 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             document_id = path_segment.split('-')[-1]  # Get documentId after last hyphen
             veteran_id = key_parts[1]
             
-            print(f"Document ID: {document_id}, Veteran ID: {veteran_id}")
+            # Add document annotations
+            tracer.put_annotation("document_id", document_id)
+            tracer.put_annotation("veteran_id", veteran_id)
+            
+            logger.info(f"Document ID: {document_id}, Veteran ID: {veteran_id}")
             
             # Update status in DynamoDB
             if TABLE_NAME:
