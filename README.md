@@ -24,34 +24,51 @@ VetROI uses AWS Lambda and serverless architecture to transform a veteran's DD21
 
 ## 🏗️ Architecture & AWS Services
 
-### Core Lambda Functions
-1. **DD214 Upload Handler** (`VetROI_DD214_Upload`)
-   - Generates presigned S3 URLs
-   - Validates file uploads
-   - Triggers Step Functions workflow
+![VetROI Architecture](docs/images/vetroi_architecture.png)
 
-2. **Text Extraction** (`VetROI_DD214_Parser`)
+### Lambda-Powered Architecture
+
+![Lambda Functions Overview](docs/images/vetroi_lambda_focus.png)
+
+### Core Lambda Functions (9 Total)
+1. **Career Recommendation Engine** (`VetROI_Recommend`)
+   - Handles POST /recommend and GET /career/{soc} endpoints
+   - O*NET API integration for military code translation
+   - Amazon Lex proxy for "Next Mission" feature
+   - Real-time career data (no caching)
+
+2. **DD214 Upload Handler** (`VetROI_DD214_GenerateUploadURL`)
+   - Generates presigned S3 URLs
+   - Validates authentication via Cognito
+
+3. **Document Processor** (`VetROI_DD214_Processor`)
    - Uses AWS Textract for OCR
    - Extracts structured data from DD214
    - Handles multiple document formats
 
-3. **PII Redaction** (`VetROI_DD214_Macie`)
+4. **PII Redaction** (`VetROI_DD214_Macie`)
    - Amazon Macie integration for PII detection
-   - Custom regex for military-specific formats
-   - Generates redacted documents for AI processing
+   - Removes SSN, addresses, DoD ID numbers
+   - Creates safe version for AI processing
 
-4. **AI Insights Generation** (`VetROI_DD214_Insights`)
+5. **AI Insights Generation** (`VetROI_DD214_Insights`)
    - Amazon Bedrock (Nova Lite) integration
    - Analyzes full DD214 text
    - Generates personalized career recommendations
    - Creates resume bullets & interview prep
 
-5. **Career Recommendation Engine** (`VetROI_Recommend`)
-   - O*NET API integration with 2 key endpoints:
-     - `/crosswalks/military` - Translates MOS to 25+ civilian careers
-     - `/careers/{soc}/report` - Detailed data for each career selected
-   - Military code to civilian job translation
-   - Real-time labor market data (salary, growth, skills, education)
+6. **S3 Event Trigger** (`VetROI_S3_DD214_Trigger`)
+   - Triggered by S3 upload events
+   - Starts Step Function workflow
+
+7. **Status Checker** (`VetROI_DD214_GetStatus`)
+   - Returns processing status
+
+8. **Insights Retrieval** (`VetROI_DD214_GetInsights`)
+   - Fetches AI-generated career insights
+
+9. **Redacted Document Access** (`VetROI_DD214_GetRedacted`)
+   - Provides access to PII-removed documents
 
 ### Serverless Orchestration
 ```yaml
@@ -65,24 +82,20 @@ Step Functions State Machine:
 ```
 
 ### AWS Services Used
-- **AWS Lambda** - Core compute (6 functions)
-  - `VetROI_Recommend` - O*NET API calls (2 endpoints per veteran)
-  - `VetROI_DD214_Upload` - Document upload handler
-  - `VetROI_DD214_Parser` - Text extraction
-  - `VetROI_DD214_Macie` - PII redaction
-  - `VetROI_DD214_Insights` - AI analysis
-  - `VetROI_DD214_Status` - Processing status
-- **Step Functions** - Workflow orchestration
-- **Amazon Bedrock** - AI/ML insights (Nova Lite model)
+- **AWS Lambda** - 9 serverless functions handling all compute
+- **Step Functions** - DD214 processing workflow orchestration
+- **Amazon Bedrock** - AI insights generation (Nova Lite model)
+- **Amazon Lex** - Conversational AI for career guidance (us-east-1)
 - **Amazon Macie** - PII detection & compliance
-- **Amazon Textract** - Document processing
-- **DynamoDB** - Session & insights storage
-- **S3** - Document storage (original & redacted)
-- **API Gateway** - RESTful API endpoints
-- **Cognito** - User authentication
-- **CloudFront** - Global content delivery
-- **EventBridge** - Event-driven triggers
-- **Secrets Manager** - API credentials
+- **Amazon Textract** - Document OCR processing
+- **DynamoDB** - 5 tables for sessions, processing status, insights
+- **S3** - Secure document storage (encrypted & redacted buckets)
+- **API Gateway** - HTTP & REST API endpoints
+- **Cognito** - User authentication & authorization
+- **CloudFront** - Custom domain (vetroi.altivum.ai)
+- **Amplify** - Frontend hosting with CI/CD
+- **Secrets Manager** - O*NET API credentials
+- **CloudWatch** - Monitoring & alerts
 
 ## 🚀 Key Features
 
@@ -104,10 +117,10 @@ Step Functions State Machine:
 
 ## 📊 Performance & Scale
 
-- **Processing Time**: Average 2.5 minutes (vs 2-week manual review)
-- **Cost Per Veteran**: ~$0.23 (pay-per-use model)
-- **Concurrent Capacity**: 10,000+ simultaneous uploads
-- **Zero Infrastructure**: 100% serverless, auto-scaling
+- **Processing Time**: Under 3 minutes end-to-end
+- **Cost Efficiency**: Pay-per-use Lambda pricing
+- **Auto-scaling**: Handles any load without configuration
+- **Zero Infrastructure**: 100% serverless architecture
 
 ## 🛠️ Technical Implementation
 
