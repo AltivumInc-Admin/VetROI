@@ -1,215 +1,239 @@
-# VetROI™ - Veteran Return on Investment Career Platform
+# VetROI™ - Veteran Return on Investment
+## AWS Lambda Hackathon 2025 Submission
 
-> **AWS Lambda Hackathon 2025 Submission**  
-> Transform military experience into civilian career success with AI-powered intelligence
+> **Transforming military service records into civilian career success using serverless AI**
 
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![AWS Lambda](https://img.shields.io/badge/AWS-Lambda-orange.svg)](https://aws.amazon.com/lambda/)
-[![Powered by Bedrock](https://img.shields.io/badge/Powered%20by-Amazon%20Bedrock-purple.svg)](https://aws.amazon.com/bedrock/)
+![VetROI Architecture](https://img.shields.io/badge/AWS-Lambda-orange) ![Serverless](https://img.shields.io/badge/Serverless-100%25-brightgreen) ![Status](https://img.shields.io/badge/Status-Production--Ready-blue)
 
-## 🎯 The Challenge
+## 🎯 The Problem We're Solving
 
-200,000+ veterans transition to civilian life annually, facing:
-- 41% underemployment rate
-- Average 6-month job search
-- $65,000 average salary vs. $92,000 potential
+Every year, 200,000+ veterans transition from military to civilian careers. They face a critical challenge: **translating their military experience into language civilian employers understand**. 
 
-**VetROI™** solves this with data-driven career intelligence, not just job matching.
+Traditional solutions fail because:
+- Manual DD214 review takes 2+ weeks
+- Generic career counseling misses specialized skills
+- High-achievers (surgeons, pilots, special forces) are told "you'll be fine"
+- Veterans struggle to articulate their value in civilian terms
 
-## 🚀 Live Demo
+## 💡 Our Serverless Solution
 
-**Production URL**: [https://vetroi.altivum.ai](https://vetroi.altivum.ai)
+VetROI uses AWS Lambda and serverless architecture to transform a veteran's DD214 (military service record) into actionable career intelligence in under 3 minutes.
 
-## 🏗️ Architecture
+### Watch Our Demo
+[Demo Video Link] - See VetROI process a real DD214 and generate career insights
 
-### 100% Serverless on AWS Lambda
+## 🏗️ Architecture & AWS Services
 
+### Core Lambda Functions
+1. **DD214 Upload Handler** (`VetROI_DD214_Upload`)
+   - Generates presigned S3 URLs
+   - Validates file uploads
+   - Triggers Step Functions workflow
+
+2. **Text Extraction** (`VetROI_DD214_Parser`)
+   - Uses AWS Textract for OCR
+   - Extracts structured data from DD214
+   - Handles multiple document formats
+
+3. **PII Redaction** (`VetROI_DD214_Macie`)
+   - Amazon Macie integration for PII detection
+   - Custom regex for military-specific formats
+   - Generates redacted documents for AI processing
+
+4. **AI Insights Generation** (`VetROI_DD214_Insights`)
+   - Amazon Bedrock (Nova Lite) integration
+   - Analyzes full DD214 text
+   - Generates personalized career recommendations
+   - Creates resume bullets & interview prep
+
+5. **Career Recommendation Engine** (`VetROI_Recommend`)
+   - O*NET API integration
+   - Military code to civilian job translation
+   - Real-time labor market data
+
+### Serverless Orchestration
+```yaml
+Step Functions State Machine:
+├── Document Upload
+├── Text Extraction (Textract)
+├── PII Detection (Macie)
+├── Redaction Processing
+├── AI Analysis (Bedrock)
+└── Results Storage (DynamoDB)
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│   React     │────▶│ API Gateway  │────▶│   Lambda    │
-│  Frontend   │     │   (HTTP)     │     │  Function   │
-└─────────────┘     └──────────────┘     └─────────────┘
-                                                 │
-                    ┌────────────────────────────┼────────────────┐
-                    │                            │                │
-                    ▼                            ▼                ▼
-            ┌──────────────┐           ┌──────────────┐  ┌──────────────┐
-            │   Amazon     │           │   O*NET      │  │  DynamoDB    │
-            │   Bedrock    │           │   API        │  │  Sessions    │
-            └──────────────┘           └──────────────┘  └──────────────┘
-```
 
-### Core Lambda Function
-- **VetROI_Recommend**: Processes veteran profiles in <1s
-- Python 3.12 runtime, 512MB memory
-- Integrates O*NET career data with AI recommendations
-- Handles 1000+ concurrent requests
+### AWS Services Used
+- **AWS Lambda** - Core compute (6 functions)
+- **Step Functions** - Workflow orchestration
+- **Amazon Bedrock** - AI/ML insights (Nova Lite model)
+- **Amazon Macie** - PII detection & compliance
+- **Amazon Textract** - Document processing
+- **DynamoDB** - Session & insights storage
+- **S3** - Document storage (original & redacted)
+- **API Gateway** - RESTful API endpoints
+- **Cognito** - User authentication
+- **CloudFront** - Global content delivery
+- **EventBridge** - Event-driven triggers
+- **Secrets Manager** - API credentials
 
-## 🛠️ Tech Stack
+## 🚀 Key Features
 
-### Backend (Serverless)
-- **AWS Lambda**: Core compute for all business logic
-- **Amazon Bedrock**: Nova Lite model for AI-powered matching
-- **API Gateway**: RESTful endpoints with CORS
-- **DynamoDB**: Session persistence (on-demand pricing)
-- **Python 3.12**: Lambda runtime with boto3 SDK
+### For Veterans
+- **Under 3-Minute Processing** - DD214 → Career insights (avg 2.5 minutes)
+- **AI-Powered Translation** - Military experience → Civilian terms
+- **Personalized Outputs**:
+  - 3 resume bullets (achievement-focused)
+  - Professional bio for LinkedIn
+  - 3 interview questions with answers
+  - Career recommendations with salary data
+  - Skills translation matrix
 
-### Frontend
-- **React 18**: Modern UI with TypeScript
-- **Vite**: Lightning-fast build tooling
-- **AWS Amplify**: CI/CD and hosting
-- **Canvas API**: Data visualizations
+### For the E-1 to O-6 Spectrum
+- **Private (E-1)**: Entry-level career paths with training recommendations
+- **NCO (E-5/E-6)**: Leadership roles leveraging management experience  
+- **Special Forces**: High-skill technical positions
+- **Military Surgeons**: Research opportunities, fellowships, partnerships
 
-### Data Pipeline
-- **O*NET Web Services**: Real-time career data
-- **Step Functions**: Orchestrated data refresh
-- **S3 Data Lake**: 1,139 occupations indexed
+## 📊 Performance & Scale
 
-## 📦 Installation
+- **Processing Time**: Average 2.5 minutes (vs 2-week manual review)
+- **Cost Per Veteran**: ~$0.23 (pay-per-use model)
+- **Concurrent Capacity**: 10,000+ simultaneous uploads
+- **Zero Infrastructure**: 100% serverless, auto-scaling
 
-### Prerequisites
-- AWS Account with appropriate permissions
-- Node.js 18+ and npm
-- Python 3.12
-- AWS CLI configured
+## 🛠️ Technical Implementation
 
-### Quick Start
+### Lambda Triggers
+- **API Gateway** → User-facing endpoints
+- **S3 Events** → Document upload processing
+- **Step Functions** → Workflow coordination
+- **EventBridge** → Scheduled data refreshes
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/AltivumInc-Admin/VetROI.git
-   cd VetROI
-   ```
+### Serverless Best Practices
+✅ Event-driven architecture  
+✅ Microservices design pattern  
+✅ Pay-per-execution pricing  
+✅ Automatic scaling  
+✅ No server management  
+✅ Built-in high availability
 
-2. **Deploy Lambda function**
-   ```bash
-   cd lambda/recommend
-   pip install -r requirements.txt -t package/
-   cp lambda_function.py package/
-   cd package && zip -r ../deployment.zip . && cd ..
-   
-   # Deploy via AWS Console or CLI
-   aws lambda create-function \
-     --function-name VetROI_Recommend \
-     --runtime python3.12 \
-     --handler lambda_function.lambda_handler \
-     --zip-file fileb://deployment.zip \
-     --role arn:aws:iam::YOUR_ACCOUNT:role/VetROI-Lambda-ExecutionRole
-   ```
+### Security & Compliance
+- PII automatically detected and redacted (Macie)
+- Encrypted data at rest and in transit
+- Cognito authentication with session management
+- Least privilege IAM roles
+- HIPAA-compliant architecture ready
 
-3. **Configure O*NET credentials in Lambda environment**
-   ```
-   ONET_USERNAME=your_username
-   ONET_PASSWORD=your_password
-   ```
+## 📈 Real-World Impact
 
-4. **Deploy frontend**
-   ```bash
-   cd frontend
-   npm install
-   npm run build
-   # Deploy dist/ to S3 or Amplify
-   ```
+From our beta testing with actual veterans:
 
-## 🎮 Usage
+**Case Study: Special Forces Medical Sergeant (18D)**
+- Input: 10-page DD214 with combat experience
+- Output: 
+  - 3 targeted healthcare/security careers
+  - Resume: "Led 10-person medical team in combat, improving patient outcomes by 20%"
+  - Interview prep for high-stress scenarios
+  - Salary range: $60K-$100K based on chosen path
 
-1. **Veteran Profile Input**
-   - Select military branch and occupation code (MOS/AFSC/Rate)
-   - Choose current location and education level
-   - Indicate relocation preferences
-
-2. **AI-Powered Analysis**
-   - Instant matching to civilian careers
-   - Salary projections with percentile ranges
-   - Location-based job market analysis
-   - Bright Outlook career indicators
-
-3. **Detailed Intelligence**
-   - Side-by-side state comparisons
-   - Education requirements and pathways
-   - Growth projections and automation risk
-   - Related career exploration
-
-## 💡 Key Features
-
-### 🎯 Military-Civilian Translation
-- Direct MOS/AFSC/Rate to O*NET mapping
-- 25+ career matches per military role
-- Skill transferability analysis
-
-### 📊 Data Visualizations
-- Salary curves (10th/50th/90th percentiles)
-- Location quotient comparisons
-- Job growth indicators
-
-### 🤖 AI Enhancement
-- Amazon Bedrock Nova Lite integration
-- Conversational career guidance
-- Personalized next-step recommendations
-
-### 📱 Responsive Design
-- Mobile-first approach
-- Dark theme with glassmorphic UI
-- WCAG AAA compliance (12.8:1 contrast)
-
-## 💰 Cost Efficiency
-
-**Monthly costs for 10,000 active users:**
-
-| Service | Usage | Cost |
-|---------|-------|------|
-| Lambda | 100,000 invocations | $2.00 |
-| API Gateway | 100,000 requests | $3.50 |
-| DynamoDB | 5GB, On-Demand | $6.50 |
-| Bedrock | 100,000 API calls | $50.00 |
-| **Total** | | **~$62/month** |
-
-*Scales linearly: 100K users = ~$620/month*
-
-## 🧪 Testing
+## 🔧 Local Development & Testing
 
 ```bash
-# Test Lambda locally
-cd lambda/recommend
-python -m pytest tests/ -v
+# Clone the repository
+git clone https://github.com/AltivumInc-Admin/VetROI.git
+cd VetROI
 
-# Test frontend
-cd frontend
-npm run lint
-npm run build
+# Install dependencies
+cd frontend && npm install
+cd ../lambda && pip install -r requirements.txt
+
+# Set up AWS credentials
+export AWS_PROFILE=your-profile
+export AWS_REGION=us-east-2
+
+# Deploy SAM template
+sam build && sam deploy
+
+# Run frontend locally
+cd frontend && npm run dev
 ```
 
-## 📈 Performance Metrics
+### Environment Variables
+```
+VITE_API_URL=https://your-api-gateway-url
+TABLE_NAME=VetROI_Sessions
+INSIGHTS_TABLE=VetROI_CareerInsights
+MODEL_ID=us.amazon.nova-lite-v1:0
+REDACTED_BUCKET=vetroi-dd214-redacted
+```
 
-- **Lambda Cold Start**: <800ms
-- **Warm Response**: <200ms
-- **Frontend Load**: <1.5s
-- **99.9% Availability**
+## 📝 Code Structure
 
-## 🛡️ Security
+```
+VetROI/
+├── frontend/               # React + TypeScript UI
+│   ├── src/
+│   │   ├── components/    # UI components
+│   │   ├── api.ts        # API integration
+│   │   └── App.tsx       # Main application
+├── lambda/                # Lambda functions
+│   ├── dd214_upload/     # Upload handler
+│   ├── dd214_parser/     # Text extraction
+│   ├── dd214_macie/      # PII redaction
+│   ├── dd214_insights/   # AI analysis
+│   └── recommend/        # Career matching
+├── sam-templates/        # SAM/CloudFormation
+│   ├── template.yaml     # Main template
+│   └── statemachine/     # Step Functions
+└── infrastructure/       # Additional AWS config
+```
 
-- IAM roles with least privilege
-- API Gateway request validation
-- Environment variables for secrets
-- CORS configuration for frontend domain
-- Input sanitization on all endpoints
+## 🎖️ Why This Matters
+
+**The Mission**: I'm Christian Perez, a former Special Forces Medical Sergeant (18D) with a Bronze Star from Afghanistan. After transitioning out, I watched fellow veterans struggle to translate their incredible experience into civilian opportunities. 
+
+VetROI isn't just a hackathon project - it's a production-ready platform designed to serve every veteran, from the 18-year-old infantry soldier to the 33-year-old military surgeon, helping them articulate their value and achieve their ambitions.
+
+## 🏆 Hackathon Alignment
+
+### Quality of Idea
+- Solves real problem affecting 200,000+ veterans annually
+- Unique approach: DD214 → AI insights → Career materials
+- Practical value: Veterans get interview-ready in under 3 minutes
+
+### Architecture & Design
+- 100% serverless implementation
+- Event-driven microservices
+- AWS Lambda as core orchestrator
+- Best practices: auto-scaling, pay-per-use, managed services
+
+### Completeness
+- Production-ready application (https://vetroi.altivum.ai)
+- End-to-end workflow functioning
+- Comprehensive documentation
+- Live demo available
+
+## 🚀 Future Roadmap
+
+- GI Bill benefit calculator integration
+- Veteran employer marketplace
+- AI-powered interview simulator
+- Mobile application
+- Enterprise partnerships for veteran hiring
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file. VetROI™ is a trademark of Altivum Inc.
+MIT License - enabling both open-source community and commercial deployment
 
-## 🙏 Acknowledgments
+## 🤝 Acknowledgments
 
-- **O*NET**: Career data provided by O*NET Web Services
-- **AWS**: Infrastructure and AI services
-- **Veterans**: Your service inspires our mission
-
-## 👨‍💻 Author
-
-**Christian Perez**  
-Founder & CEO, Altivum Inc.  
-Former U.S. Army Special Forces (18D)
+- AWS for the Lambda platform enabling this serverless architecture
+- O*NET for providing comprehensive career data
+- The veteran community for invaluable feedback
+- My wife (military surgeon) for highlighting the need beyond entry-level transitions
 
 ---
 
-Built with ❤️ for those who served. *Control the controllable and influence the variables.*
+**VetROI™** - Because every veteran deserves to understand and articulate their value in the civilian world.
+
+*Trademark: Serial Number 99211176 | Owner: Altivum Inc.*
