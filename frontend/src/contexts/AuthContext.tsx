@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
-import { getCurrentUser, signOut, fetchAuthSession, signIn, SignInInput } from 'aws-amplify/auth';
+import { getCurrentUser, signOut, fetchAuthSession, signIn, SignInInput, fetchUserAttributes } from 'aws-amplify/auth';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -98,7 +98,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
 
-        setUser(currentUser);
+        // Fetch user attributes to get email and name
+        try {
+          const attributes = await fetchUserAttributes();
+          const enhancedUser = {
+            ...currentUser,
+            email: attributes.email,
+            name: attributes.name,
+            givenName: attributes.given_name,
+            familyName: attributes.family_name,
+            attributes
+          };
+          setUser(enhancedUser);
+        } catch (attributeError) {
+          console.log('Could not fetch user attributes:', attributeError);
+          setUser(currentUser);
+        }
+        
         setIsAuthenticated(true);
         setSessionExpired(false);
         resetSessionTimeout();

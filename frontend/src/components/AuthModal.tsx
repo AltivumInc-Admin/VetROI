@@ -14,6 +14,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [confirmationCode, setConfirmationCode] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [error, setError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -104,7 +106,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         password,
         options: {
           userAttributes: {
-            email
+            email,
+            given_name: firstName,
+            family_name: lastName,
+            name: `${firstName} ${lastName}`.trim()
           }
         }
       }
@@ -119,6 +124,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         setSuccessMessage('Account created successfully! Please sign in.')
         setPassword('')
         setConfirmPassword('')
+        setFirstName('')
+        setLastName('')
       }
     } catch (err: any) {
       if (err.message?.includes('already exists') || 
@@ -153,6 +160,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         setConfirmationCode('') // Clear the code
         setPassword('') // Clear password for security
         setConfirmPassword('')
+        setFirstName('')
+        setLastName('')
       }
     } catch (err: any) {
       // Handle case where user is already confirmed
@@ -252,6 +261,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                 setMode('signUp')
                 setError('')
                 setSuccessMessage('')
+                setFirstName('')
+                setLastName('')
               }}>
                 Sign Up
               </button>
@@ -261,6 +272,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
         {mode === 'signUp' && (
           <form onSubmit={handleSignUp}>
+            <div className="auth-field">
+              <label>First Name</label>
+              <input
+                type="text"
+                value={firstName}
+                onChange={e => setFirstName(e.target.value)}
+                required
+                placeholder="John"
+              />
+            </div>
+            
+            <div className="auth-field">
+              <label>Last Name</label>
+              <input
+                type="text"
+                value={lastName}
+                onChange={e => setLastName(e.target.value)}
+                required
+                placeholder="Doe"
+              />
+            </div>
+            
             <div className="auth-field">
               <label>Email</label>
               <input
