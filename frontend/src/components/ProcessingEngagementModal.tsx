@@ -104,9 +104,9 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
                 >
                   <div className="option-icon">🎧</div>
                   <div className="option-content">
-                    <h3>AI News Podcast</h3>
-                    <p>Listen to the latest in AI & career tech</p>
-                    <span className="option-duration">2 min episode</span>
+                    <h3>Vector: AI Newsletter & Podcast</h3>
+                    <p>Strategic AI insights for military leaders</p>
+                    <span className="option-duration">Weekly episodes</span>
                   </div>
                 </button>
               </div>
@@ -210,13 +210,14 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
           {currentView === 'content' && (
             <div className="content-view">
               <div className="book-showcase">
-                <div className="book-cover">
-                  <img 
-                    src="/beyond-the-assessment-cover.png" 
-                    alt="Beyond the Assessment book cover"
-                  />
-                </div>
-                <div className="book-details">
+                <div className="book-showcase-layout">
+                  <div className="book-cover">
+                    <img 
+                      src="/beyond-the-assessment-cover.png" 
+                      alt="Beyond the Assessment book cover"
+                    />
+                  </div>
+                  <div className="book-details">
                   <h2>Beyond the Assessment</h2>
                   <h3>Forging Strength, Overcoming Adversity, and Embracing the Warrior Mindset</h3>
                   <p className="author">By Christian Perez<br />Former Green Beret and Founder of Altivum<sup>™</sup> Inc.</p>
@@ -266,19 +267,21 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
                     <p className="offer-code">Use code: <span className="code">VETROI15</span></p>
                   </div>
 
-                  <div className="audiobook-preview">
-                    <p className="preview-label">📻 5-Minute Audio Preview:</p>
-                    <iframe 
-                      style={{ borderRadius: '12px' }}
-                      src="https://open.spotify.com/embed/show/6d5fm6qimH1ARze2WS7Drk?utm_source=generator" 
-                      width="100%" 
-                      height="152" 
-                      frameBorder="0" 
-                      allowFullScreen
-                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                      loading="lazy"
-                    ></iframe>
                   </div>
+                </div>
+                
+                <div className="audiobook-preview">
+                  <p className="preview-label">📻 5-Minute Audio Preview:</p>
+                  <iframe 
+                    style={{ borderRadius: '12px' }}
+                    src="https://open.spotify.com/embed/show/6d5fm6qimH1ARze2WS7Drk?utm_source=generator" 
+                    width="100%" 
+                    height="152" 
+                    frameBorder="0" 
+                    allowFullScreen
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy"
+                  />
                 </div>
               </div>
 
@@ -290,50 +293,82 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
 
           {currentView === 'podcast' && (
             <div className="podcast-view">
-              <div className="podcast-player">
-                <div className="podcast-artwork">
-                  <img 
-                    src="/podcast-cover-placeholder.jpg" 
-                    alt="The AI Transition Podcast"
-                  />
-                  <div className="play-button-overlay">
-                    <button className="play-button">▶</button>
+              <div className="vector-content">
+                <div className="vector-header">
+                  <h2>Vector: AI</h2>
+                  <h3>Strategic AI Intelligence for Military Leaders</h3>
+                  <p className="vector-tagline">
+                    A concise and strategic roundup of developments in artificial intelligence—examined 
+                    through the dual lenses of military insight and business leadership.
+                  </p>
+                </div>
+
+                <div className="vector-sections">
+                  <div className="vector-section newsletter-section">
+                    <div className="section-icon">📧</div>
+                    <h4>Weekly Newsletter</h4>
+                    <p>
+                      Get strategic AI insights delivered to your inbox every week. 
+                      Join military leaders and veterans staying ahead of the AI revolution.
+                    </p>
+                    <button 
+                      className="vector-button newsletter-button"
+                      onClick={() => window.open('https://vector.altivum.ai/', '_blank')}
+                    >
+                      Subscribe to Newsletter
+                    </button>
+                  </div>
+
+                  <div className="vector-section podcast-section">
+                    <div className="section-icon">🎙️</div>
+                    <h4>Vector Podcast</h4>
+                    <p>
+                      Deep dives into AI's impact on defense, business, and society. 
+                      Featuring interviews with military leaders, tech executives, and AI pioneers.
+                    </p>
+                    
+                    <div className="podcast-platforms">
+                      <button 
+                        className="platform-button spotify-platform"
+                        onClick={() => window.open('https://open.spotify.com/show/4JtDt7M9b6J2HRvQxzX1CX?si=dd247384425e4dc3', '_blank')}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+                        </svg>
+                        Listen on Spotify
+                      </button>
+                      
+                      <button 
+                        className="platform-button apple-platform"
+                        onClick={() => window.open('https://podcasts.apple.com/us/podcast/vector-ai/id1820813071', '_blank')}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                        Apple Podcasts
+                      </button>
+                    </div>
+
+                    <div className="latest-episode">
+                      <p className="episode-label">Latest Episode Preview:</p>
+                      <iframe 
+                        style={{ borderRadius: '12px' }}
+                        src="https://open.spotify.com/embed/show/4JtDt7M9b6J2HRvQxzX1CX?utm_source=generator&theme=0" 
+                        width="100%" 
+                        height="152" 
+                        frameBorder="0" 
+                        allowFullScreen
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                        loading="lazy"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="podcast-info">
-                  <h2>The AI Transition Podcast</h2>
-                  <h3>Episode 42: How Veterans Are Leading the AI Revolution</h3>
-                  <p className="podcast-meta">2 min highlight • Full episode: 28 min</p>
-
-                  <div className="podcast-description">
-                    <p>
-                      In this episode, we explore how military veterans are uniquely positioned 
-                      to lead in the AI age. From operational excellence to adaptive thinking, 
-                      discover why tech companies are actively recruiting veterans.
-                    </p>
-                  </div>
-
-                  <div className="audio-controls">
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: '0%' }}></div>
-                    </div>
-                    <div className="time-display">
-                      <span>0:00</span>
-                      <span>2:00</span>
-                    </div>
-                  </div>
-
-                  <div className="podcast-links">
-                    <a href="#" className="podcast-link">
-                      <img src="/spotify-icon.svg" alt="Spotify" />
-                      Full episode on Spotify
-                    </a>
-                    <a href="#" className="podcast-link">
-                      <img src="/apple-podcasts-icon.svg" alt="Apple Podcasts" />
-                      Subscribe on Apple Podcasts
-                    </a>
-                  </div>
+                <div className="vector-footer">
+                  <p className="vector-credit">
+                    Brought to you by <strong>Altivum™ Inc.</strong> - Empowering veterans with AI insights
+                  </p>
                 </div>
               </div>
 

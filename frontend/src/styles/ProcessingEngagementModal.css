@@ -286,10 +286,16 @@
 
 /* Content View - Book Showcase */
 .book-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.book-showcase-layout {
   display: grid;
   grid-template-columns: 200px 1fr;
   gap: 2rem;
-  margin-bottom: 2rem;
 }
 
 .book-cover {
@@ -303,6 +309,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.book-details {
+  flex: 1;
 }
 
 .book-details h2 {
@@ -442,6 +452,13 @@
   margin-top: 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+.audiobook-preview iframe {
+  width: 100%;
+  max-width: 100%;
+  display: block;
 }
 
 .preview-label {
@@ -452,7 +469,154 @@
   gap: 0.5rem;
 }
 
-/* Podcast View */
+/* Vector Content */
+.vector-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.vector-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.vector-header h2 {
+  font-size: 2.5rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.vector-header h3 {
+  font-size: 1.25rem;
+  color: #00d4ff;
+  margin-bottom: 1rem;
+  font-weight: 300;
+}
+
+.vector-tagline {
+  color: #9CA3AF;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.vector-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.vector-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.section-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.vector-section h4 {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.vector-section p {
+  color: #9CA3AF;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vector-button {
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.newsletter-button {
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #0a0e1a;
+}
+
+.newsletter-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(0, 212, 255, 0.4);
+}
+
+.podcast-platforms {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.platform-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+}
+
+.spotify-platform {
+  background: #1DB954;
+}
+
+.spotify-platform:hover {
+  background: #1ed760;
+  transform: translateY(-2px);
+}
+
+.apple-platform {
+  background: #333;
+}
+
+.apple-platform:hover {
+  background: #555;
+  transform: translateY(-2px);
+}
+
+.latest-episode {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.episode-label {
+  color: #9CA3AF;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.vector-footer {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vector-credit {
+  color: #6A6D73;
+  font-size: 0.875rem;
+}
+
+/* Podcast View - Deprecated but keeping for structure */
 .podcast-player {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -676,9 +840,29 @@
     font-size: 1.5rem;
   }
 
-  .book-showcase,
-  .podcast-player {
+  .book-showcase-layout {
     grid-template-columns: 1fr;
+  }
+  
+  .podcast-platforms {
+    flex-direction: column;
+  }
+  
+  .platform-button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .vector-header h2 {
+    font-size: 2rem;
+  }
+  
+  .vector-section {
+    padding: 1.5rem;
+  }
+  
+  .latest-episode iframe {
+    height: 120px;
   }
 
   .book-cover {
@@ -711,8 +895,14 @@
     padding: 1rem;
   }
   
+  .audiobook-preview {
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+  
   .audiobook-preview iframe {
     height: 120px;
+    min-height: 120px;
   }
 
   .podcast-artwork {
