@@ -212,7 +212,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     setTimeout(() => clearInterval(pollInterval), 300000)
   }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: {
       'application/pdf': ['.pdf'],
@@ -220,7 +220,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     },
     maxFiles: 1,
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
-    noClick: !isAuthenticated, // Prevent click if not authenticated
+    noClick: true, // We'll handle clicks manually with the button
     noDrag: !isAuthenticated, // Prevent drag if not authenticated
     noKeyboard: !isAuthenticated // Prevent keyboard activation if not authenticated
   })
@@ -399,7 +399,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
           <div 
             {...getRootProps()} 
             className={`dropzone ${isDragActive ? 'active' : ''} ${!isAuthenticated ? 'unauthenticated' : ''}`}
-            onClick={!isAuthenticated ? () => setShowAuthModal(true) : undefined}
           >
             <input {...getInputProps()} />
             <div className="dropzone-content">
@@ -410,7 +409,17 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               <p>Drop your DD214 here...</p>
             ) : (
               <>
-                <button className="upload-button-primary">
+                <button 
+                  className="upload-button-primary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isAuthenticated) {
+                      setShowAuthModal(true);
+                    } else {
+                      open();
+                    }
+                  }}
+                >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
                   </svg>
