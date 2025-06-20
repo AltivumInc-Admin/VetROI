@@ -151,3 +151,16 @@ export async function sentraConversation(params: {
   const { data } = await api.post('/sentra/conversation', params)
   return data
 }
+
+// DD214 Insights
+export async function getDD214InsightsData(documentId: string): Promise<any> {
+  const { data } = await axios.get(
+    `https://wzj49zuaaa.execute-api.us-east-2.amazonaws.com/prod/dd214/insights/${documentId}`,
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  return data;
+}

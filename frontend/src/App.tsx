@@ -354,6 +354,7 @@ function App() {
               veteranContext={getSentraContext()!}
               sessionId={`session-${Date.now()}`}
               onBack={handleBackFromSentra}
+              dd214DocumentId={dd214DocumentId}
             />
           )}
           

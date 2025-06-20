@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { MessageContent } from './MessageContent'
 import '../styles/SentraChat.css'
 
@@ -40,16 +41,21 @@ interface SentraChatProps {
   veteranContext: SentraContext
   sessionId: string
   onBack: () => void
+  dd214DocumentId?: string
 }
 
 export const SentraChat: React.FC<SentraChatProps> = ({ 
+  veteranContext,
   sessionId,
-  onBack 
+  onBack,
+  dd214DocumentId
 }) => {
+  const navigate = useNavigate()
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [missionClicked, setMissionClicked] = useState(false)
   const [showNextMission, setShowNextMission] = useState(false)
+  const [showDD214InsightsButton, setShowDD214InsightsButton] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -59,15 +65,26 @@ export const SentraChat: React.FC<SentraChatProps> = ({
   useEffect(() => {
     scrollToBottom()
     
-    // Show NextMission button 3 seconds after receiving mission response
-    if (messages.length === 2 && messages[1].role === 'assistant' && !showNextMission) {
-      const timer = setTimeout(() => {
-        setShowNextMission(true)
-      }, 3000)
+    // Show buttons 3 seconds after receiving mission response
+    if (messages.length === 2 && messages[1].role === 'assistant') {
+      if (!showNextMission) {
+        const timer = setTimeout(() => {
+          setShowNextMission(true)
+        }, 3000)
+        
+        return () => clearTimeout(timer)
+      }
       
-      return () => clearTimeout(timer)
+      // Show DD214 insights button 1 second after NextMission button if they have DD214
+      if (showNextMission && !showDD214InsightsButton && dd214DocumentId) {
+        const timer = setTimeout(() => {
+          setShowDD214InsightsButton(true)
+        }, 1000)
+        
+        return () => clearTimeout(timer)
+      }
     }
-  }, [messages, showNextMission])
+  }, [messages, showNextMission, showDD214InsightsButton, dd214DocumentId])
 
   const scrollToBottom = () => {
     // Scroll to the last assistant message, not the very bottom
@@ -123,6 +140,11 @@ export const SentraChat: React.FC<SentraChatProps> = ({
     } finally {
       setIsTyping(false)
     }
+  }
+  
+  const handleDD214InsightsClick = () => {
+    // Navigate to DD214 insights view with the document ID
+    navigate(`/dd214-insights/${dd214DocumentId}`)
   }
 
 
@@ -220,16 +242,29 @@ export const SentraChat: React.FC<SentraChatProps> = ({
       </div>
     </div>
     
-    {showNextMission && (
-      <div className="nextmission-container">
-        <a 
-          href="https://altivum.ai/nextmission" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="nextmission-button"
-        >
-          NextMission.ai
-        </a>
+    {(showDD214InsightsButton || showNextMission) && (
+      <div className="action-buttons-container">
+        {showDD214InsightsButton && (
+          <button 
+            onClick={handleDD214InsightsClick}
+            className="dd214-insights-button"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-4h-6v2h6v-2zm0-4h-6v2h6V7zm0 8h-6v2h6v-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Get your DD214 Insight
+          </button>
+        )}
+        {showNextMission && (
+          <a 
+            href="https://altivum.ai/nextmission" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="nextmission-button"
+          >
+            NextMission.ai
+          </a>
+        )}
       </div>
     )}
   </>
