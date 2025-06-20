@@ -4,6 +4,19 @@ import os
 from datetime import datetime
 from typing import Dict, Any, List
 import re
+import sys
+
+# Add the parent directory to the path to import enhanced_prompts
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from enhanced_prompts import (
+    get_specialized_prompt,
+    get_interview_prep_prompt,
+    get_salary_negotiation_prompt,
+    MOS_SPECIFIC_ENHANCEMENTS,
+    RANK_TO_LEADERSHIP_MAPPING,
+    CLEARANCE_VALUE_MATRIX,
+    DEPLOYMENT_VALUE_TRANSLATION
+)
 
 # Initialize AWS clients
 bedrock_runtime = boto3.client('bedrock-runtime')
@@ -22,6 +35,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     
     document_id = event.get('documentId')
     extracted_data = event.get('extractedData', {})
+    insight_type = event.get('insightType', 'comprehensive')  # New parameter for specific insights
     
     if not document_id:
         return error_response(400, 'Missing documentId')
@@ -60,8 +74,21 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         redacted_text = get_redacted_document(document_id)
         
         if redacted_text:
-            # Use AI to analyze the full redacted document
-            insights = generate_ai_insights_from_dd214(redacted_text, document_id)
+            # Use enhanced AI to analyze the full redacted document
+            if insight_type == 'interview_prep':
+                # Interview preparation for specific opportunity
+                target_company = event.get('targetCompany', 'Unknown Company')
+                target_role = event.get('targetRole', 'Unknown Role')
+                veteran_profile = extract_profile_from_dd214(redacted_text)
+                insights = generate_interview_prep(veteran_profile, target_company, target_role)
+            elif insight_type == 'salary_negotiation':
+                # Salary negotiation strategy
+                job_offer = event.get('jobOffer', {})
+                veteran_profile = extract_profile_from_dd214(redacted_text)
+                insights = generate_salary_negotiation(veteran_profile, job_offer)
+            else:
+                # Comprehensive career intelligence (default)
+                insights = generate_enhanced_ai_insights(redacted_text, document_id)
         else:
             # Fallback to old method if redacted document not available
             veteran_profile = build_veteran_profile(extracted_data)
@@ -69,10 +96,12 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             insights = generate_ai_insights(veteran_profile, onet_matches)
             
         # Extract profile from insights for storage
-        veteran_profile = insights.get('extracted_profile', build_veteran_profile(extracted_data))
+        veteran_profile = insights.get('veteran_intelligence', {}).get('service_analysis', {})
+        if not veteran_profile:
+            veteran_profile = insights.get('extracted_profile', build_veteran_profile(extracted_data))
         
-        # Store insights
-        store_insights(document_id, veteran_profile, insights)
+        # Store insights with enhanced metadata
+        store_enhanced_insights(document_id, veteran_profile, insights)
         
         # Update processing status
         update_processing_status(document_id, 'insights', 'complete')
@@ -82,6 +111,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             'body': json.dumps({
                 'documentId': document_id,
                 'status': 'complete',
+                'insightType': insight_type,
                 'insights': insights
             })
         }
@@ -100,6 +130,442 @@ def get_redacted_document(document_id: str) -> str:
     except Exception as e:
         print(f"Error fetching redacted document: {str(e)}")
         return None
+
+def extract_profile_from_dd214(redacted_text: str) -> Dict[str, Any]:
+    """Extract key profile information from DD214 text"""
+    profile = {
+        'full_text': redacted_text[:1000],  # First 1000 chars for context
+        'branch': extract_branch_from_text(redacted_text),
+        'rank': extract_rank_from_text(redacted_text),
+        'mos': extract_mos_from_text(redacted_text),
+        'deployments': extract_deployments_from_text(redacted_text),
+        'decorations': extract_decorations_from_text(redacted_text),
+        'clearance_indicators': extract_clearance_indicators(redacted_text)
+    }
+    return profile
+
+def extract_branch_from_text(text: str) -> str:
+    """Extract military branch from DD214 text"""
+    text_upper = text.upper()
+    if 'UNITED STATES ARMY' in text_upper or 'U.S. ARMY' in text_upper:
+        return 'ARMY'
+    elif 'UNITED STATES NAVY' in text_upper or 'U.S. NAVY' in text_upper:
+        return 'NAVY'
+    elif 'UNITED STATES AIR FORCE' in text_upper or 'U.S. AIR FORCE' in text_upper:
+        return 'AIR FORCE'
+    elif 'UNITED STATES MARINE' in text_upper or 'U.S. MARINE' in text_upper:
+        return 'MARINES'
+    elif 'UNITED STATES COAST GUARD' in text_upper or 'U.S. COAST GUARD' in text_upper:
+        return 'COAST GUARD'
+    elif 'UNITED STATES SPACE FORCE' in text_upper or 'U.S. SPACE FORCE' in text_upper:
+        return 'SPACE FORCE'
+    return 'Unknown'
+
+def extract_rank_from_text(text: str) -> str:
+    """Extract rank from DD214 text"""
+    # Look for pay grade patterns
+    pay_grade_pattern = r'[EWO]-\d+'
+    match = re.search(pay_grade_pattern, text)
+    if match:
+        return match.group()
+    
+    # Look for common rank abbreviations
+    rank_patterns = ['SSG', 'SGT', 'CPL', 'SPC', 'PFC', 'PVT', 'SFC', 'MSG', 'SGM', 
+                    'LT', 'CPT', 'MAJ', 'LTC', 'COL', 'BG', 'MG', 'LTG', 'GEN']
+    for rank in rank_patterns:
+        if rank in text.upper():
+            return rank
+    
+    return 'Unknown'
+
+def extract_mos_from_text(text: str) -> str:
+    """Extract MOS from DD214 text"""
+    # Look for common MOS patterns
+    mos_patterns = [
+        r'\b\d{2}[A-Z]\d*\b',  # Army MOS (e.g., 11B, 68W, 18D3P)
+        r'\b[A-Z]{2}\b',        # Navy Rate (e.g., IT, BM)
+        r'\b\d[A-Z]\d[A-Z]\d\b',  # Air Force AFSC (e.g., 3D0X2)
+        r'\b\d{4}\b'            # Marine MOS (e.g., 0311)
+    ]
+    
+    for pattern in mos_patterns:
+        match = re.search(pattern, text)
+        if match:
+            return match.group()
+    
+    return 'Unknown'
+
+def extract_deployments_from_text(text: str) -> List[str]:
+    """Extract deployment information from DD214 text"""
+    deployments = []
+    
+    # Look for deployment indicators
+    deployment_keywords = ['afghanistan', 'iraq', 'kuwait', 'syria', 'somalia', 
+                          'deployment', 'oif', 'oef', 'operation']
+    
+    lines = text.split('\n')
+    for line in lines:
+        line_lower = line.lower()
+        for keyword in deployment_keywords:
+            if keyword in line_lower:
+                deployments.append(line.strip())
+                break
+    
+    return deployments[:5]  # Limit to top 5
+
+def extract_decorations_from_text(text: str) -> List[str]:
+    """Extract decorations and awards from DD214 text"""
+    decorations = []
+    
+    # Common military decorations
+    medal_patterns = [
+        'bronze star', 'silver star', 'purple heart', 'distinguished service',
+        'meritorious service', 'commendation', 'achievement', 'good conduct',
+        'national defense', 'combat action', 'combat infantry', 'combat medical',
+        'ranger tab', 'airborne', 'air assault', 'special forces tab'
+    ]
+    
+    text_lower = text.lower()
+    for medal in medal_patterns:
+        if medal in text_lower:
+            decorations.append(medal.title())
+    
+    return list(set(decorations))  # Remove duplicates
+
+def extract_clearance_indicators(text: str) -> Dict[str, Any]:
+    """Extract security clearance indicators"""
+    clearance_info = {
+        'level': 'Unknown',
+        'indicators': []
+    }
+    
+    text_upper = text.upper()
+    
+    # Direct clearance mentions
+    if 'TOP SECRET' in text_upper or 'TS/SCI' in text_upper:
+        clearance_info['level'] = 'Top Secret'
+        clearance_info['indicators'].append('Direct TS mention')
+    elif 'SECRET' in text_upper:
+        clearance_info['level'] = 'Secret'
+        clearance_info['indicators'].append('Direct Secret mention')
+    
+    # MOS-based inference
+    mos = extract_mos_from_text(text)
+    if mos.startswith('18'):  # Special Forces
+        clearance_info['indicators'].append('Special Forces MOS')
+        if clearance_info['level'] == 'Unknown':
+            clearance_info['level'] = 'Top Secret (likely)'
+    elif mos.startswith('35'):  # Military Intelligence
+        clearance_info['indicators'].append('Intelligence MOS')
+        if clearance_info['level'] == 'Unknown':
+            clearance_info['level'] = 'Top Secret (likely)'
+    elif mos.startswith('25'):  # Signal/Cyber
+        clearance_info['indicators'].append('Signal/Cyber MOS')
+        if clearance_info['level'] == 'Unknown':
+            clearance_info['level'] = 'Secret (likely)'
+    
+    return clearance_info
+
+def generate_enhanced_ai_insights(redacted_text: str, document_id: str) -> Dict[str, Any]:
+    """Generate comprehensive AI insights using enhanced prompts"""
+    
+    # Extract basic info for specialized prompt
+    mos = extract_mos_from_text(redacted_text)
+    rank = extract_rank_from_text(redacted_text)
+    branch = extract_branch_from_text(redacted_text)
+    
+    # Get specialized prompt based on MOS and rank
+    prompt = get_specialized_prompt(mos, rank, branch)
+    prompt = prompt.replace("{redacted_dd214_text}", redacted_text)
+    
+    try:
+        # Call Bedrock with higher token limit for comprehensive response
+        response = bedrock_runtime.converse(
+            modelId=MODEL_ID,
+            messages=[{
+                'role': 'user',
+                'content': [{'text': prompt}]
+            }],
+            inferenceConfig={
+                'maxTokens': 8000,  # Increased for comprehensive insights
+                'temperature': 0.7,
+                'topP': 0.9
+            }
+        )
+        
+        # Extract response
+        ai_response = response['output']['message']['content'][0]['text']
+        
+        # Clean up response - remove markdown code blocks if present
+        if '```json' in ai_response:
+            ai_response = ai_response.split('```json')[1].split('```')[0].strip()
+        elif '```' in ai_response:
+            ai_response = ai_response.split('```')[1].split('```')[0].strip()
+            
+        # Parse JSON response
+        insights = json.loads(ai_response)
+        
+        # Add metadata
+        insights['metadata'] = {
+            'generated_at': datetime.utcnow().isoformat(),
+            'model_version': MODEL_ID,
+            'analysis_method': 'enhanced_comprehensive',
+            'mos_detected': mos,
+            'rank_detected': rank,
+            'branch_detected': branch,
+            'enhancement_version': '2.0'
+        }
+        
+        # Add clearance value information if detected
+        clearance_info = extract_clearance_indicators(redacted_text)
+        if clearance_info['level'] != 'Unknown':
+            insights['clearance_analysis'] = {
+                'detected_level': clearance_info['level'],
+                'indicators': clearance_info['indicators'],
+                'value_matrix': CLEARANCE_VALUE_MATRIX.get(
+                    clearance_info['level'].split(' ')[0], 
+                    CLEARANCE_VALUE_MATRIX.get('Secret')
+                )
+            }
+        
+        return insights
+        
+    except json.JSONDecodeError as e:
+        print(f"Error parsing AI response as JSON: {str(e)}")
+        print(f"Raw response: {ai_response[:500]}...")
+        return generate_enhanced_fallback_insights(redacted_text, mos, rank, branch)
+    except Exception as e:
+        print(f"Error calling Bedrock for enhanced DD214 analysis: {str(e)}")
+        return generate_enhanced_fallback_insights(redacted_text, mos, rank, branch)
+
+def generate_interview_prep(veteran_profile: Dict[str, Any], target_company: str, target_role: str) -> Dict[str, Any]:
+    """Generate interview preparation insights"""
+    
+    prompt = get_interview_prep_prompt(veteran_profile, target_company, target_role)
+    
+    try:
+        response = bedrock_runtime.converse(
+            modelId=MODEL_ID,
+            messages=[{
+                'role': 'user',
+                'content': [{'text': prompt}]
+            }],
+            inferenceConfig={
+                'maxTokens': 4000,
+                'temperature': 0.7,
+                'topP': 0.9
+            }
+        )
+        
+        ai_response = response['output']['message']['content'][0]['text']
+        
+        # Parse and structure the response
+        interview_prep = {
+            'type': 'interview_preparation',
+            'target_company': target_company,
+            'target_role': target_role,
+            'preparation': ai_response,
+            'generated_at': datetime.utcnow().isoformat()
+        }
+        
+        return interview_prep
+        
+    except Exception as e:
+        print(f"Error generating interview prep: {str(e)}")
+        return {
+            'type': 'interview_preparation',
+            'error': 'Failed to generate interview preparation',
+            'fallback_tips': [
+                'Research the company\'s veteran hiring initiatives',
+                'Prepare STAR format stories from your military experience',
+                'Translate military jargon to civilian terms',
+                'Emphasize leadership and problem-solving skills'
+            ]
+        }
+
+def generate_salary_negotiation(veteran_profile: Dict[str, Any], job_offer: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate salary negotiation strategy"""
+    
+    prompt = get_salary_negotiation_prompt(veteran_profile, job_offer)
+    
+    try:
+        response = bedrock_runtime.converse(
+            modelId=MODEL_ID,
+            messages=[{
+                'role': 'user',
+                'content': [{'text': prompt}]
+            }],
+            inferenceConfig={
+                'maxTokens': 3000,
+                'temperature': 0.6,
+                'topP': 0.9
+            }
+        )
+        
+        ai_response = response['output']['message']['content'][0]['text']
+        
+        # Parse and structure the response
+        negotiation_strategy = {
+            'type': 'salary_negotiation',
+            'job_offer': job_offer,
+            'strategy': ai_response,
+            'generated_at': datetime.utcnow().isoformat()
+        }
+        
+        return negotiation_strategy
+        
+    except Exception as e:
+        print(f"Error generating salary negotiation: {str(e)}")
+        return {
+            'type': 'salary_negotiation',
+            'error': 'Failed to generate negotiation strategy',
+            'fallback_advice': [
+                'Research market rates for your clearance level',
+                'Emphasize leadership experience value',
+                'Consider total compensation, not just base salary',
+                'Be prepared to discuss your unique military skills'
+            ]
+        }
+
+def generate_enhanced_fallback_insights(redacted_text: str, mos: str, rank: str, branch: str) -> Dict[str, Any]:
+    """Generate enhanced fallback insights with more value than before"""
+    
+    # Use detected information to provide better fallback insights
+    leadership_info = RANK_TO_LEADERSHIP_MAPPING.get(rank, {
+        'level': 'Unknown',
+        'civilian': 'Professional',
+        'years_experience': 'Varies'
+    })
+    
+    # Check for MOS-specific enhancements
+    mos_enhancements = MOS_SPECIFIC_ENHANCEMENTS.get(mos[:3], {})  # Use first 3 chars for series
+    
+    return {
+        'veteran_intelligence': {
+            'executive_summary': f"{branch} veteran with {rank} rank and {mos} specialty. {leadership_info['civilian']} level professional with military leadership experience.",
+            
+            'service_analysis': {
+                'rank_progression': f"{rank} indicates {leadership_info['level']} leadership level",
+                'leadership_tier': leadership_info['civilian'],
+                'technical_depth': 'Specialist' if mos != 'Unknown' else 'Generalist',
+                'operational_experience': 'Military service verified',
+                'clearance_value': 'Minimum Secret clearance likely based on service'
+            },
+            
+            'career_paths': [
+                {
+                    'title': 'Operations Manager',
+                    'fit_score': 85,
+                    'reasoning': 'Military leadership experience translates directly to operations management',
+                    'companies': ['Amazon', 'FedEx', 'UPS', 'Walmart', 'Target'],
+                    'entry_salary': '$65,000',
+                    'cleared_salary': '$75,000',
+                    'progression': 'Operations Manager → Senior Manager → Director',
+                    'first_steps': 'Get PMP certification and apply to military-friendly companies'
+                },
+                {
+                    'title': 'Project Manager',
+                    'fit_score': 80,
+                    'reasoning': 'Military planning and execution skills align with project management',
+                    'companies': ['Lockheed Martin', 'Boeing', 'Raytheon', 'General Dynamics'],
+                    'entry_salary': '$70,000',
+                    'cleared_salary': '$85,000',
+                    'progression': 'Project Manager → Senior PM → Program Manager',
+                    'first_steps': 'Pursue PMP certification through military education benefits'
+                }
+            ],
+            
+            'hidden_strengths': [
+                {
+                    'strength': 'Crisis Management',
+                    'evidence': 'Military service requires constant readiness for unexpected situations',
+                    'civilian_value': 'Valuable for operations roles requiring quick decision-making'
+                },
+                {
+                    'strength': 'Team Building',
+                    'evidence': f"{rank} rank indicates experience leading and developing teams",
+                    'civilian_value': 'Critical for management positions in any industry'
+                }
+            ],
+            
+            'market_differentiators': [
+                'Security clearance eligibility saves employers time and money',
+                'Proven ability to work under pressure and meet deadlines',
+                'Strong ethics and integrity from military service',
+                'Experience with diverse teams and cultures'
+            ],
+            
+            '90_day_action_plan': {
+                'immediate': [
+                    'Create LinkedIn profile highlighting military leadership',
+                    'Research veteran-friendly companies in your area',
+                    'Connect with veteran transition assistance programs'
+                ],
+                'short_term': [
+                    'Pursue industry certifications (PMP, Six Sigma, etc.)',
+                    'Attend veteran job fairs and networking events',
+                    'Practice translating military experience to civilian terms'
+                ],
+                'positioning': [
+                    'Apply to 5-10 positions per week at target companies',
+                    'Follow up with recruiters and hiring managers',
+                    'Leverage veteran networks for referrals'
+                ]
+            },
+            
+            'metadata': {
+                'generated_at': datetime.utcnow().isoformat(),
+                'analysis_method': 'enhanced_fallback',
+                'enhancement_version': '2.0'
+            }
+        }
+    }
+
+def store_enhanced_insights(document_id: str, profile: Dict[str, Any], insights: Dict[str, Any]):
+    """Store enhanced insights with additional metadata"""
+    
+    insights_table = dynamodb.Table(INSIGHTS_TABLE)
+    
+    try:
+        # Extract key information for quick queries
+        veteran_intelligence = insights.get('veteran_intelligence', {})
+        service_analysis = veteran_intelligence.get('service_analysis', {})
+        
+        insights_table.put_item(
+            Item={
+                'document_id': document_id,
+                'created_at': datetime.utcnow().isoformat(),
+                'veteran_profile': profile,
+                'ai_insights': insights,
+                'insight_type': insights.get('type', 'comprehensive'),
+                'enhancement_version': '2.0',
+                
+                # Denormalized fields for querying
+                'branch': service_analysis.get('branch', 'Unknown'),
+                'rank': service_analysis.get('rank', 'Unknown'),
+                'leadership_tier': service_analysis.get('leadership_tier', 'Unknown'),
+                'clearance_level': service_analysis.get('clearance_value', 'Unknown'),
+                
+                # Analytics fields
+                'career_paths_count': len(veteran_intelligence.get('career_paths', [])),
+                'hidden_strengths_count': len(veteran_intelligence.get('hidden_strengths', [])),
+                'has_clearance_analysis': 'clearance_analysis' in insights,
+                
+                'ttl': int(datetime.utcnow().timestamp()) + (365 * 24 * 60 * 60)  # 1 year
+            }
+        )
+    except Exception as e:
+        print(f"Error storing enhanced insights: {str(e)}")
+        # Fallback to main table
+        table = dynamodb.Table(TABLE_NAME)
+        table.update_item(
+            Key={'document_id': document_id},
+            UpdateExpression='SET ai_insights = :insights, enhancement_version = :version',
+            ExpressionAttributeValues={
+                ':insights': insights,
+                ':version': '2.0'
+            }
+        )
 
 def build_veteran_profile(extracted_data: Dict[str, Any]) -> Dict[str, Any]:
     """Build comprehensive veteran profile from DD214 data"""
@@ -350,305 +816,8 @@ def fetch_onet_matches(mos: str, branch: str) -> List[Dict[str, Any]]:
         print(f"Error fetching O*NET data: {str(e)}")
         return []
 
-def generate_ai_insights_from_dd214(redacted_text: str, document_id: str) -> Dict[str, Any]:
-    """Generate AI insights by analyzing the full redacted DD214 document"""
-    
-    prompt = f"""You are an expert military career advisor analyzing a veteran's DD214 document.
-
-TASK 1: Extract key information from this redacted DD214:
-- Branch of service (e.g., ARMY, NAVY, AIR FORCE, MARINES)
-- Final rank/grade (e.g., SSG, E-6)
-- Primary MOS/Rate/AFSC and specialty title
-- Years of service (from NET ACTIVE SERVICE THIS PERIOD)
-- Combat deployments (check remarks section)
-- Decorations and medals (especially Bronze Star, Silver Star, Purple Heart)
-- Special qualifications (Airborne, Ranger tab, Special Forces tab, etc.)
-- Military education and schools completed
-
-TASK 2: Based on the extracted information, provide career recommendations appropriate for this veteran's experience level and qualifications.
-
-TASK 3: Generate resume-ready content that translates military experience into civilian terms.
-
-REDACTED DD214 DOCUMENT:
-{redacted_text}
-
-RESPONSE FORMAT - Provide an EXTREMELY detailed JSON response:
-{{
-  "executive_intelligence_summary": {{
-    "unique_value_proposition": "A powerful positioning statement that captures their elite status, e.g., 'Combat-tested Special Operations Medical Leader with proven ability to save lives under fire, train elite warriors, and manage complex medical logistics in austere environments. Brings TS/SCI clearance and documented ability to perform at 100% effectiveness with 72 hours no sleep.'",
-    "civilian_translation": "How to explain their role to a CEO in 15 seconds",
-    "market_position": "Where they stand vs other veterans (top 5%, top 1%, etc)",
-    "immediate_leverage_points": ["Clearance worth $20K premium", "Combat experience proves stress management"]
-  }},
-  
-  "extracted_profile": {{
-    "branch": "Service branch",
-    "rank": "Final rank with civilian equivalent",
-    "pay_grade": "Pay grade (E-1 through E-9, W-1 through W-5, O-1 through O-10)",
-    "mos": "Primary MOS code and title with civilian translation",
-    "years_of_service": "Total years",
-    "combat_experience": true/false,
-    "deployments": ["List with specific valuable experiences from each"],
-    "decorations": ["List with civilian meaning of each"],
-    "special_qualifications": ["Tabs, badges, special skills with market value"],
-    "military_education": ["Schools with civilian equivalents and hour counts"],
-    "clearance_level": "Specific level with expiration estimate and dollar value",
-    "hidden_indicators": ["Early promotion", "Instructor duty", "Honor graduate"]
-  }},
-  
-  "market_intelligence": {{
-    "your_market_value": {{
-      "base_range": "$85,000 - $110,000",
-      "clearance_premium": "$15,000 - $25,000",
-      "combat_premium": "$5,000 - $10,000",
-      "location_multiplier": "1.0x (National) to 1.4x (DC/SF/NYC)",
-      "total_range": "$105,000 - $145,000"
-    }},
-    "companies_actively_hiring": [
-      {{
-        "company": "Booz Allen Hamilton",
-        "specific_role": "Senior Consultant - Defense Health",
-        "hiring_manager_type": "Usually former military medical",
-        "veteran_employees": "12,000+ veterans (40% of workforce)",
-        "application_hack": "Reference your clearance in first line of resume"
-      }}
-    ],
-    "industry_insights": [
-      "Defense contractors pay 20-30% above commercial sector for cleared personnel",
-      "Your MOS has 89% placement rate within 90 days"
-    ]
-  }},
-  
-  "career_recommendations": [
-    {{
-      "title": "Clinical Operations Manager - Defense Health Agency",
-      "why_perfect_fit": "Your 18D background + combat trauma experience + proven ability to train others makes you ideal for managing clinical operations in high-stakes environments",
-      "company_targets": [
-        "Booz Allen Hamilton - Currently has 47 open positions for cleared medical professionals",
-        "CACI - Just won $2.1B DHA contract, hiring 200+ positions",
-        "Leidos - Expanding telehealth division, values combat medical experience"
-      ],
-      "salary_intelligence": {{
-        "base": "$95,000 - $115,000",
-        "clearance_add": "$20,000",
-        "total_package": "$115,000 - $135,000 plus 15% bonus"
-      }},
-      "90_day_strategy": [
-        "Week 1: Update LinkedIn with security clearance and combat medical keywords",
-        "Week 2: Reach out to 3 veterans at each target company via LinkedIn",
-        "Week 3-4: Attend AFCEA or AUSA event for face-to-face networking",
-        "Week 5-8: Submit tailored applications referencing specific contracts",
-        "Week 9-12: Interview prep focusing on STAR stories from deployments"
-      ],
-      "insider_tips": [
-        "These companies bill government $250-350/hour for your expertise",
-        "Mention specific military medical systems you've used (TC3, TCCC protocols)",
-        "Emphasize your ability to work with joint/multinational forces"
-      ]
-    }}
-  ],
-  
-  "hidden_strengths_analysis": [
-    {{
-      "strength": "Ability to Make Life-or-Death Decisions with Incomplete Information",
-      "evidence": "Combat deployments + medical MOS = proven under ultimate pressure",
-      "civilian_application": "Critical for healthcare administration, emergency management, crisis consulting",
-      "stories_to_tell": "Frame your combat medical experience as 'managing complex operations with limited resources and zero margin for error'",
-      "salary_impact": "Worth $10-15K premium in negotiation"
-    }}
-  ],
-  
-  "psychological_preparation": {{
-    "imposter_syndrome_counters": [
-      "You operated at a level most civilians can't comprehend - your 'normal' is their 'extraordinary'",
-      "Your security clearance alone puts you in top 10% of candidates",
-      "Companies pay premium for leaders who won't crack under pressure - you've proven this"
-    ],
-    "confidence_builders": [
-      "You've led teams through life-or-death situations - a board meeting is nothing",
-      "Your military training cost taxpayers $500K+ - you're a walking investment"
-    ],
-    "bias_navigation": [
-      "When they say 'lacks corporate experience' counter with 'brings fresh perspective and proven adaptability'",
-      "If they question your technical skills, highlight your ability to master complex systems under pressure"
-    ]
-  }},
-  
-  "compensation_intelligence": {{
-    "negotiation_leverage": [
-      "Your clearance saves them 6-12 months and $10K in processing",
-      "Your combat experience de-risks their hire - you won't quit when it gets tough",
-      "Your military network gives them access to top talent pipeline"
-    ],
-    "total_compensation_targets": {{
-      "base_salary": "Target top of range",
-      "signing_bonus": "Ask for $10-20K to 'make transition smooth'",
-      "clearance_maintenance": "Request $5K annual for maintaining clearance",
-      "education_benefits": "Negotiate time off for VA appointments and school"
-    }}
-  }},
-  
-  "action_oriented_deliverables": {{
-    "linkedin_headline": "TS/SCI Cleared | Combat Medical Leader | [Your Specialty] Expert | Veteran",
-    "elevator_pitch": "I'm a combat-tested medical operations leader transitioning from Army Special Forces. I've managed emergency medical operations in Afghanistan, trained elite warriors in trauma care, and maintained 100% accountability of medical supplies in combat. I bring an active TS clearance and proven ability to lead diverse teams under extreme pressure. I'm targeting clinical operations or program management roles where my unique blend of medical expertise and combat leadership can drive mission success.",
-    "resume_bullets": [
-      "Led 12-person medical team through 187 combat missions with zero preventable casualties, directly saving 23 coalition and civilian lives through expert trauma intervention",
-      "Managed $2.3M in medical supplies across 3 forward operating bases with 100% accountability despite 14 enemy attacks on supply convoys",
-      "Trained 147 host nation medical personnel in combat trauma protocols, reducing civilian casualties by 34% in operational area",
-      "Pioneered new mass casualty protocol adopted brigade-wide, reducing response time by 40% and earning Bronze Star Medal"
-    ],
-    "interview_stories": [
-      {{
-        "question": "Tell me about a time you handled a crisis",
-        "star_response": "SITUATION: During a patrol in Helmand Province, we received 9 casualties from an IED strike with only 2 medics available. TASK: Stabilize all patients and coordinate MEDEVAC within the golden hour. ACTION: I immediately triaged patients, delegated care to trained squad members, established security perimeter, and managed 3 simultaneous radio nets for MEDEVAC coordination. RESULT: All 9 casualties survived, with 7 returning to duty. This experience directly translates to managing multiple priorities in healthcare operations."
-      }}
-    ]
-  }},
-  
-  "transition_timeline": {{
-    "next_7_days": [
-      "Day 1-2: Update LinkedIn with keywords from this analysis",
-      "Day 3-4: Join 3 veteran networking groups in target industry",
-      "Day 5-7: Reach out to 5 veterans at target companies"
-    ],
-    "next_30_days": [
-      "Week 2: Attend virtual job fair with security clearance focus",
-      "Week 3: Complete PMP or relevant certification enrollment",
-      "Week 4: Have coffee with 3 successfully transitioned veterans"
-    ],
-    "60_90_days": [
-      "Targeting 3-5 interviews per week",
-      "Negotiating multiple offers",
-      "Selecting position that values your unique background"
-    ]
-  }}
-}}
-
-CRITICAL SUCCESS FACTORS:
-
-1. BE SPECIFIC, NOT GENERIC
-- Bad: "Consider project management roles"
-- Good: "Target Clinical Operations Manager at Booz Allen Hamilton's DHA contract paying $125K+"
-
-2. QUANTIFY EVERYTHING
-- Bad: "Led soldiers in combat"
-- Good: "Led 42 soldiers through 187 combat patrols with zero friendly casualties"
-
-3. TRANSLATE TO DOLLARS
-- Their clearance = $15-25K salary premium
-- Combat experience = 10-15% higher retention rate (valuable to employers)
-- Military training = $250K-500K investment by government
-
-4. KNOW THE MARKET
-- E-1 to E-4: $45-75K (entry to mid-level roles)
-- E-5 to E-6: $65-95K (supervisory/technical specialist)  
-- E-7 to E-9: $85-135K (senior leadership/management)
-- Special Operations: Add 20-30% premium
-- Active TS/SCI: Add $20-30K
-- Combat Arms with Bronze Star+: Executive track potential
-
-5. PSYCHOLOGICAL WARFARE (For Their Benefit)
-- They've been indoctrinated to downplay achievements
-- Your job: Reframe their service as the elite performance it was
-- Every deployment is "international operations experience"
-- Every medal is "documented performance excellence"
-
-6. THE 10X RULE
-- Whatever salary they think they deserve, add 30-40%
-- Most veterans undervalue themselves by $20-40K
-- Your insights should open their eyes to their true market value
-"""
-
-    try:
-        # Call Bedrock
-        response = bedrock_runtime.converse(
-            modelId=MODEL_ID,
-            messages=[{
-                'role': 'user',
-                'content': [{'text': prompt}]
-            }],
-            inferenceConfig={
-                'maxTokens': 8000,
-                'temperature': 0.8,
-                'topP': 0.95
-            }
-        )
-        
-        # Extract response
-        ai_response = response['output']['message']['content'][0]['text']
-        
-        # Clean up response - remove markdown code blocks if present
-        if '```json' in ai_response:
-            ai_response = ai_response.split('```json')[1].split('```')[0].strip()
-        elif '```' in ai_response:
-            ai_response = ai_response.split('```')[1].split('```')[0].strip()
-            
-        # Parse JSON response
-        insights = json.loads(ai_response)
-        
-        # Add metadata
-        insights['generated_at'] = datetime.utcnow().isoformat()
-        insights['model_version'] = MODEL_ID
-        insights['analysis_method'] = 'enhanced_full_dd214_analysis'
-        insights['analysis_depth'] = 'comprehensive'
-        
-        # Ensure we have all expected sections
-        required_sections = [
-            'executive_intelligence_summary', 'extracted_profile', 'market_intelligence',
-            'career_recommendations', 'hidden_strengths_analysis', 'psychological_preparation',
-            'compensation_intelligence', 'action_oriented_deliverables', 'transition_timeline'
-        ]
-        
-        for section in required_sections:
-            if section not in insights:
-                insights[section] = {}
-        
-        return insights
-        
-    except json.JSONDecodeError as e:
-        print(f"Error parsing AI response as JSON: {str(e)}")
-        print(f"Raw response: {ai_response[:500]}...")
-        return generate_fallback_insights_with_profile(redacted_text)
-    except Exception as e:
-        print(f"Error calling Bedrock for DD214 analysis: {str(e)}")
-        return generate_fallback_insights_with_profile(redacted_text)
-
-def generate_fallback_insights_with_profile(redacted_text: str) -> Dict[str, Any]:
-    """Generate basic insights with simple text parsing"""
-    
-    # Simple extraction from redacted text
-    profile = {
-        'branch': 'ARMY' if 'ARMY' in redacted_text else 'Unknown',
-        'rank': 'Unknown',
-        'mos': 'Unknown',
-        'years_of_service': '0'
-    }
-    
-    # Look for specific patterns
-    if 'SSG' in redacted_text:
-        profile['rank'] = 'SSG'
-    if '18D' in redacted_text:
-        profile['mos'] = '18D - Special Forces Medical Sergeant'
-    if 'BRONZE STAR' in redacted_text:
-        profile['decorations'] = ['Bronze Star Medal']
-        
-    return {
-        'extracted_profile': profile,
-        'career_recommendations': [],
-        'transferable_skills': ['Leadership', 'Teamwork', 'Problem-solving'],
-        'action_steps': ['Update resume', 'Network with veterans', 'Apply to positions'],
-        'education_priorities': ['Relevant certification', 'Degree completion'],
-        'networking_strategy': {
-            'industries': ['Security', 'Healthcare'],
-            'associations': ['Veterans groups'],
-            'companies': ['Government contractors']
-        },
-        'generated_at': datetime.utcnow().isoformat(),
-        'analysis_method': 'fallback'
-    }
-
 def generate_ai_insights(profile: Dict[str, Any], onet_matches: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Generate AI-powered career insights using Bedrock"""
+    """Generate AI-powered career insights using Bedrock (legacy method)"""
     
     # Build comprehensive prompt
     prompt = build_insights_prompt(profile, onet_matches)
@@ -685,7 +854,7 @@ def generate_ai_insights(profile: Dict[str, Any], onet_matches: List[Dict[str, A
         return generate_fallback_insights(profile)
 
 def build_insights_prompt(profile: Dict[str, Any], onet_matches: List[Dict[str, Any]]) -> str:
-    """Build comprehensive prompt for AI insights"""
+    """Build comprehensive prompt for AI insights (legacy)"""
     
     prompt = f"""You are a career advisor specializing in military-to-civilian transitions. 
 Analyze this veteran's profile and provide actionable career insights.
@@ -811,7 +980,7 @@ def parse_ai_response(response_text: str) -> Dict[str, Any]:
     return insights
 
 def generate_fallback_insights(profile: Dict[str, Any]) -> Dict[str, Any]:
-    """Generate fallback insights if AI fails"""
+    """Generate fallback insights if AI fails (legacy)"""
     
     # Basic insights based on profile data
     skills = profile.get('technical_skills', [])
@@ -861,32 +1030,6 @@ def generate_fallback_insights(profile: Dict[str, Any]) -> Dict[str, Any]:
         },
         'generated_at': datetime.utcnow().isoformat()
     }
-
-def store_insights(document_id: str, profile: Dict[str, Any], insights: Dict[str, Any]):
-    """Store insights in DynamoDB"""
-    
-    # Create insights table if it doesn't exist
-    insights_table = dynamodb.Table(INSIGHTS_TABLE)
-    
-    try:
-        insights_table.put_item(
-            Item={
-                'document_id': document_id,
-                'created_at': datetime.utcnow().isoformat(),
-                'veteran_profile': profile,
-                'ai_insights': insights,
-                'ttl': int(datetime.utcnow().timestamp()) + (90 * 24 * 60 * 60)  # 90 days
-            }
-        )
-    except Exception as e:
-        print(f"Error storing insights: {str(e)}")
-        # If table doesn't exist, store in main table
-        table = dynamodb.Table(TABLE_NAME)
-        table.update_item(
-            Key={'document_id': document_id},
-            UpdateExpression='SET ai_insights = :insights',
-            ExpressionAttributeValues={':insights': insights}
-        )
 
 def update_processing_status(document_id: str, step: str, status: str, error: str = None):
     """Update processing status in DynamoDB"""
