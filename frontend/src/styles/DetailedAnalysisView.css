@@ -109,9 +109,19 @@
 }
 
 .career-cards {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
   gap: 2rem;
+}
+
+/* When any card is expanded, switch to single column */
+.career-cards:has(.career-detail-card.expanded) {
+  grid-template-columns: 1fr;
+}
+
+/* Alternative for browsers without :has() support */
+.career-cards.has-expanded {
+  grid-template-columns: 1fr;
 }
 
 @keyframes fadeInUp {
@@ -201,6 +211,13 @@
   }
 }
 
+/* Tablet responsiveness */
+@media (max-width: 1200px) {
+  .career-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .detailed-analysis-container {
@@ -242,6 +259,7 @@
   }
   
   .career-cards {
+    grid-template-columns: 1fr;
     gap: 1.5rem;
   }
   
