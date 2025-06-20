@@ -104,7 +104,7 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
                 >
                   <div className="option-icon">🎧</div>
                   <div className="option-content">
-                    <h3>Vector: AI Newsletter & Podcast</h3>
+                    <h3>Vector by Altivum Press™</h3>
                     <p>Strategic AI insights for military leaders</p>
                     <span className="option-duration">Weekly episodes</span>
                   </div>
@@ -295,7 +295,7 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
             <div className="podcast-view">
               <div className="vector-content">
                 <div className="vector-header">
-                  <h2>Vector: AI</h2>
+                  <h2>Vector by Altivum Press™</h2>
                   <h3>Strategic AI Intelligence for Military Leaders</h3>
                   <p className="vector-tagline">
                     A concise and strategic roundup of developments in artificial intelligence—examined 
@@ -357,9 +357,10 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
                         width="100%" 
                         height="152" 
                         frameBorder="0" 
-                        allowFullScreen
+                        allowFullScreen={false}
                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
                         loading="lazy"
+                        onError={(e) => console.error('Spotify iframe failed to load:', e)}
                       />
                     </div>
                   </div>
@@ -367,7 +368,7 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
 
                 <div className="vector-footer">
                   <p className="vector-credit">
-                    Brought to you by <strong>Altivum™ Inc.</strong> - Empowering veterans with AI insights
+                    Published by <strong>Altivum Press™</strong> - A division of Altivum™ Inc.
                   </p>
                 </div>
               </div>
