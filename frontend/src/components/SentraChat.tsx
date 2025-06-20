@@ -45,7 +45,6 @@ interface SentraChatProps {
 }
 
 export const SentraChat: React.FC<SentraChatProps> = ({ 
-  veteranContext,
   sessionId,
   onBack,
   dd214DocumentId

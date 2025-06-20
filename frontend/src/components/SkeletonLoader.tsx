@@ -2,7 +2,7 @@ import React from 'react'
 import '../styles/SkeletonLoader.css'
 
 interface SkeletonLoaderProps {
-  type: 'card' | 'chart' | 'text' | 'button'
+  type: 'card' | 'chart' | 'text' | 'button' | 'insights'
   count?: number
   width?: string
   height?: string
@@ -52,6 +52,31 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
         
       case 'button':
         return <div className="skeleton-button" style={{ width, height }} />
+        
+      case 'insights':
+        return (
+          <div className="skeleton-insights">
+            <div className="skeleton-header-section">
+              <div className="skeleton-title large" />
+              <div className="skeleton-subtitle" />
+            </div>
+            <div className="skeleton-tabs">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="skeleton-tab" />
+              ))}
+            </div>
+            <div className="skeleton-content-grid">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton-title" />
+                  <div className="skeleton-line" />
+                  <div className="skeleton-line" />
+                  <div className="skeleton-line short" />
+                </div>
+              ))}
+            </div>
+          </div>
+        )
         
       default:
         return null

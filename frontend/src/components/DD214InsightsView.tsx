@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getDD214InsightsData } from '../api'
 import { SkeletonLoader } from './SkeletonLoader'
+import { DocumentGenerator } from '../utils/documentGenerator'
 import '../styles/DD214InsightsView.css'
 
 interface DD214InsightsViewProps {}
@@ -63,7 +64,20 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
 
   const handleDownload = () => {
     setShowDownloadModal(true)
-    // Will implement actual download in Phase 4
+  }
+
+  const handleDownloadHTML = () => {
+    if (insights) {
+      DocumentGenerator.downloadHTML(insights.insights, insights.veteranProfile || insights.insights.extracted_profile)
+      setShowDownloadModal(false)
+    }
+  }
+
+  const handleDownloadPDF = () => {
+    if (insights) {
+      DocumentGenerator.openPrintPreview(insights.insights, insights.veteranProfile || insights.insights.extracted_profile)
+      setShowDownloadModal(false)
+    }
   }
 
   const copyToClipboard = async (text: string) => {
@@ -203,11 +217,23 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
             <h3>Download Your Report</h3>
             <p>Your comprehensive DD214 Career Intelligence Report is ready.</p>
             <div className="download-options">
-              <button className="download-pdf">
-                Download as PDF
+              <button className="download-pdf" onClick={handleDownloadPDF}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" strokeWidth="2"/>
+                  <polyline points="14 2 14 8 20 8" strokeWidth="2"/>
+                  <path d="M10 12h4" strokeWidth="2"/>
+                  <path d="M10 16h4" strokeWidth="2"/>
+                </svg>
+                Print to PDF
               </button>
-              <button className="download-html">
-                Download as HTML
+              <button className="download-html" onClick={handleDownloadHTML}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" strokeWidth="2"/>
+                  <polyline points="13 2 13 9 20 9" strokeWidth="2"/>
+                  <line x1="10" y1="13" x2="14" y2="13" strokeWidth="2"/>
+                  <line x1="10" y1="17" x2="14" y2="17" strokeWidth="2"/>
+                </svg>
+                Download HTML
               </button>
             </div>
             <button className="close-modal" onClick={() => setShowDownloadModal(false)}>
@@ -307,7 +333,7 @@ const OverviewSection: React.FC<{
 const CareerSection: React.FC<{
   careers: any[]
   marketIntel: any
-}> = ({ careers, marketIntel }) => {
+}> = ({ careers }) => {
   const [selectedCareer, setSelectedCareer] = useState(0)
 
   return (
