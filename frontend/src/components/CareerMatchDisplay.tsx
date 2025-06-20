@@ -30,6 +30,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
   const [activeTab, setActiveTab] = useState<'available' | 'interest'>('available')
   const [showInfoBox, setShowInfoBox] = useState(false)
   const [currentPage, setCurrentPage] = useState(0)
+  const [currentQuote] = useState(() => getRandomQuote())
   
   // MOS code will be used for deeper analysis in Phase 4
   console.log(`Displaying career matches for MOS: ${mosCode}`)
@@ -212,7 +213,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
           <h3>Careers of Interest</h3>
           {selectedCareers.length === 0 ? (
             <div className="empty-state">
-              <p className="quote">{getRandomQuote()}</p>
+              <p className="quote">{currentQuote}</p>
               <p className="instruction">Click SOC codes to add careers here</p>
             </div>
           ) : (
