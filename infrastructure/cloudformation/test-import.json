@@ -1,9 +1,0 @@
-[
-  {
-    "ResourceType": "AWS::DynamoDB::Table",
-    "LogicalResourceId": "SessionsTable",
-    "ResourceIdentifier": {
-      "TableName": "VetROI_Sessions"
-    }
-  }
-]
