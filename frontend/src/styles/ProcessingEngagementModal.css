@@ -351,7 +351,8 @@
 }
 
 .preview-button,
-.amazon-button {
+.amazon-button,
+.spotify-button {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
@@ -360,13 +361,25 @@
 }
 
 .preview-button {
-  background: transparent;
-  color: #00d4ff;
-  border: 2px solid #00d4ff;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #0a0e1a;
+  border: none;
 }
 
 .preview-button:hover {
-  background: rgba(0, 212, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(0, 212, 255, 0.4);
+}
+
+.spotify-button {
+  background: #1DB954;
+  color: white;
+  border: none;
+}
+
+.spotify-button:hover {
+  background: #1ed760;
+  transform: translateY(-2px);
 }
 
 .amazon-button {
@@ -381,12 +394,62 @@
 }
 
 .special-offer {
-  background: rgba(255, 153, 0, 0.1);
-  border: 1px solid rgba(255, 153, 0, 0.3);
-  border-radius: 8px;
-  padding: 1rem;
-  color: #ff9900;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   text-align: center;
+}
+
+.offer-title {
+  font-size: 1.125rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.offer-details {
+  color: #9CA3AF;
+  margin-bottom: 0.75rem;
+}
+
+.offer-details a {
+  color: #00d4ff;
+  text-decoration: none;
+}
+
+.offer-details a:hover {
+  text-decoration: underline;
+}
+
+.offer-code {
+  color: #9CA3AF;
+}
+
+.code {
+  display: inline-block;
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 1.125rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+
+.audiobook-preview {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-label {
+  color: #9CA3AF;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Podcast View */

@@ -212,46 +212,73 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
               <div className="book-showcase">
                 <div className="book-cover">
                   <img 
-                    src="/book-cover-placeholder.jpg" 
-                    alt="From Combat to Career: A Veteran's Guide to AI-Powered Transition"
+                    src="/beyond-the-assessment-cover.png" 
+                    alt="Beyond the Assessment book cover"
                   />
                 </div>
                 <div className="book-details">
-                  <h2>From Combat to Career</h2>
-                  <h3>A Veteran's Guide to AI-Powered Transition</h3>
+                  <h2>Beyond the Assessment</h2>
+                  <h3>Transform Your Military Experience into Civilian Success</h3>
                   <p className="author">By Christian Perez, 18D Special Forces</p>
                   
                   <div className="book-highlights">
                     <div className="highlight">
                       <span className="highlight-icon">🎯</span>
-                      <span>Translate military skills to civilian gold</span>
+                      <span>100+ copies sold to veterans transitioning</span>
                     </div>
                     <div className="highlight">
-                      <span className="highlight-icon">🤖</span>
-                      <span>Leverage AI for career acceleration</span>
+                      <span className="highlight-icon">❤️</span>
+                      <span>$100 donated to Stop Soldier Suicide for every 100 copies</span>
                     </div>
                     <div className="highlight">
-                      <span className="highlight-icon">💼</span>
-                      <span>Real veteran success stories</span>
+                      <span className="highlight-icon">🎧</span>
+                      <span>Available as audiobook on Spotify</span>
                     </div>
                     <div className="highlight">
-                      <span className="highlight-icon">📈</span>
-                      <span>Maximize your civilian earning potential</span>
+                      <span className="highlight-icon">📚</span>
+                      <span>Premium & Standard editions available</span>
                     </div>
                   </div>
 
                   <div className="book-cta">
-                    <button className="preview-button">
-                      Read Free Chapter
+                    <button 
+                      className="preview-button"
+                      onClick={() => window.open('https://www.beyondtheassessment.com/', '_blank')}
+                    >
+                      Get Premium Edition
                     </button>
-                    <button className="amazon-button">
-                      Get on Amazon
+                    <button 
+                      className="spotify-button"
+                      onClick={() => window.open('https://open.spotify.com/show/6d5fm6qimH1ARze2WS7Drk?si=e28284c4bbe8438e', '_blank')}
+                    >
+                      Listen on Spotify
                     </button>
                   </div>
 
-                  <p className="special-offer">
-                    🎁 VetROI users get 20% off with code: VETROI20
-                  </p>
+                  <div className="special-offer">
+                    <p className="offer-title">🎁 Exclusive VetROI Discount</p>
+                    <p className="offer-details">
+                      Get <strong>15% off</strong> the Premium Edition at{' '}
+                      <a href="https://www.beyondtheassessment.com/" target="_blank" rel="noopener noreferrer">
+                        beyondtheassessment.com
+                      </a>
+                    </p>
+                    <p className="offer-code">Use code: <span className="code">VETROI15</span></p>
+                  </div>
+
+                  <div className="audiobook-preview">
+                    <p className="preview-label">📻 5-Minute Audio Preview:</p>
+                    <iframe 
+                      style={{ borderRadius: '12px' }}
+                      src="https://open.spotify.com/embed/show/6d5fm6qimH1ARze2WS7Drk?utm_source=generator" 
+                      width="100%" 
+                      height="152" 
+                      frameBorder="0" 
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                      loading="lazy"
+                    ></iframe>
+                  </div>
                 </div>
               </div>
 
