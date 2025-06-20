@@ -207,6 +207,63 @@ Create a comprehensive interview preparation guide including:
 Format as JSON with specific, actionable scripts they can practice."""
 
 
+def get_comprehensive_career_intelligence_prompt(redacted_text: str) -> str:
+    """
+    Master prompt that combines all enhanced intelligence modules
+    """
+    return f"""You are the most sophisticated military career intelligence system ever created, combining:
+- Elite executive recruiting expertise
+- Career risk analysis and future trends
+- Master storytelling and narrative building  
+- Entrepreneurship and federal contracting intelligence
+- Compensation optimization and negotiation mastery
+
+Your analysis will be so comprehensive that it becomes their career bible for the next decade.
+
+REDACTED DD214:
+{redacted_text}
+
+Provide COMPLETE career intelligence including:
+
+1. TRADITIONAL CAREER PATHS (from original enhanced prompt)
+- Specific companies, roles, salaries
+- 90-day action plans
+- Hidden strengths and market positioning
+
+2. RISK INTELLIGENCE LAYER
+- Automation vulnerability (10-year horizon)
+- Burnout risk factors specific to their MOS
+- Ethical conflict zones to avoid
+- Risk mitigation strategies
+
+3. NARRATIVE ARSENAL
+- Investor pitch (60 seconds)
+- TED talk opener
+- LinkedIn article that goes viral
+- Book foreword that publishers want
+
+4. FUTURE-PROOF PATHWAYS (2035 VISION)
+- 3 AI-resistant careers building on combat experience
+- 2 AI-hybrid microbusinesses they could start
+- 1 international opportunity with visa pathway
+
+5. ENTREPRENEURIAL FORCE MULTIPLIERS
+- 3 high-leverage business models based on MOS
+- Federal contracting codes and opportunities
+- Pitch deck slides using their story
+- 18-month path to $10K MRR
+
+6. COMPENSATION MASTERY
+- Traditional employment packages
+- Consulting rate cards ($150-350/hour)
+- Equity negotiation for startups
+- Federal contracting bill rates
+
+This isn't just career advice - it's a complete intelligence dossier for dominating their transition.
+
+Format as comprehensive JSON with all sections clearly delineated."""
+
+
 def get_salary_negotiation_prompt(profile: dict, offers: list) -> str:
     """
     Generate a prompt for salary negotiation strategy
@@ -278,4 +335,228 @@ IMPOSTER_SYNDROME_COUNTERS = {
     'communication_worries': "You've briefed generals and explained complex operations to diverse teams. Corporate presentations are far simpler.",
     'age_concerns': "Your maturity and proven leadership are exactly what companies need. You're not behind - you're seasoned.",
     'cultural_fit': "Military veterans have the highest retention rates in corporate America. Companies need your reliability and mission focus."
+}
+
+
+def get_risk_intelligence_prompt(profile: dict, career_recommendations: list) -> str:
+    """
+    Generate Career Threat Assessment analyzing automation risk, burnout potential, and ethical conflicts
+    """
+    return f"""You are a career risk analyst specializing in military transitions and future of work trends.
+
+VETERAN PROFILE:
+{profile}
+
+CAREER RECOMMENDATIONS:
+{career_recommendations}
+
+Generate a comprehensive Career Threat Assessment:
+
+1. AUTOMATION VULNERABILITY ANALYSIS
+For each recommended career:
+- 10-year automation risk (0-100% probability)
+- Specific tasks/skills that will be automated
+- Adjacent roles to pivot toward
+- Reskilling timeline and cost
+
+2. BURNOUT & MENTAL HEALTH RISKS
+- Roles with highest veteran burnout rates
+- Specific triggers based on their MOS (e.g., high-stress medical for combat medics)
+- Warning signs to monitor
+- Protective factors from military experience
+
+3. ETHICAL CONFLICT ZONES
+- Roles that conflict with military values/oath
+- Industries with ethical concerns for veterans
+- Company cultures that clash with military ethos
+- Green flags: companies with strong veteran retention
+
+4. RISK MITIGATION STRATEGIES
+- Skills to develop for automation resistance
+- Side hustles that hedge career bets
+- Networks that provide career insurance
+- Geographic arbitrage opportunities
+
+Format as JSON with visual risk scores (Low/Medium/High/Critical) for each dimension."""
+
+
+def get_legacy_narrative_prompt(profile: dict) -> str:
+    """
+    Build powerful first-person narratives for different audiences
+    """
+    return f"""You are a master storyteller who helps veterans craft compelling narratives that transform military service into civilian leadership currency.
+
+VETERAN PROFILE:
+{profile}
+
+Create three powerful narratives:
+
+1. THE INVESTOR PITCH (60 seconds)
+"I learned [core lesson] when [specific combat/deployment story]. This taught me [business principle], which is why I'm building [company] to solve [problem]."
+- Hook them with specific moment
+- Bridge to business insight
+- Show unfair advantage from service
+
+2. THE TED TALK OPENER (90 seconds)  
+"At 0300 hours in [location], I faced [life-or-death decision]. In that moment, I discovered [universal truth about leadership/resilience/innovation]."
+- Visceral scene setting
+- Universal theme extraction
+- Audience connection point
+
+3. THE BOOK FOREWORD
+"What My [Rank/MOS] Experience Taught Me About [Business/Leadership/Life]"
+- Chapter 1: The day everything changed
+- Core transformation story
+- Lessons for civilian leaders
+- Why this matters now
+
+4. THE LINKEDIN ARTICLE
+Headline: "From [Military Achievement] to [Civilian Impact]: 3 Lessons..."
+- SEO-optimized title
+- Viral-worthy hook
+- Actionable takeaways
+
+Each narrative should:
+- Use specific details (dates, places, people)
+- Connect military experience to civilian value
+- Create emotional investment
+- End with clear call-to-action"""
+
+
+def get_future_career_prompt(profile: dict) -> str:
+    """
+    Generate 2035-proof career paths based on AI and global trends
+    """
+    return f"""You are a futurist specializing in AI-resistant careers and emerging global opportunities for military veterans.
+
+VETERAN PROFILE:
+{profile}
+
+TIME HORIZON: 2035 (10+ years out)
+
+Provide future-proof career intelligence:
+
+1. AI-RESISTANT CAREER PATHS (3)
+Based on their military experience, identify roles that:
+- Require human judgment in life/death situations
+- Leverage trust and relationships
+- Involve physical + cognitive + emotional intelligence
+- Build on their specific combat/technical experience
+
+Example: "Combat Medic → Disaster Response AI Coordinator - manages human-AI teams in crisis zones"
+
+2. AI-HYBRID MICROBUSINESSES (2)
+Small businesses leveraging their expertise + AI tools:
+- Initial investment required
+- Revenue projections
+- AI tools to leverage
+- Government contracts available
+
+Example: "Infantry → AI-Enhanced Security Consulting - uses computer vision + tactical expertise"
+
+3. INTERNATIONAL OPPORTUNITIES (1)
+Global role leveraging military experience:
+- Countries actively recruiting their skillset
+- Visa pathways for veterans
+- Salary arbitrage opportunities
+- Cultural fit analysis
+
+4. SKILLS INVESTMENT PORTFOLIO
+- Top 3 skills to develop now
+- Learning path with costs/time
+- ROI projections for each skill
+- Hedge against multiple futures
+
+Format as actionable intelligence with specific next steps."""
+
+
+def get_entrepreneurial_prompt(profile: dict) -> str:
+    """
+    Generate business opportunities based on military experience
+    """
+    return f"""You are a veteran entrepreneurship expert who's helped launch 500+ veteran-owned businesses.
+
+VETERAN PROFILE:
+{profile}
+
+Generate comprehensive entrepreneurial intelligence:
+
+1. HIGH-LEVERAGE BUSINESS MODELS (3)
+Based on their MOS and experience:
+- Specific business concept
+- Target market size (TAM/SAM/SOM)
+- Unfair advantages from military service
+- 18-month path to $10K MRR
+- Federal contracting opportunities
+
+Examples:
+- 18D → Mobile Combat Medicine Training (VR + live instruction)
+- 11B → Executive Protection Tech Platform
+- 25B → Cleared IT Staffing Agency
+
+2. FEDERAL CONTRACTING CODES
+Specific NAICS codes they qualify for:
+- Primary codes with contract volumes
+- Set-aside opportunities (SDVOSB, 8(a))
+- Recent contract awards in their space
+- Teaming partner suggestions
+
+3. INVESTOR-READY MATERIALS
+- Pitch deck slide: "Why My Military Experience = Unfair Advantage"
+- Revenue model based on government contracts
+- Team slide emphasizing clearances/experience
+- Traction: translate military achievements to business metrics
+
+4. QUICK-WIN OPPORTUNITIES
+- Consulting gigs available immediately
+- Products they could launch in 30 days
+- Partnerships with other veteran businesses
+- Grants/competitions for veteran entrepreneurs
+
+5. BUSINESS LAUNCH CHECKLIST
+Week 1-4: Legal structure, EIN, bank accounts, SAM.gov
+Week 5-8: Capability statement, past performance, GSA schedules
+Week 9-12: First contract pursuit, team building
+
+Include specific resources, contacts, and funding sources."""
+
+
+# Enhanced MOS to Entrepreneurial Opportunities
+MOS_TO_BUSINESS = {
+    '18D': {
+        'businesses': [
+            {
+                'model': 'Tactical Medicine Training Company',
+                'description': 'VR-based trauma training for first responders',
+                'tam': '$2.3B emergency training market',
+                'moat': 'Only company with real combat medical experience',
+                'path_to_10k_mrr': '3 enterprise contracts at $3,500/month each',
+                'federal_opportunity': 'DHS First Responder Training contracts'
+            },
+            {
+                'model': 'Medical Logistics SaaS',
+                'description': 'Supply chain software for austere medical operations',
+                'tam': '$890M medical logistics software',
+                'moat': 'Built by operators who lived the problem',
+                'path_to_10k_mrr': '20 clinics at $500/month',
+                'federal_opportunity': 'VA community clinic logistics'
+            }
+        ],
+        'contracting_codes': [
+            {'code': '621999', 'description': 'All Other Miscellaneous Ambulatory Health Care Services', 'volume': '$2.1B'},
+            {'code': '611699', 'description': 'All Other Miscellaneous Schools and Instruction', 'volume': '$890M'}
+        ]
+    },
+    '11B': {
+        'businesses': [
+            {
+                'model': 'AI-Enhanced Security Operations Center',
+                'description': 'Remote monitoring with veteran analysts + AI threat detection',
+                'tam': '$45B private security market',
+                'moat': 'Combat-tested operators managing AI tools',
+                'path_to_10k_mrr': '5 small business clients at $2K/month',
+                'federal_opportunity': 'GSA Schedule 84 - Security Services'
+            }
+        ]
+    }
 }

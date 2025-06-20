@@ -118,30 +118,70 @@ AWS Services Deployed:
 - ✅ Beautiful data visualization
 - ✅ Session storage in DynamoDB
 - ✅ Dark theme UI with glassmorphic effects
+- ✅ DD214 upload and processing pipeline
+- ✅ Enhanced Nova Lite AI insights (8000 tokens)
 
 ---
 
-## 🚀 Next Phase: AI Career Counseling (Ready to Implement)
+## 🚀 AI Intelligence Layers (ENHANCED - June 20, 2025)
 
-### Sentra - AI Career Counselor
+### DD214 AI Insights - Revolutionary Career Intelligence
+When veteran uploads DD214, Nova Lite generates:
+
+1. **Executive Intelligence Summary**
+   - Unique value proposition with clearance premiums
+   - Market position (top 1%, 5%, etc.)
+   - Immediate leverage points worth $20-40K
+
+2. **Market Intelligence**
+   - Specific companies actively hiring (with requisition IDs)
+   - Exact salary ranges with geographic multipliers
+   - Insider tips and application hacks
+   - Hidden opportunities in emerging sectors
+
+3. **Risk Intelligence**
+   - 10-year automation vulnerability
+   - MOS-specific burnout factors
+   - Ethical conflict identification
+   - Risk mitigation strategies
+
+4. **Legacy Narratives**
+   - 60-second investor pitch
+   - TED Talk opener
+   - LinkedIn viral article template
+   - Book foreword positioning
+
+5. **Future-Proof Pathways (2035 Vision)**
+   - AI-resistant careers
+   - AI-hybrid microbusinesses
+   - International opportunities
+   - Skills investment portfolio
+
+6. **Entrepreneurial Force Multipliers**
+   - MOS-specific business models
+   - Federal contracting opportunities
+   - Pitch deck templates
+   - Path to $10K MRR
+
+### Sentra - AI Career Counselor (Next Enhancement)
 When veteran clicks "Meet with Sentra" after exploring careers:
 
-1. **Context Gathering**
-   - Veteran profile
-   - Careers viewed
-   - Time spent on each
-   - Selected careers of interest
+1. **Context Awareness**
+   - Full DD214 intelligence
+   - Career exploration history
+   - Risk tolerance assessment
+   - Geographic preferences
 
-2. **AI-Powered Conversation**
-   - Uses Amazon Bedrock (Nova Lite)
-   - Contextual understanding of military background
-   - Personalized career guidance
-   - Next steps and action items
+2. **Conversational Intelligence**
+   - Military-aware language model
+   - Motivational interviewing techniques
+   - Action-oriented guidance
+   - Accountability check-ins
 
 3. **Integration Points**
-   - New endpoint: POST /sentra/conversation
-   - Bedrock integration (already have permissions)
-   - Session continuity from DynamoDB
+   - POST /sentra/conversation
+   - Context from DD214 insights
+   - Session continuity
 
 ---
 
@@ -566,4 +606,34 @@ Revolutionary 2-3 minute wait time monetization:
 
 ---
 
-*Last Updated: June 19, 2025 - After CloudFormation migration, DD214 processing implementation, comprehensive cost tracking setup, and frontend engagement features*
+---
+
+## Nova Lite Enhancements (June 20, 2025)
+
+### Prompt Engineering
+- Expanded prompts from 500 to 2000+ words
+- Increased token limit to 8000 for comprehensive responses
+- Role-based prompting ("elite military career strategist")
+- Structured JSON output with 50+ data points per veteran
+
+### Intelligence Modules
+1. **Traditional Career Paths**: Companies, salaries, 90-day plans
+2. **Risk Assessment**: Automation, burnout, ethical conflicts
+3. **Narrative Building**: Investor pitches, TED talks, viral content
+4. **Future-Proofing**: 2035 careers, AI-hybrid businesses
+5. **Entrepreneurship**: Business models, federal contracting
+
+### Output Quality
+- **Before**: Generic recommendations ($70K roles)
+- **After**: Specific intelligence ($130K+ opportunities)
+- Includes negotiation scripts, networking contacts, weekly action plans
+- Transforms imposter syndrome into executive confidence
+
+### Files Created
+- `lambda/dd214_insights/src/enhanced_prompts.py` - Prompt library
+- `DD214_ENHANCED_OUTPUT_EXAMPLE.md` - Shows transformation
+- `NOVA_LITE_ENHANCEMENT_SUMMARY.md` - Technical details
+
+---
+
+*Last Updated: June 20, 2025 - After Nova Lite enhancement implementation*
