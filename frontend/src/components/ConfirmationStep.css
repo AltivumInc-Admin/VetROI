@@ -58,6 +58,8 @@
 
 .confirmation-content {
   margin-bottom: 2rem;
+  width: 100%;
+  text-align: center !important;
 }
 
 .profile-summary {
@@ -69,6 +71,8 @@
   font-size: 1.125rem;
   line-height: 1.8;
   margin: 0 0 1.5rem 0;
+  text-align: center !important;
+  width: 100%;
 }
 
 .profile-summary p:last-child {
@@ -81,6 +85,11 @@
   position: relative;
   display: inline-block;
   text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+/* Ensure highlight spans don't break centering */
+.profile-summary .highlight {
+  display: inline;
 }
 
 .highlight::after {

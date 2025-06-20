@@ -218,8 +218,8 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
                 </div>
                 <div className="book-details">
                   <h2>Beyond the Assessment</h2>
-                  <h3>Transform Your Military Experience into Civilian Success</h3>
-                  <p className="author">By Christian Perez, 18D Special Forces</p>
+                  <h3>Forging Strength, Overcoming Adversity, and Embracing the Warrior Mindset</h3>
+                  <p className="author">By Christian Perez<br />Former Green Beret and Founder of Altivum<sup>™</sup> Inc.</p>
                   
                   <div className="book-highlights">
                     <div className="highlight">
