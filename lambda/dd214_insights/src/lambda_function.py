@@ -4,6 +4,17 @@ import os
 from datetime import datetime
 from typing import Dict, Any, List
 import re
+import sys
+import random
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+try:
+    from enhanced_prompts_v2 import get_dynamic_prompt
+    USE_DYNAMIC_PROMPTS = True
+except ImportError:
+    USE_DYNAMIC_PROMPTS = False
+    print("Warning: enhanced_prompts_v2 not found, using standard prompts")
 
 # Initialize AWS clients
 bedrock_runtime = boto3.client('bedrock-runtime')
@@ -353,7 +364,16 @@ def fetch_onet_matches(mos: str, branch: str) -> List[Dict[str, Any]]:
 def generate_ai_insights_from_dd214(redacted_text: str, document_id: str) -> Dict[str, Any]:
     """Generate AI insights by analyzing the full redacted DD214 document"""
     
-    prompt = f"""You are an expert military career advisor analyzing a veteran's DD214 document.
+    # Use dynamic prompt if available for variety
+    if USE_DYNAMIC_PROMPTS:
+        try:
+            prompt = get_dynamic_prompt(redacted_text)
+            print("Using dynamic prompt for variety")
+        except Exception as e:
+            print(f"Error with dynamic prompt: {e}, falling back to standard")
+            prompt = f"""You are an expert military career advisor analyzing a veteran's DD214 document."""
+    else:
+        prompt = f"""You are an expert military career advisor analyzing a veteran's DD214 document.
 
 TASK 1: Extract key information from this redacted DD214:
 - Branch of service (e.g., ARMY, NAVY, AIR FORCE, MARINES)
@@ -366,6 +386,15 @@ TASK 1: Extract key information from this redacted DD214:
 - Military education and schools completed
 
 TASK 2: Based on the extracted information, provide career recommendations appropriate for this veteran's experience level and qualifications.
+
+IMPORTANT: Generate UNIQUE insights each time. Vary your recommendations by:
+- Focusing on different industry sectors
+- Suggesting different company types (startups vs Fortune 500 vs government contractors)
+- Varying salary ranges based on market conditions
+- Providing fresh perspectives and unexpected opportunities
+- Using different narrative styles and tones
+
+Analysis timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 TASK 3: Generate resume-ready content that translates military experience into civilian terms.
 

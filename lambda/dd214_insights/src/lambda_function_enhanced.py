@@ -17,6 +17,7 @@ from enhanced_prompts import (
     CLEARANCE_VALUE_MATRIX,
     DEPLOYMENT_VALUE_TRANSLATION
 )
+from enhanced_prompts_v2 import get_dynamic_prompt
 
 # Initialize AWS clients
 bedrock_runtime = boto3.client('bedrock-runtime')
@@ -274,9 +275,9 @@ def generate_enhanced_ai_insights(redacted_text: str, document_id: str) -> Dict[
     rank = extract_rank_from_text(redacted_text)
     branch = extract_branch_from_text(redacted_text)
     
-    # Get specialized prompt based on MOS and rank
-    prompt = get_specialized_prompt(mos, rank, branch)
-    prompt = prompt.replace("{redacted_dd214_text}", redacted_text)
+    # Use dynamic prompt for variability
+    # Could also check if user has previous analyses to increment count
+    prompt = get_dynamic_prompt(redacted_text, previous_analysis_count=0)
     
     try:
         # Call Bedrock with higher token limit for comprehensive response
@@ -288,8 +289,8 @@ def generate_enhanced_ai_insights(redacted_text: str, document_id: str) -> Dict[
             }],
             inferenceConfig={
                 'maxTokens': 8000,  # Increased for comprehensive insights
-                'temperature': 0.7,
-                'topP': 0.9
+                'temperature': 0.85,  # Increased for more variability
+                'topP': 0.95  # Increased for more creative outputs
             }
         )
         
