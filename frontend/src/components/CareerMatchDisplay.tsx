@@ -98,7 +98,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
           Scroll through these options below and click on the SOC codes that spark your interest. 
           We'll explore these in greater detail soon.
           <br /><br />
-          Add careers to your "Careers of Interest" column by clicking on the SOC code at the top of each card. 
+          Add careers to your "Careers of Interest" column by clicking the card. 
           When you're ready to learn more about these fields, click on the 'Detailed Analysis' button.
         </p>
       </div>
@@ -214,7 +214,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
           {selectedCareers.length === 0 ? (
             <div className="empty-state">
               <p className="quote">{currentQuote}</p>
-              <p className="instruction">Click SOC codes to add careers here</p>
+              <p className="instruction">Click cards to add careers here</p>
             </div>
           ) : (
             <div className="career-cards-grid">

@@ -70,7 +70,14 @@ export const SentraChat: React.FC<SentraChatProps> = ({
   }, [messages, showNextMission])
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    // Scroll to the last assistant message, not the very bottom
+    const assistantMessages = document.querySelectorAll('.message.assistant')
+    if (assistantMessages.length > 0) {
+      const lastAssistantMessage = assistantMessages[assistantMessages.length - 1]
+      lastAssistantMessage.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   const handleMissionClick = async () => {
