@@ -349,8 +349,8 @@
 }
 
 .career-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
@@ -454,6 +454,9 @@
   display: grid;
   gap: 1rem;
   margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .strategy-step {
@@ -483,6 +486,9 @@
 .insider-tips {
   display: grid;
   gap: 1rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tip-card {
@@ -615,8 +621,8 @@
 }
 
 .strengths-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 

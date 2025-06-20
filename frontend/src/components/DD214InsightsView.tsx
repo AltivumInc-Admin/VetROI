@@ -124,7 +124,7 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
         </button>
         
         <div className="header-content">
-          <h1>Your DD214 Career Intelligence Report</h1>
+          <h1>DD214 Career Intelligence Report</h1>
           <p className="subtitle">AI-Powered Analysis of Your Military Service</p>
         </div>
 
@@ -408,12 +408,8 @@ const CompensationSection: React.FC<{
             <span className="value-amount">{marketValue?.base_range || '$85K - $110K'}</span>
           </div>
           <div className="value-item highlight">
-            <span className="value-label">+ Clearance Premium</span>
+            <span className="value-label">+ Security Clearance Premium</span>
             <span className="value-amount">{marketValue?.clearance_premium || '$15K - $25K'}</span>
-          </div>
-          <div className="value-item">
-            <span className="value-label">+ Combat Premium</span>
-            <span className="value-amount">{marketValue?.combat_premium || '$5K - $10K'}</span>
           </div>
           <div className="divider"></div>
           <div className="value-item total">
