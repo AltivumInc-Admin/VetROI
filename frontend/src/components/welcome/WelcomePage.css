@@ -63,6 +63,8 @@
   font-size: 1.5rem;
   vertical-align: super;
   opacity: 0.8;
+  color: #6A6D73;
+  -webkit-text-fill-color: #6A6D73;
 }
 
 .tagline {

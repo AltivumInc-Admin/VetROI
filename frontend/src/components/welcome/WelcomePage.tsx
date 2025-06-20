@@ -108,7 +108,8 @@ const WelcomePage: React.FC = () => {
               </button>
               
               <p className="free-features-note">
-                Free access includes AI career counseling and O*NET data exploration
+                While you can still receive career guidance without an account, 
+                signing in unlocks AI-powered DD214 analysis and personalized insights
               </p>
             </div>
           </motion.div>

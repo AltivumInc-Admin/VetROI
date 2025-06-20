@@ -4,6 +4,7 @@ import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import { AuthModal } from './AuthModal'
 import { UserAgreement } from './UserAgreement'
+import { ProcessingEngagementModal } from './ProcessingEngagementModal'
 import '../styles/DD214Upload.css'
 
 interface DD214UploadProps {
@@ -43,6 +44,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showAgreement, setShowAgreement] = useState(false)
   const [hasAcceptedAgreement, setHasAcceptedAgreement] = useState(false)
+  const [showEngagementModal, setShowEngagementModal] = useState(false)
   const { isAuthenticated, user, checkAuth, signOutUser, sessionExpired, clearSessionExpired, loading } = useAuth()
 
   // Check authentication status on mount
@@ -143,6 +145,9 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         documentId
       }))
 
+      // Show engagement modal during processing
+      setShowEngagementModal(true)
+
       // Start polling for status
       pollProcessingStatus(documentId)
 
@@ -185,6 +190,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             ...prev,
             status: 'complete'
           }))
+          // Close engagement modal when processing is complete
+          setShowEngagementModal(false)
           onUploadComplete(documentId)
         } else if (status.status === 'error') {
           clearInterval(pollInterval)
@@ -193,6 +200,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             status: 'error',
             error: status.error || 'Processing failed'
           }))
+          // Close engagement modal on error
+          setShowEngagementModal(false)
         }
       } catch (error) {
         console.error('Failed to poll status:', error)
@@ -259,6 +268,12 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         isOpen={showAgreement}
         onAccept={handleAcceptAgreement}
         onDecline={handleDeclineAgreement}
+      />
+      
+      <ProcessingEngagementModal
+        isOpen={showEngagementModal}
+        onClose={() => setShowEngagementModal(false)}
+        processingTime={180} // 3 minutes
       />
       
       <h3>Upload Your DD214</h3>
