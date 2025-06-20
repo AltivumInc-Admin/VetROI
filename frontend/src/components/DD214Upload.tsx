@@ -95,14 +95,9 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       return
     }
     
-    // Check if user has accepted agreement
+    // Agreement should already be accepted at this point
     if (!hasAcceptedAgreement) {
-      // Store the file temporarily to upload after agreement
-      sessionStorage.setItem('pendingFile', JSON.stringify({
-        name: acceptedFiles[0].name,
-        type: acceptedFiles[0].type,
-        size: acceptedFiles[0].size
-      }))
+      console.error('Agreement not accepted - this should not happen')
       setShowAgreement(true)
       return
     }
@@ -221,8 +216,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     maxFiles: 1,
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
     noClick: true, // We'll handle clicks manually with the button
-    noDrag: !isAuthenticated, // Prevent drag if not authenticated
-    noKeyboard: !isAuthenticated // Prevent keyboard activation if not authenticated
+    noDrag: !isAuthenticated || !hasAcceptedAgreement, // Prevent drag if not authenticated or agreement not accepted
+    noKeyboard: !isAuthenticated || !hasAcceptedAgreement // Prevent keyboard activation if not authenticated or agreement not accepted
   })
 
   const handleAuthSuccess = async () => {
@@ -238,14 +233,10 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     localStorage.setItem('dd214AgreementAccepted', 'true')
     setShowAgreement(false)
     
-    // Check if there was a pending file to upload
-    const pendingFile = sessionStorage.getItem('pendingFile')
-    if (pendingFile) {
-      // Clear the pending file
-      sessionStorage.removeItem('pendingFile')
-      // Show a message to re-upload
-      alert('Agreement accepted! Please upload your DD214 again.')
-    }
+    // After accepting agreement, immediately open file picker
+    setTimeout(() => {
+      open()
+    }, 100)
   }
   
   const handleDeclineAgreement = () => {
@@ -415,6 +406,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
                     e.stopPropagation();
                     if (!isAuthenticated) {
                       setShowAuthModal(true);
+                    } else if (!hasAcceptedAgreement) {
+                      setShowAgreement(true);
                     } else {
                       open();
                     }
