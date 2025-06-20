@@ -308,15 +308,24 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
             <span>
-              {user.givenName ? (
-                `Welcome, ${user.givenName}`
-              ) : user.name ? (
-                `Signed in as ${user.name}`
-              ) : user.email ? (
-                `Signed in as ${user.email}`
-              ) : (
-                `Signed in as ${user.username || user.userId}`
-              )}
+              {(() => {
+                // Try multiple sources for user display name
+                const email = user.email || user.attributes?.email;
+                const givenName = user.givenName || user.attributes?.given_name;
+                const name = user.name || user.attributes?.name;
+                const username = user.username;
+                
+                // Prefer name/givenName, then email, then username
+                if (givenName || name) {
+                  return `Welcome, ${givenName || name}`;
+                } else if (email) {
+                  return `Signed in as ${email}`;
+                } else if (username && !username.includes('-')) {
+                  return `Signed in as ${username}`;
+                } else {
+                  return 'Signed in';
+                }
+              })()}
             </span>
           </div>
           <div className="auth-actions">
