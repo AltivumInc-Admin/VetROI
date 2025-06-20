@@ -88,6 +88,51 @@
   gap: 1rem;
 }
 
+/* Primary Upload Button */
+.upload-button-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  color: #0a0e1a;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
+}
+
+.upload-button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 212, 255, 0.4);
+  background: linear-gradient(135deg, #00e5ff 0%, #00aadd 100%);
+}
+
+.upload-button-primary:active {
+  transform: translateY(0);
+}
+
+.upload-or {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.875rem;
+  margin: 0.5rem 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.upload-or::before,
+.upload-or::after {
+  content: '';
+  height: 1px;
+  width: 40px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .upload-icon {
   color: #00d4ff;
   opacity: 0.6;
@@ -144,6 +189,7 @@
   align-items: center;
   gap: 0.5rem;
   flex: 1;
+  min-width: 0; /* Allow text to wrap */
 }
 
 .step-number {
@@ -164,6 +210,8 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.7);
   text-align: center;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .step-arrow {
@@ -489,5 +537,48 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
+  }
+  
+  .upload-button-primary {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .upload-button-primary svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .trust-indicators {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .steps-grid {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .step-arrow {
+    display: none;
+  }
+  
+  .step-preview {
+    flex: 0 0 calc(50% - 0.5rem);
+  }
+  
+  .step-preview:last-child {
+    /* Career Insights - center it if odd number */
+    flex: 0 0 100%;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+  
+  .process-steps-preview {
+    padding: 1rem;
+  }
+  
+  .process-steps-preview h4 {
+    font-size: 0.75rem;
   }
 }

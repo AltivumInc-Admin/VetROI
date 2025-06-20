@@ -278,7 +278,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       
       <h3>Upload Your DD214</h3>
       <p className="upload-description">
-        Your military service record unlocks personalized career intelligence powered by O*NET data
+        Your military service record unlocks AI-powered insights including personalized resume bullets, 
+        interview strategies, and career recommendations tailored to your unique experience
       </p>
       
       <div className="trust-indicators">
@@ -409,8 +410,13 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               <p>Drop your DD214 here...</p>
             ) : (
               <>
-                <p>Drag & drop your DD214 here</p>
-                <p className="upload-hint">or click to browse files on your device</p>
+                <button className="upload-button-primary">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
+                  </svg>
+                  Click to Select File
+                </button>
+                <p className="upload-or">or drag & drop your DD214 here</p>
                 <p className="upload-formats">Supports PDF, JPG, PNG (max 10MB)</p>
               </>
             )}
