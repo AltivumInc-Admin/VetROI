@@ -223,13 +223,13 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
         
         {selectedSection === 'legacy' && (
           <LegacySection 
-            legacyReport={insights.insights.legacy_report}
+            legacyReport={insights.insights?.legacy_report}
           />
         )}
         
         {selectedSection === 'ai-prompts' && (
           <AIPromptsSection 
-            metaAI={insights.insights.meta_ai_prompts}
+            metaAI={insights.insights?.meta_ai_prompts}
             onCopy={copyToClipboard}
           />
         )}

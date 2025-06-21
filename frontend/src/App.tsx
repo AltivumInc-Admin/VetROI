@@ -23,7 +23,7 @@ interface ChatSession {
 
 function App() {
   const navigate = useNavigate()
-  const { sessionWarning, sessionExpired, isAuthenticated, loading: authLoading } = useAuth()
+  const { sessionWarning, sessionExpired } = useAuth()
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
