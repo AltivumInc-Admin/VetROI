@@ -55,7 +55,7 @@ export const generatePDF = async (insights: any) => {
     pdf.line(margin, 10, pageWidth - margin, 10)
     
     // Page number
-    const pageNumber = pdf.internal.getNumberOfPages()
+    const pageNumber = pdf.internal.pages.length - 1
     pdf.setTextColor(...colors.textLight)
     pdf.setFontSize(9)
     pdf.text(`Page ${pageNumber}`, pageWidth - margin, 10, { align: 'right' })
@@ -265,11 +265,13 @@ export const generatePDF = async (insights: any) => {
     pdf.setFont('helvetica', 'normal')
     pdf.text(`${item.icon}  ${index + 1}. ${item.title}`, margin + 5, yPosition + 4)
     
-    // Dotted line
+    // Dotted line (draw multiple small lines for dotted effect)
     pdf.setDrawColor(...colors.textLight)
-    pdf.setLineDash([1, 2], 0)
-    pdf.line(margin + 120, yPosition + 3, pageWidth - margin - 20, yPosition + 3)
-    pdf.setLineDash([])
+    const startX = margin + 120
+    const endX = pageWidth - margin - 20
+    for (let x = startX; x < endX; x += 3) {
+      pdf.line(x, yPosition + 3, Math.min(x + 1, endX), yPosition + 3)
+    }
     
     // Page number
     pdf.text(`${item.page}`, pageWidth - margin - 15, yPosition + 4, { align: 'right' })
@@ -440,7 +442,7 @@ export const generatePDF = async (insights: any) => {
     pdf.text('Pro Tip: Customize these bullets with specific metrics from your experience', margin, yPosition)
     yPosition += 10
     
-    insights.insights.action_oriented_deliverables.resume_nuclear_bullets.forEach((bullet: string, index: number) => {
+    insights.insights.action_oriented_deliverables.resume_nuclear_bullets.forEach((bullet: string) => {
       addNewPageIfNeeded(30)
       
       // Bullet container
