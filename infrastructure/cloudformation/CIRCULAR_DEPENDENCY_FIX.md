@@ -1,69 +1,41 @@
-# Circular Dependency Fix for VetROI CloudFormation Template
+# SAM Template Circular Dependency Fix
 
 ## Problem
+The SAM template had a circular dependency issue where the DD214UploadBucket was trying to reference DD214ParserFunction in its notification configuration before the function existed.
 
-The original template had a circular dependency between:
+## Solution
+1. **Added Missing Resources**: Added the DD214ParserFunction and ONetRefreshFunction that were missing from the production template.
 
-1. **DD214SecureBucket** → Depends on S3DD214TriggerFunction (via NotificationConfiguration)
-2. **S3DD214TriggerFunction** → Depends on DD214ProcessingStateMachine (via environment variable)
-3. **DD214ProcessingStateMachine** → Depends on StepFunctionsExecutionRole
-4. **StepFunctionsExecutionRole** → References Lambda function ARNs (which creates implicit dependencies)
+2. **Custom Resource for S3 Notifications**: Instead of configuring S3 bucket notifications directly on the bucket (which would create a circular dependency), we created a custom resource that configures the notifications after both the bucket and Lambda function are created.
 
-This created a circular reference that CloudFormation couldn't resolve.
+3. **Key Components Added**:
+   - `DD214ParserFunction`: Lambda function to parse DD-214 documents
+   - `DD214ParserS3Permission`: Permission for S3 to invoke the Lambda function
+   - `S3NotificationConfigFunction`: Custom resource Lambda to configure S3 notifications
+   - `S3BucketNotificationCustomResource`: Custom resource that sets up the S3 notification after both resources exist
+   - `ONetCacheBucket`: S3 bucket for O*NET data caching
+   - `ONetRefreshFunction`: Lambda function to refresh O*NET data
+   - `ONetRefreshStateMachine`: Step Function for scheduled O*NET refresh
+   - CloudWatch Log Groups for all Lambda functions
+   - CloudWatch Alarms for production monitoring
 
-## Solution Applied
+## How It Works
+1. CloudFormation creates the DD214UploadBucket and DD214ParserFunction independently
+2. The S3NotificationConfigFunction is created as a Lambda function
+3. The S3BucketNotificationCustomResource is then created, which:
+   - Calls the S3NotificationConfigFunction
+   - Sets up the S3 bucket notification to trigger DD214ParserFunction on .pdf file uploads
+   - This happens after both the bucket and function exist, avoiding the circular dependency
 
-### 1. Removed Direct S3 Notification Configuration
-- Removed the `NotificationConfiguration` property from the `DD214SecureBucket` resource
-- This breaks the direct dependency between the bucket and the Lambda function
+## Additional Improvements
+- Added KMS encryption to CloudWatch Log Groups
+- Added proper error alarms for all Lambda functions
+- Added versioning to the O*NET cache bucket
+- Added reserved concurrent executions for Lambda functions based on environment
+- Added proper KMS permissions for all services
 
-### 2. Added Custom Resource for S3 Notifications
-- Created `BucketNotificationFunction`: A Lambda function that configures S3 bucket notifications
-- Created `S3BucketNotification`: A custom resource that runs after all dependencies are created
-- This allows the notification to be configured after both the bucket and trigger function exist
-
-### 3. Fixed IAM Role References
-- Changed `StepFunctionsExecutionRole` to use `!Sub` with function names instead of `!GetAtt`
-- This avoids creating implicit dependencies on Lambda functions that haven't been created yet
-
-### 4. Added Explicit Dependencies
-- Added `DependsOn: DD214ProcessingStateMachine` to `S3DD214TriggerFunction`
-- The custom resource `S3BucketNotification` explicitly depends on:
-  - S3DD214TriggerFunction
-  - S3DD214TriggerFunctionPermission
-  - DD214SecureBucket
-
-## Resource Creation Order
-
-The fixed template creates resources in this order:
-
-1. IAM Roles (LambdaExecutionRole, StepFunctionsExecutionRole)
-2. DynamoDB Tables
-3. S3 Buckets (without notifications)
-4. Lambda Functions (except S3DD214TriggerFunction)
-5. CloudWatch Log Groups
-6. Step Functions State Machine
-7. S3DD214TriggerFunction (depends on State Machine)
-8. S3 Lambda Permission
-9. BucketNotificationFunction
-10. S3BucketNotification (configures the bucket notification)
-
-## Key Changes Summary
-
-1. **Line 249**: Added comment noting NotificationConfiguration was removed
-2. **Lines 223-256**: Removed `DependsOn` and `NotificationConfiguration` from DD214SecureBucket
-3. **Lines 387-391**: Changed Lambda ARN references to use `!Sub` instead of `!GetAtt`
-4. **Line 358**: Added comment explaining use of `!Ref` to avoid circular dependency
-5. **Line 655**: Added `DependsOn: DD214ProcessingStateMachine` to S3DD214TriggerFunction
-6. **Lines 800-859**: Added BucketNotificationFunction Lambda
-7. **Lines 860-869**: Added S3BucketNotification custom resource
-
-## Testing the Fix
-
-To validate the fix:
-
-1. Run `aws cloudformation validate-template` on the template
-2. Deploy with `aws cloudformation create-stack` or `update-stack`
-3. Verify S3 notifications are properly configured after deployment
-
-The custom resource approach ensures that S3 bucket notifications are configured only after all required resources are successfully created, avoiding any circular dependencies.
+## Deployment
+The template is now ready for deployment without circular dependency issues:
+```bash
+sam deploy --template-file sam-templates/template-production.yaml --stack-name vetroi-prod --parameter-overrides Environment=prod
+```

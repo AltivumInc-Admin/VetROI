@@ -22,6 +22,10 @@ VetROI uses AWS Lambda and serverless architecture to transform a veteran's DD21
 ### Watch Our Demo
 [Demo Video Link] - See VetROI process a real DD214 and generate career insights
 
+## 🗺️ Repository Navigation
+
+📍 **New to the project?** Start with our [Repository Guide](REPOSITORY_GUIDE.md) for a complete map of the codebase, key files, and where to find everything.
+
 ## 🏗️ Architecture & AWS Services
 
 ![VetROI Architecture](docs/images/vetroi_architecture.png)

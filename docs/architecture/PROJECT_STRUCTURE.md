@@ -1,5 +1,9 @@
 # VetROI™ Project Structure
 
+> **Note**: This document has been superseded by the comprehensive [REPOSITORY_GUIDE.md](../../REPOSITORY_GUIDE.md) in the root directory, which contains the most up-to-date structure and navigation information.
+
+# Original Project Structure (Historical Reference)
+
 ```
 VetROI/
 │

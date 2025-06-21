@@ -1,0 +1,52 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Text files
+*.md text
+*.txt text
+*.json text
+*.yaml text
+*.yml text
+*.xml text
+*.py text
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.css text
+*.html text
+*.sh text
+*.bash text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.tgz binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.whl binary
+
+# Lambda Layer files
+*.dist-info/* binary
+*.cpython-*.so binary
+*.pyd binary
+*.pem binary
+
+# Exclude from language statistics
+docs/* linguist-documentation
+*.md linguist-documentation
+infrastructure/* linguist-documentation
+scripts/* linguist-documentation
+
+# Mark generated files
+*-output.json linguist-generated
+generated-diagrams/* linguist-generated
