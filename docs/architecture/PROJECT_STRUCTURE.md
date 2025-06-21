@@ -54,7 +54,7 @@ VetROI/
 ├── docs/                       # Documentation
 ├── README.md                   # Project documentation
 ├── LICENSE                     # MIT License
-├── CLAUDE.md                   # Development instructions
+├── DEVELOPMENT.md                   # Development instructions
 ├── PROJECT_STRUCTURE.md        # This file
 └── .gitignore                  # Git ignore patterns
 ```

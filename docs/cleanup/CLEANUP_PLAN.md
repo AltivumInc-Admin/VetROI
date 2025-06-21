@@ -22,7 +22,7 @@ These files contain AWS account IDs, ARNs, and infrastructure details:
 **Risk Level: HIGH-RISK**
 **Action: Move to environment variables**
 
-The CLAUDE.md file mentions:
+The DEVELOPMENT.md file mentions:
 ```
 VITE_API_KEY=1du0W33OTS3NkLhXJY5R4FOY9LJq6ZB1h7Lrdwig
 ```

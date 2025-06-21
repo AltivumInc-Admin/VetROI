@@ -153,7 +153,7 @@ Files to REVIEW and possibly MERGE:
 
 Keep only:
 - README.md
-- CLAUDE.md
+- DEVELOPMENT.md
 - LICENSE
 - Key architecture docs
 ```
@@ -222,7 +222,7 @@ du -sh */ | sort -hr | head -20
 ```
 VetROI/
 ├── README.md                    # Hackathon submission
-├── CLAUDE.md                    # Development docs
+├── DEVELOPMENT.md                    # Development docs
 ├── LICENSE
 ├── .gitignore
 ├── frontend/                    # React app (no node_modules)
