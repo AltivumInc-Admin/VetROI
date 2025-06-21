@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import '../../styles/insights/PsychologicalPreparation.css'
+import '../../styles/insights/PsychologicalPreparation-refined.css'
 
 interface PsychologicalPreparationProps {
   data: any

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import '../../styles/insights/CareerIntelligence.css'
+import '../../styles/insights/CareerIntelligence-refined.css'
 
 interface CareerIntelligenceProps {
   data: any

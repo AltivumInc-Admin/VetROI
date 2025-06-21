@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import '../../styles/insights/AIPromptGenerator.css'
+import '../../styles/insights/AIPromptGenerator-refined.css'
 
 interface AIPromptGeneratorProps {
   data: any

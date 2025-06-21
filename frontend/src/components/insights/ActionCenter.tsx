@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import '../../styles/insights/ActionCenter.css'
+import '../../styles/insights/ActionCenter-refined.css'
 
 interface ActionCenterProps {
   data: any

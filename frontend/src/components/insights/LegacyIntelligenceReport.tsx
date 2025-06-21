@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import '../../styles/insights/LegacyIntelligenceReport.css'
+import '../../styles/insights/LegacyIntelligenceReport-refined.css'
 
 interface LegacyIntelligenceReportProps {
   data: any

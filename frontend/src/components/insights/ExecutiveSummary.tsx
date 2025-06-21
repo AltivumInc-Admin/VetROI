@@ -1,5 +1,5 @@
 import React from 'react'
-import '../../styles/insights/ExecutiveSummary.css'
+import '../../styles/insights/ExecutiveSummary-refined.css'
 
 interface ExecutiveSummaryProps {
   data: any

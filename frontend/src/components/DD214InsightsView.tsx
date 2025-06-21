@@ -10,8 +10,8 @@ import { PsychologicalPreparation } from './insights/PsychologicalPreparation'
 import { TimelineRoadmap } from './insights/TimelineRoadmap'
 import { LegacyIntelligenceReport } from './insights/LegacyIntelligenceReport'
 import { AIPromptGenerator } from './insights/AIPromptGenerator'
-import { generatePDF } from '../utils/pdfGenerator'
-import '../styles/DD214InsightsView.css'
+import { generatePDF } from '../utils/pdfGenerator-enhanced'
+import '../styles/DD214InsightsView-refined.css'
 
 interface DD214InsightsViewProps {}
 

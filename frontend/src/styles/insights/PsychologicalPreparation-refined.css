@@ -1,0 +1,454 @@
+/* Psychological Preparation - Refined with Design System */
+@import './design-system.css';
+
+.psychological-preparation {
+  padding: 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.section-header h1 {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-sm);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--font-bold);
+}
+
+.section-header p {
+  color: var(--color-text-secondary);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+/* Mindset Shifts with Progress Indicators */
+.mindset-shifts {
+  margin-bottom: var(--space-3xl);
+}
+
+.mindset-shifts h2 {
+  font-size: var(--text-3xl);
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  color: var(--color-text-primary);
+  font-weight: var(--font-bold);
+}
+
+.shifts-container {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.shift-item {
+  background: var(--color-surface-2);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-base);
+  animation: fadeInUp var(--transition-slow) ease-out;
+  animation-fill-mode: both;
+}
+
+.shift-item:nth-child(1) { animation-delay: 0.1s; }
+.shift-item:nth-child(2) { animation-delay: 0.2s; }
+.shift-item:nth-child(3) { animation-delay: 0.3s; }
+.shift-item:nth-child(4) { animation-delay: 0.4s; }
+
+/* Progress indicator */
+.shift-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition-slower);
+}
+
+.shift-item:hover::before {
+  transform: scaleX(1);
+}
+
+.shift-item:hover {
+  background: var(--color-surface-3);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-sm);
+}
+
+.shift-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.from-to {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex: 1;
+}
+
+.military-mindset,
+.civilian-mindset {
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-medium);
+  font-size: var(--text-base);
+}
+
+.military-mindset {
+  background: rgba(255, 107, 107, 0.1);
+  color: #ff6b6b;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+}
+
+.civilian-mindset {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+  border: 1px solid rgba(82, 196, 26, 0.2);
+}
+
+.arrow {
+  color: var(--color-primary);
+  font-size: var(--text-xl);
+  animation: slideRight 2s ease-in-out infinite;
+}
+
+@keyframes slideRight {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(8px); }
+}
+
+.reframe-strategy {
+  color: var(--color-text-primary);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+  font-size: var(--text-base);
+}
+
+/* Common Challenges with Solutions */
+.common-challenges {
+  margin-bottom: var(--space-3xl);
+}
+
+.common-challenges h2 {
+  font-size: var(--text-3xl);
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  color: var(--color-text-primary);
+  font-weight: var(--font-bold);
+}
+
+.challenges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-lg);
+}
+
+.challenge-card {
+  background: var(--color-surface-2);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  position: relative;
+  animation: scaleIn var(--transition-slow) ease-out;
+  animation-fill-mode: both;
+}
+
+.challenge-card:nth-child(1) { animation-delay: 0.1s; }
+.challenge-card:nth-child(2) { animation-delay: 0.15s; }
+.challenge-card:nth-child(3) { animation-delay: 0.2s; }
+.challenge-card:nth-child(4) { animation-delay: 0.25s; }
+
+.challenge-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-sm);
+}
+
+.challenge-header {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.05) 100%);
+  border-bottom: 1px solid rgba(255, 107, 107, 0.2);
+  padding: var(--space-lg);
+}
+
+.challenge-header h3 {
+  margin: 0;
+  color: #ff6b6b;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.challenge-icon {
+  font-size: var(--text-2xl);
+}
+
+.challenge-body {
+  padding: var(--space-lg);
+}
+
+.challenge-body p {
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-lg);
+  font-size: var(--text-base);
+}
+
+.solution {
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.05) 0%, rgba(82, 196, 26, 0.02) 100%);
+  border: 1px solid rgba(82, 196, 26, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: all var(--transition-base);
+}
+
+.solution:hover {
+  background: linear-gradient(135deg, rgba(82, 196, 26, 0.08) 0%, rgba(82, 196, 26, 0.04) 100%);
+  transform: translateX(4px);
+}
+
+.solution h4 {
+  color: #52c41a;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--space-sm) 0;
+  font-weight: var(--font-semibold);
+}
+
+.solution p {
+  margin: 0;
+  color: var(--color-text-primary);
+  line-height: var(--leading-normal);
+  font-size: var(--text-base);
+}
+
+/* Interview Prep with Scenarios */
+.interview-prep {
+  margin-bottom: var(--space-3xl);
+}
+
+.interview-prep h2 {
+  font-size: var(--text-3xl);
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  color: var(--color-text-primary);
+  font-weight: var(--font-bold);
+}
+
+.interview-categories {
+  display: grid;
+  gap: var(--space-2xl);
+}
+
+.interview-category {
+  background: var(--color-surface-2);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.interview-category::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 212, 255, 0.03) 0%,
+    transparent 40%
+  );
+  animation: float 25s ease-in-out infinite;
+}
+
+.category-content {
+  position: relative;
+  z-index: 1;
+}
+
+.interview-category h3 {
+  color: var(--color-primary);
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-lg);
+  font-weight: var(--font-semibold);
+}
+
+.scenarios-list {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.scenario-item {
+  background: var(--color-surface-3);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  transition: all var(--transition-base);
+  animation: slideInLeft var(--transition-slow) ease-out;
+  animation-fill-mode: both;
+}
+
+.scenario-item:nth-child(1) { animation-delay: 0.1s; }
+.scenario-item:nth-child(2) { animation-delay: 0.15s; }
+.scenario-item:nth-child(3) { animation-delay: 0.2s; }
+
+.scenario-item:hover {
+  background: var(--color-surface-4);
+  transform: translateX(8px);
+  box-shadow: var(--shadow-md);
+}
+
+.scenario-question {
+  color: var(--color-text-secondary);
+  font-style: italic;
+  margin-bottom: var(--space-md);
+  line-height: var(--leading-relaxed);
+  font-size: var(--text-base);
+}
+
+.scenario-answer {
+  color: var(--color-text-primary);
+  line-height: var(--leading-relaxed);
+  font-size: var(--text-base);
+}
+
+/* Daily Affirmations */
+.daily-affirmations {
+  background: linear-gradient(
+    135deg,
+    var(--color-surface-2) 0%,
+    var(--color-surface-1) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-affirmations::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 212, 255, 0.05) 0%,
+    transparent 60%
+  );
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.affirmations-content {
+  position: relative;
+  z-index: 1;
+}
+
+.daily-affirmations h2 {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-xl);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--font-bold);
+}
+
+.affirmations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+}
+
+.affirmation-card {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  position: relative;
+  transition: all var(--transition-base);
+  animation: fadeIn var(--transition-slow) ease-out;
+  animation-fill-mode: both;
+}
+
+.affirmation-card:nth-child(1) { animation-delay: 0.1s; }
+.affirmation-card:nth-child(2) { animation-delay: 0.2s; }
+.affirmation-card:nth-child(3) { animation-delay: 0.3s; }
+.affirmation-card:nth-child(4) { animation-delay: 0.4s; }
+
+.affirmation-card:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-md);
+}
+
+.affirmation-text {
+  color: var(--color-primary);
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-relaxed);
+  margin: 0;
+}
+
+.affirmation-icon {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  font-size: var(--text-xl);
+  opacity: 0.3;
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .from-to {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+  
+  .arrow {
+    transform: rotate(90deg);
+  }
+  
+  @keyframes slideRight {
+    0%, 100% { transform: rotate(90deg) translateX(0); }
+    50% { transform: rotate(90deg) translateX(8px); }
+  }
+  
+  .challenges-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .affirmations-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .daily-affirmations {
+    padding: var(--space-xl);
+  }
+}

@@ -1,5 +1,5 @@
 import React from 'react'
-import '../../styles/insights/LeadershipProfile.css'
+import '../../styles/insights/LeadershipProfile-refined.css'
 
 interface LeadershipProfileProps {
   data: any

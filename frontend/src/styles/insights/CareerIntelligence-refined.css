@@ -1,0 +1,435 @@
+/* Career Intelligence - Refined with Design System */
+@import './design-system.css';
+
+.career-intelligence {
+  padding: 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.section-header h1 {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-sm);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--font-bold);
+}
+
+.section-header p {
+  color: var(--color-text-secondary);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+/* Intelligence Tabs with Modern Design */
+.intelligence-tabs {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+  padding: var(--space-sm);
+  background: var(--color-surface-2);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.tab-button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  padding: var(--space-md) var(--space-lg);
+  cursor: pointer;
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  position: relative;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-md);
+}
+
+.tab-button:hover {
+  color: var(--color-text-primary);
+  background: var(--color-surface-3);
+}
+
+.tab-button.active {
+  color: var(--color-primary);
+  background: var(--color-surface-4);
+  font-weight: var(--font-semibold);
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -var(--space-sm);
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  border-radius: var(--radius-sm);
+}
+
+.tab-icon {
+  font-size: var(--text-xl);
+}
+
+/* Tab Content with Smooth Transitions */
+.tab-content {
+  animation: fadeIn var(--transition-base) ease-out;
+}
+
+/* Opportunities Section */
+.opportunities-section {
+  padding: var(--space-sm) 0;
+}
+
+.opportunities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: var(--space-lg);
+}
+
+.opportunity-card {
+  background: var(--color-surface-2);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp var(--transition-slow) ease-out;
+  animation-fill-mode: both;
+}
+
+.opportunity-card:nth-child(1) { animation-delay: 0.1s; }
+.opportunity-card:nth-child(2) { animation-delay: 0.15s; }
+.opportunity-card:nth-child(3) { animation-delay: 0.2s; }
+.opportunity-card:nth-child(4) { animation-delay: 0.25s; }
+.opportunity-card:nth-child(5) { animation-delay: 0.3s; }
+.opportunity-card:nth-child(6) { animation-delay: 0.35s; }
+
+/* Gradient border on hover */
+.opportunity-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.opportunity-card:hover::before {
+  opacity: 1;
+}
+
+.opportunity-card:hover {
+  background: var(--color-surface-3);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-sm);
+}
+
+.opportunity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-md);
+  gap: var(--space-md);
+}
+
+.opportunity-header h3 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  flex: 1;
+  line-height: var(--leading-tight);
+}
+
+.match-badge {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.1) 100%);
+  color: var(--color-primary);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  white-space: nowrap;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  box-shadow: var(--shadow-sm);
+}
+
+.salary-range {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  color: var(--color-primary);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+}
+
+.salary-icon {
+  font-size: var(--text-xl);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.opportunity-reasoning {
+  color: var(--color-text-secondary);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-md);
+  font-size: var(--text-base);
+}
+
+.your-advantage,
+.application-hack {
+  background: var(--color-surface-3);
+  border-left: 3px solid var(--color-primary);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.your-advantage:hover,
+.application-hack:hover {
+  background: var(--color-surface-4);
+  transform: translateX(4px);
+}
+
+.your-advantage h4,
+.application-hack h4 {
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-semibold);
+}
+
+.your-advantage p,
+.application-hack p {
+  margin: 0;
+  color: var(--color-text-primary);
+  line-height: var(--leading-normal);
+  font-size: var(--text-base);
+}
+
+.companies-section,
+.keywords-section {
+  margin-top: var(--space-md);
+}
+
+.companies-section h4,
+.keywords-section h4 {
+  margin: 0 0 var(--space-sm) 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: var(--font-medium);
+}
+
+.company-tags,
+.keyword-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.company-tag,
+.keyword-tag {
+  background: var(--color-surface-4);
+  border: 1px solid var(--color-border-default);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.company-tag:hover,
+.keyword-tag:hover {
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.fast-track {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 215, 0, 0.05) 100%);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+}
+
+.fast-track:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.08) 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+.fast-track-icon {
+  font-size: var(--text-xl);
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.fast-track p {
+  margin: 0;
+  color: #ffd700;
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+}
+
+/* Compensation Section */
+.compensation-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-lg) 0;
+}
+
+.salary-visualization {
+  background: var(--color-surface-2);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-2xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.salary-visualization::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.05) 0%, transparent 50%);
+  animation: rotate 20s linear infinite;
+}
+
+.salary-visualization h3 {
+  text-align: center;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-xl);
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  position: relative;
+}
+
+.salary-scale {
+  position: relative;
+  padding: var(--space-2xl) 0;
+}
+
+.salary-bar {
+  height: 12px;
+  background: var(--color-surface-4);
+  border-radius: var(--radius-full);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-inset-subtle);
+}
+
+.salary-range-fill {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm), var(--shadow-glow-sm);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.salary-marker {
+  position: absolute;
+  transform: translateX(-50%);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.salary-marker:hover {
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.salary-marker.conservative { left: 15%; }
+.salary-marker.market { left: 50%; }
+.salary-marker.aggressive { left: 85%; }
+
+.marker-label {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-xs);
+  font-weight: var(--font-medium);
+}
+
+.marker-value {
+  display: block;
+  color: var(--color-primary);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  text-shadow: var(--shadow-glow-sm);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .opportunities-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .intelligence-tabs {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+  
+  .tab-button {
+    width: 100%;
+  }
+  
+  .opportunities-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .salary-scale {
+    padding: var(--space-xl) 0;
+  }
+  
+  .marker-value {
+    font-size: var(--text-lg);
+  }
+}
