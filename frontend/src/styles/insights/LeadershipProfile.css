@@ -1,0 +1,393 @@
+.leadership-profile {
+  padding: 20px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.section-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-header p {
+  color: #8892b0;
+  font-size: 1.1rem;
+}
+
+/* Combat Multiplier Section */
+.combat-multiplier-section {
+  margin-bottom: 60px;
+}
+
+.combat-multiplier-section h2 {
+  font-size: 2rem;
+  color: #e8e8e8;
+  margin-bottom: 10px;
+}
+
+.section-description {
+  color: #8892b0;
+  margin-bottom: 30px;
+  font-size: 1.05rem;
+}
+
+.skills-matrix {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skills-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.skills-table thead {
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.skills-table th {
+  padding: 15px;
+  text-align: left;
+  color: #00d4ff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid rgba(0, 212, 255, 0.2);
+}
+
+.skills-table td {
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skills-table tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.military-term {
+  font-weight: 600;
+}
+
+.term-badge {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.civilian-value {
+  color: #00d4ff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.market-demand {
+  color: #e8e8e8;
+}
+
+.proof-points {
+  color: #8892b0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  color: #8892b0;
+}
+
+/* Leadership Style Section */
+.leadership-style-section {
+  margin-bottom: 60px;
+}
+
+.leadership-style-section h2 {
+  font-size: 2rem;
+  color: #e8e8e8;
+  margin-bottom: 30px;
+}
+
+.leadership-visualization {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 30px;
+}
+
+.leadership-core {
+  text-align: center;
+  padding: 20px;
+}
+
+.leadership-core h3 {
+  color: #00d4ff;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+}
+
+.style-description {
+  color: #e8e8e8;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.civilian-equivalent {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.civilian-equivalent h4 {
+  color: #00d4ff;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.equivalent-role {
+  color: #e8e8e8;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.industry-fits {
+  padding: 20px;
+}
+
+.industry-fits h3 {
+  color: #e8e8e8;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+}
+
+.industry-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.industry-tag {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e8e8e8;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.industry-tag:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+}
+
+/* Stress Value Section */
+.stress-value-section {
+  margin-bottom: 60px;
+}
+
+.stress-value-section h2 {
+  font-size: 2rem;
+  color: #e8e8e8;
+  margin-bottom: 10px;
+}
+
+.stress-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.stress-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  transition: all 0.3s ease;
+}
+
+.stress-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.stress-card h3 {
+  color: #00d4ff;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.stress-card p {
+  color: #e8e8e8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.premium-roles {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, transparent 100%);
+  border-color: rgba(0, 212, 255, 0.2);
+}
+
+.role-list {
+  display: grid;
+  gap: 12px;
+}
+
+.premium-role {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e8e8e8;
+}
+
+.role-icon {
+  font-size: 1.2rem;
+}
+
+/* Leadership Metrics */
+.leadership-metrics {
+  margin-bottom: 60px;
+}
+
+.leadership-metrics h2 {
+  font-size: 2rem;
+  color: #e8e8e8;
+  margin-bottom: 30px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 25px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateX(5px);
+}
+
+.metric-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+
+.metric-content h3 {
+  margin: 0 0 5px 0;
+  color: #8892b0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-value {
+  margin: 0;
+  color: #00d4ff;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* Training Section */
+.training-section {
+  margin-bottom: 60px;
+}
+
+.training-section h2 {
+  font-size: 2rem;
+  color: #e8e8e8;
+  margin-bottom: 30px;
+}
+
+.training-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.training-item {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+}
+
+.training-item:hover {
+  background: rgba(0, 212, 255, 0.08);
+  transform: translateX(5px);
+}
+
+.training-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.training-name {
+  color: #e8e8e8;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .leadership-visualization {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .skills-table {
+    font-size: 0.9rem;
+  }
+  
+  .skills-table th,
+  .skills-table td {
+    padding: 10px;
+  }
+  
+  .stress-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .training-list {
+    grid-template-columns: 1fr;
+  }
+}
