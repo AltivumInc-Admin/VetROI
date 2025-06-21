@@ -24,7 +24,14 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
   
   // Organize prompts from the AI response
   const getAllPrompts = () => {
-    const prompts = []
+    const prompts: Array<{
+      id: string
+      category: string
+      platform: string
+      title: string
+      prompt: string
+      icon: string
+    }> = []
     
     // ChatGPT Career Coach Prompts
     if (aiPrompts.chatgpt_career_coach_prompts) {

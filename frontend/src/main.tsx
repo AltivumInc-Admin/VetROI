@@ -6,7 +6,7 @@ import { awsConfig } from './aws-config'
 import { AuthProvider } from './contexts/AuthContext'
 import App from './App.tsx'
 import WelcomePage from './components/welcome/WelcomePage.tsx'
-import DD214InsightsView from './components/DD214InsightsView.tsx'
+import { DD214InsightsView } from './components/DD214InsightsView.tsx'
 import './styles/index.css'
 import './styles/DarkTheme.css'
 

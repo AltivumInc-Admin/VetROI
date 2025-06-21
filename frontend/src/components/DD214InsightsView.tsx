@@ -131,7 +131,7 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
         <div className="insights-header">
           <h2>Loading Your Career Intelligence...</h2>
         </div>
-        <SkeletonLoader />
+        <SkeletonLoader type="insights" />
       </div>
     )
   }

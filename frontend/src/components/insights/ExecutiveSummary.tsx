@@ -120,7 +120,8 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
           <p>Navigate through each section to discover your full career potential</p>
           <div className="cta-buttons">
             <button className="explore-button" onClick={() => {
-              document.querySelector('[data-section="career-intelligence"]')?.click()
+              const element = document.querySelector('[data-section="career-intelligence"]') as HTMLElement
+              if (element) element.click()
             }}>
               Explore Career Opportunities →
             </button>

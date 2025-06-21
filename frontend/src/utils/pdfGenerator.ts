@@ -23,9 +23,9 @@ export const generatePDF = async (insights: any) => {
   let yPosition = margin
   
   // Color scheme
-  const primaryColor = [0, 212, 255] // #00d4ff
-  const textColor = [40, 40, 40]
-  const grayColor = [100, 100, 100]
+  const primaryColor: [number, number, number] = [0, 212, 255] // #00d4ff
+  const textColor: [number, number, number] = [40, 40, 40]
+  const grayColor: [number, number, number] = [100, 100, 100]
   
   // Helper functions
   const addNewPageIfNeeded = (requiredSpace: number) => {
@@ -37,15 +37,15 @@ export const generatePDF = async (insights: any) => {
     return false
   }
   
-  const drawSectionHeader = (title: string, icon?: string) => {
+  const drawSectionHeader = (title: string) => {
     addNewPageIfNeeded(30)
     
     // Draw section background
-    pdf.setFillColor(...primaryColor, 0.1)
+    pdf.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2], 0.1)
     pdf.rect(margin - 5, yPosition - 5, contentWidth + 10, 20, 'F')
     
     // Draw section title
-    pdf.setTextColor(...primaryColor)
+    pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
     pdf.setFontSize(18)
     pdf.setFont('helvetica', 'bold')
     pdf.text(title, margin, yPosition + 10)
@@ -54,17 +54,17 @@ export const generatePDF = async (insights: any) => {
   }
   
   // Title Page
-  pdf.setFillColor(...primaryColor, 0.05)
+  pdf.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2], 0.05)
   pdf.rect(0, 0, pageWidth, pageHeight, 'F')
   
   // Logo/Brand
-  pdf.setTextColor(...primaryColor)
+  pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
   pdf.setFontSize(36)
   pdf.setFont('helvetica', 'bold')
   pdf.text('VetROI™', pageWidth / 2, 50, { align: 'center' })
   
   // Report Title
-  pdf.setTextColor(...textColor)
+  pdf.setTextColor(textColor[0], textColor[1], textColor[2])
   pdf.setFontSize(28)
   pdf.text('Career Intelligence Report', pageWidth / 2, 80, { align: 'center' })
   
@@ -77,7 +77,7 @@ export const generatePDF = async (insights: any) => {
   pdf.text(veteranName, pageWidth / 2, 100, { align: 'center' })
   
   // Generated Date
-  pdf.setTextColor(...grayColor)
+  pdf.setTextColor(grayColor[0], grayColor[1], grayColor[2])
   pdf.setFontSize(12)
   pdf.text(`Generated: ${new Date(insights.generatedAt).toLocaleDateString()}`, pageWidth / 2, 115, { align: 'center' })
   
@@ -85,11 +85,11 @@ export const generatePDF = async (insights: any) => {
   const summaryBox = insights.insights.executive_intelligence_summary
   if (summaryBox) {
     pdf.setFillColor(255, 255, 255)
-    pdf.setDrawColor(...primaryColor)
+    pdf.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2])
     pdf.setLineWidth(2)
     pdf.rect(margin, 140, contentWidth, 80, 'FD')
     
-    pdf.setTextColor(...textColor)
+    pdf.setTextColor(textColor[0], textColor[1], textColor[2])
     pdf.setFontSize(14)
     pdf.setFont('helvetica', 'bold')
     pdf.text('Your Unique Value:', margin + 10, 155)
@@ -114,7 +114,7 @@ export const generatePDF = async (insights: any) => {
   
   // Table of Contents
   drawSectionHeader('Table of Contents')
-  pdf.setTextColor(...textColor)
+  pdf.setTextColor(textColor[0], textColor[1], textColor[2])
   pdf.setFontSize(12)
   
   const tocItems = [
@@ -162,19 +162,19 @@ export const generatePDF = async (insights: any) => {
   drawSectionHeader('Career Opportunities')
   
   const recommendations = insights.insights.career_recommendations || []
-  recommendations.slice(0, 5).forEach((rec: any, index: number) => {
+  recommendations.slice(0, 5).forEach((rec: any) => {
     addNewPageIfNeeded(60)
     
     // Career box
     pdf.setFillColor(248, 249, 250)
     pdf.rect(margin, yPosition, contentWidth, 50, 'F')
     
-    pdf.setTextColor(...primaryColor)
+    pdf.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2])
     pdf.setFont('helvetica', 'bold')
     pdf.setFontSize(14)
     pdf.text(rec.title, margin + 5, yPosition + 10)
     
-    pdf.setTextColor(...textColor)
+    pdf.setTextColor(textColor[0], textColor[1], textColor[2])
     pdf.setFont('helvetica', 'normal')
     pdf.setFontSize(11)
     pdf.text(`Salary Range: ${rec.salary_range}`, margin + 5, yPosition + 20)
@@ -193,7 +193,7 @@ export const generatePDF = async (insights: any) => {
     yPosition = margin
     drawSectionHeader('Resume Nuclear Bullets')
     
-    pdf.setTextColor(...textColor)
+    pdf.setTextColor(textColor[0], textColor[1], textColor[2])
     pdf.setFont('helvetica', 'normal')
     pdf.setFontSize(11)
     
@@ -257,7 +257,7 @@ export const generatePDF = async (insights: any) => {
     yPosition = margin
     drawSectionHeader('Legacy Intelligence Report Summary')
     
-    pdf.setTextColor(...textColor)
+    pdf.setTextColor(textColor[0], textColor[1], textColor[2])
     pdf.setFont('helvetica', 'italic')
     pdf.setFontSize(11)
     
@@ -280,7 +280,7 @@ export const generatePDF = async (insights: any) => {
   yPosition = margin
   drawSectionHeader('Next Steps')
   
-  pdf.setTextColor(...textColor)
+  pdf.setTextColor(textColor[0], textColor[1], textColor[2])
   pdf.setFont('helvetica', 'normal')
   pdf.setFontSize(12)
   
@@ -299,7 +299,7 @@ export const generatePDF = async (insights: any) => {
   
   // Footer
   yPosition = pageHeight - 30
-  pdf.setTextColor(...grayColor)
+  pdf.setTextColor(grayColor[0], grayColor[1], grayColor[2])
   pdf.setFontSize(10)
   pdf.text('© 2025 VetROI™ by Altivum Inc. All rights reserved.', pageWidth / 2, yPosition, { align: 'center' })
   pdf.text('This report contains confidential career intelligence. Handle accordingly.', pageWidth / 2, yPosition + 5, { align: 'center' })
