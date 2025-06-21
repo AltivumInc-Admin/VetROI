@@ -481,3 +481,4 @@ FORMAT AS JSON:
 }}
 
 Make each prompt so specific and insightful that the veteran immediately wants to try it. These should feel like custom keys that unlock doors they didn't know existed.
+"""

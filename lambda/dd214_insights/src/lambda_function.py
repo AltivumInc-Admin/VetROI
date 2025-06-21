@@ -10,11 +10,12 @@ import random
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 try:
-    from enhanced_prompts_v2 import get_dynamic_prompt, get_legacy_intelligence_prompt, get_meta_ai_prompts
+    from enhanced_prompts_original import get_original_dd214_prompt
+    from enhanced_prompts_v2 import get_legacy_intelligence_prompt, get_meta_ai_prompts
     USE_DYNAMIC_PROMPTS = True
 except ImportError:
     USE_DYNAMIC_PROMPTS = False
-    print("Warning: enhanced_prompts_v2 not found, using standard prompts")
+    print("Warning: enhanced prompts not found, using standard prompts")
 
 # Initialize AWS clients
 bedrock_runtime = boto3.client('bedrock-runtime')
@@ -376,13 +377,13 @@ def fetch_onet_matches(mos: str, branch: str) -> List[Dict[str, Any]]:
 def generate_ai_insights_from_dd214(redacted_text: str, document_id: str) -> Dict[str, Any]:
     """Generate AI insights by analyzing the full redacted DD214 document"""
     
-    # Use dynamic prompt if available for variety
+    # Use original prompt that generates the correct JSON structure
     if USE_DYNAMIC_PROMPTS:
         try:
-            prompt = get_dynamic_prompt(redacted_text)
-            print("Using dynamic prompt for variety")
+            prompt = get_original_dd214_prompt(redacted_text, document_id)
+            print("Using enhanced original prompt")
         except Exception as e:
-            print(f"Error with dynamic prompt: {e}, falling back to standard")
+            print(f"Error with enhanced prompt: {e}, falling back to standard")
             prompt = f"""You are an expert military career advisor analyzing a veteran's DD214 document."""
     else:
         prompt = f"""You are an expert military career advisor analyzing a veteran's DD214 document.

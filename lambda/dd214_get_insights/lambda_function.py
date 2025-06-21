@@ -2,6 +2,17 @@ import json
 import boto3
 import os
 from typing import Dict, Any
+from decimal import Decimal
+
+class DecimalEncoder(json.JSONEncoder):
+    """Helper class to convert DynamoDB Decimal types to JSON"""
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            if obj % 1 == 0:
+                return int(obj)
+            else:
+                return float(obj)
+        return super(DecimalEncoder, self).default(obj)
 
 # Initialize AWS clients
 dynamodb = boto3.resource('dynamodb')
@@ -50,7 +61,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'veteranProfile': insights_data.get('veteran_profile', {}),
                     'insights': insights_data.get('ai_insights', {}),
                     'generatedAt': insights_data.get('created_at')
-                })
+                }, cls=DecimalEncoder)
             }
         
         # If not in insights table, check processing table
@@ -94,7 +105,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                     'extractedData': extracted_fields,
                     'insights': insights,
                     'processingStatus': item.get('status', 'unknown')
-                })
+                }, cls=DecimalEncoder)
             }
         
         # Check processing status
