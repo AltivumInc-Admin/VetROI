@@ -28,8 +28,9 @@ const ParticleBackground: React.FC = () => {
               enable: true,
               mode: "grab",
             },
-            resize: true,
+            resize: false,
           },
+          detectsOn: "canvas",
           modes: {
             grab: {
               distance: 140,
@@ -55,7 +56,7 @@ const ParticleBackground: React.FC = () => {
             direction: "none",
             enable: true,
             outModes: {
-              default: "bounce",
+              default: "out",
             },
             random: false,
             speed: 0.5,
@@ -64,9 +65,10 @@ const ParticleBackground: React.FC = () => {
           number: {
             density: {
               enable: true,
-              area: 800,
+              area: 1000,
             },
-            value: 80,
+            value: 60,
+            limit: 100,
           },
           opacity: {
             value: 0.4,
@@ -81,9 +83,9 @@ const ParticleBackground: React.FC = () => {
         detectRetina: true,
       }}
       style={{
-        position: "absolute",
+        position: "fixed",
         width: "100%",
-        height: "100%",
+        height: "100vh",
         top: 0,
         left: 0,
         zIndex: 0,
