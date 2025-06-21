@@ -164,11 +164,12 @@ function App() {
   }, [sessionExpired])
 
   // Redirect to welcome if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated && !authLoading) {
-      navigate('/')
-    }
-  }, [isAuthenticated, authLoading, navigate])
+  // Commented out to allow guest access without authentication
+  // useEffect(() => {
+  //   if (!isAuthenticated && !authLoading) {
+  //     navigate('/')
+  //   }
+  // }, [isAuthenticated, authLoading, navigate])
   
   const handleBackToCareerSelection = () => {
     setShowDetailedAnalysis(false)
