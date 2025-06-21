@@ -22,6 +22,8 @@ interface InsightsData {
     transition_timeline?: any
     action_oriented_deliverables?: any
     psychological_preparation?: any
+    legacy_report?: any
+    meta_ai_prompts?: any
   }
   generatedAt: string
 }
