@@ -1,10 +1,9 @@
-import jsPDF from 'jspdf'
-import 'jspdf-autotable'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 
 // Extend jsPDF type to include autoTable
 declare module 'jspdf' {
   interface jsPDF {
-    autoTable: (options: any) => jsPDF
     lastAutoTable: {
       finalY: number
     }
@@ -368,15 +367,15 @@ export const generatePDF = async (insights: any) => {
       rec.reasoning ? rec.reasoning.substring(0, 60) + '...' : ''
     ])
     
-    pdf.autoTable({
+    autoTable(pdf, {
       head: [['Role', 'Salary Range', 'Match', 'Why You\'re Perfect']],
       body: tableData,
       startY: yPosition,
       margin: { left: margin, right: margin },
       theme: 'grid',
       headStyles: {
-        fillColor: colors.primary,
-        textColor: colors.white,
+        fillColor: colors.primary as any,
+        textColor: colors.white as any,
         fontSize: 12,
         fontStyle: 'bold'
       },
@@ -385,17 +384,17 @@ export const generatePDF = async (insights: any) => {
         cellPadding: 5
       },
       alternateRowStyles: {
-        fillColor: colors.background
+        fillColor: colors.background as any
       },
       columnStyles: {
         0: { cellWidth: 50 },
         1: { cellWidth: 35 },
-        2: { cellWidth: 20, halign: 'center' },
+        2: { cellWidth: 20, halign: 'center' as any },
         3: { cellWidth: 65 }
       }
     })
     
-    yPosition = pdf.lastAutoTable.finalY + 15
+    yPosition = (pdf as any).lastAutoTable.finalY + 15
   }
   
   // Top Companies Actively Hiring
