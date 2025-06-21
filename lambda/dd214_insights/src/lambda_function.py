@@ -10,7 +10,7 @@ import random
 # Add parent directory to path for imports
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 try:
-    from enhanced_prompts_v2 import get_dynamic_prompt
+    from enhanced_prompts_v2 import get_dynamic_prompt, get_legacy_intelligence_prompt, get_meta_ai_prompts
     USE_DYNAMIC_PROMPTS = True
 except ImportError:
     USE_DYNAMIC_PROMPTS = False
@@ -82,7 +82,19 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Extract profile from insights for storage
         veteran_profile = insights.get('extracted_profile', build_veteran_profile(extracted_data))
         
-        # Store insights
+        # Generate long-form content if redacted text is available
+        if redacted_text and USE_DYNAMIC_PROMPTS:
+            print("Generating Legacy Intelligence Report...")
+            legacy_report = generate_legacy_report(redacted_text, veteran_profile)
+            if legacy_report and 'error' not in legacy_report:
+                insights['legacy_report'] = legacy_report
+            
+            print("Generating Meta AI Recommendations...")
+            meta_ai = generate_meta_ai_recommendations(veteran_profile, insights)
+            if meta_ai and 'error' not in meta_ai:
+                insights['meta_ai_prompts'] = meta_ai
+        
+        # Store insights with long-form content
         store_insights(document_id, veteran_profile, insights)
         
         # Update processing status
@@ -890,6 +902,94 @@ def generate_fallback_insights(profile: Dict[str, Any]) -> Dict[str, Any]:
         },
         'generated_at': datetime.utcnow().isoformat()
     }
+
+def generate_legacy_report(redacted_text: str, veteran_profile: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate comprehensive Legacy Intelligence Report"""
+    
+    if not USE_DYNAMIC_PROMPTS:
+        return {}
+    
+    try:
+        prompt = get_legacy_intelligence_prompt(redacted_text, veteran_profile)
+        
+        # Call Bedrock with higher token limit for long-form content
+        response = bedrock_runtime.converse(
+            modelId=MODEL_ID,
+            messages=[{
+                'role': 'user',
+                'content': [{'text': prompt}]
+            }],
+            inferenceConfig={
+                'maxTokens': 5000,  # Need high token count for 1500 words
+                'temperature': 0.9,  # Higher temperature for creative writing
+                'topP': 0.95
+            }
+        )
+        
+        # Extract response
+        ai_response = response['output']['message']['content'][0]['text']
+        
+        # Clean up response
+        if '```json' in ai_response:
+            ai_response = ai_response.split('```json')[1].split('```')[0].strip()
+        elif '```' in ai_response:
+            ai_response = ai_response.split('```')[1].split('```')[0].strip()
+            
+        # Parse JSON response
+        legacy_report = json.loads(ai_response)
+        
+        return legacy_report.get('legacy_intelligence_report', {})
+        
+    except Exception as e:
+        print(f"Error generating legacy report: {str(e)}")
+        return {
+            'error': 'Failed to generate legacy report',
+            'reason': str(e)
+        }
+
+def generate_meta_ai_recommendations(veteran_profile: Dict[str, Any], ai_insights: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate personalized AI prompts for the veteran"""
+    
+    if not USE_DYNAMIC_PROMPTS:
+        return {}
+    
+    try:
+        prompt = get_meta_ai_prompts(veteran_profile, ai_insights)
+        
+        # Call Bedrock
+        response = bedrock_runtime.converse(
+            modelId=MODEL_ID,
+            messages=[{
+                'role': 'user',
+                'content': [{'text': prompt}]
+            }],
+            inferenceConfig={
+                'maxTokens': 3000,
+                'temperature': 0.8,
+                'topP': 0.9
+            }
+        )
+        
+        # Extract response
+        ai_response = response['output']['message']['content'][0]['text']
+        
+        # Clean up response
+        if '```json' in ai_response:
+            ai_response = ai_response.split('```json')[1].split('```')[0].strip()
+        elif '```' in ai_response:
+            ai_response = ai_response.split('```')[1].split('```')[0].strip()
+            
+        # Parse JSON response
+        meta_recommendations = json.loads(ai_response)
+        
+        return meta_recommendations.get('meta_ai_recommendations', {})
+        
+    except Exception as e:
+        print(f"Error generating meta AI recommendations: {str(e)}")
+        return {
+            'error': 'Failed to generate AI recommendations',
+            'reason': str(e)
+        }
 
 def store_insights(document_id: str, profile: Dict[str, Any], insights: Dict[str, Any]):
     """Store insights in DynamoDB"""

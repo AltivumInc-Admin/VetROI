@@ -168,6 +168,18 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
         >
           Action Plan
         </button>
+        <button 
+          className={`nav-tab ${selectedSection === 'legacy' ? 'active' : ''}`}
+          onClick={() => setSelectedSection('legacy')}
+        >
+          Legacy Report
+        </button>
+        <button 
+          className={`nav-tab ${selectedSection === 'ai-prompts' ? 'active' : ''}`}
+          onClick={() => setSelectedSection('ai-prompts')}
+        >
+          AI Insights
+        </button>
       </nav>
 
       {/* Main Content */}
@@ -205,6 +217,19 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
           <TimelineSection 
             timeline={insights.insights.transition_timeline}
             actionItems={insights.insights.action_oriented_deliverables}
+            onCopy={copyToClipboard}
+          />
+        )}
+        
+        {selectedSection === 'legacy' && (
+          <LegacySection 
+            legacyReport={insights.insights.legacy_report}
+          />
+        )}
+        
+        {selectedSection === 'ai-prompts' && (
+          <AIPromptsSection 
+            metaAI={insights.insights.meta_ai_prompts}
             onCopy={copyToClipboard}
           />
         )}
@@ -585,6 +610,211 @@ const TimelineSection: React.FC<{
               <button className="copy-button" onClick={() => onCopy(actionItems.resume_bullets.join('\n\n'))}>Copy All</button>
             </div>
           )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Legacy Section Component
+const LegacySection: React.FC<{ legacyReport: any }> = ({ legacyReport }) => {
+  if (!legacyReport || legacyReport.error) {
+    return (
+      <div className="legacy-section">
+        <div className="coming-soon-card">
+          <h3>Legacy Intelligence Report</h3>
+          <p>Your comprehensive 1,500-word Legacy Report is being generated...</p>
+          <p className="note">This feature will be available in your next DD214 analysis.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="legacy-section">
+      <div className="legacy-header">
+        <h2>{legacyReport.report_title || 'Legacy Intelligence Report'}</h2>
+        <p className="executive-summary">{legacyReport.executive_summary}</p>
+      </div>
+
+      {/* Tactical Career Recommendations */}
+      {legacyReport.tactical_career_recommendations && (
+        <div className="legacy-card">
+          <h3>1. Tactical Career Recommendations</h3>
+          <div className="legacy-content">
+            <p>{legacyReport.tactical_career_recommendations.content}</p>
+            {legacyReport.tactical_career_recommendations.force_multiplier_move && (
+              <div className="force-multiplier">
+                <h4>Force Multiplier Move:</h4>
+                <p>{legacyReport.tactical_career_recommendations.force_multiplier_move}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Strategic Leadership Profile */}
+      {legacyReport.strategic_leadership_profile && (
+        <div className="legacy-card">
+          <h3>2. Strategic Leadership Profile</h3>
+          <div className="legacy-content">
+            <p>{legacyReport.strategic_leadership_profile.content}</p>
+            <div className="leadership-archetype">
+              <strong>Leadership Archetype:</strong> {legacyReport.strategic_leadership_profile.leadership_archetype}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Moral Compass & Risk Alignment */}
+      {legacyReport.moral_compass_risk_alignment && (
+        <div className="legacy-card">
+          <h3>3. Moral Compass & Risk Alignment</h3>
+          <div className="legacy-content">
+            <p>{legacyReport.moral_compass_risk_alignment.content}</p>
+            {legacyReport.moral_compass_risk_alignment.core_values && (
+              <div className="core-values">
+                <h4>Core Values:</h4>
+                <ul>
+                  {legacyReport.moral_compass_risk_alignment.core_values.map((value: string, idx: number) => (
+                    <li key={idx}>{value}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Societal Value Projections */}
+      {legacyReport.societal_value_projections && (
+        <div className="legacy-card">
+          <h3>4. Societal Value Projections</h3>
+          <div className="legacy-content">
+            <p>{legacyReport.societal_value_projections.content}</p>
+            <div className="impact-metrics">
+              <div className="metric">
+                <span className="metric-label">Economic Impact:</span>
+                <span className="metric-value">{legacyReport.societal_value_projections.economic_impact}</span>
+              </div>
+              <div className="metric">
+                <span className="metric-label">Lives Influenced:</span>
+                <span className="metric-value">{legacyReport.societal_value_projections.lives_influenced}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Narrative Legacy Summary */}
+      {legacyReport.narrative_legacy_summary && (
+        <div className="legacy-card">
+          <h3>5. Narrative Legacy Summary</h3>
+          <div className="legacy-content">
+            <p>{legacyReport.narrative_legacy_summary.content}</p>
+            {legacyReport.narrative_legacy_summary.ted_talk_title && (
+              <div className="legacy-highlight">
+                <h4>Your TED Talk:</h4>
+                <p>"{legacyReport.narrative_legacy_summary.ted_talk_title}"</p>
+              </div>
+            )}
+            {legacyReport.narrative_legacy_summary.epitaph && (
+              <div className="legacy-highlight epitaph">
+                <h4>Your Epitaph:</h4>
+                <p>{legacyReport.narrative_legacy_summary.epitaph}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// AI Prompts Section Component
+const AIPromptsSection: React.FC<{ metaAI: any, onCopy: (text: string) => void }> = ({ metaAI, onCopy }) => {
+  if (!metaAI || metaAI.error) {
+    return (
+      <div className="ai-prompts-section">
+        <div className="coming-soon-card">
+          <h3>AI-Powered Insights Generator</h3>
+          <p>Personalized AI prompts tailored to your military experience are being created...</p>
+          <p className="note">This feature will be available in your next DD214 analysis.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="ai-prompts-section">
+      <div className="ai-header">
+        <h2>Your Personalized AI Prompts</h2>
+        <p className="meta-analysis">{metaAI.meta_analysis}</p>
+      </div>
+
+      {/* Transformative Prompts */}
+      {metaAI.transformative_prompts && (
+        <div className="prompts-container">
+          {metaAI.transformative_prompts.map((prompt: any, idx: number) => (
+            <div key={idx} className="prompt-card">
+              <div className="prompt-header">
+                <h3>{prompt.prompt_title}</h3>
+                <button 
+                  className="copy-prompt-button"
+                  onClick={() => onCopy(prompt.the_prompt)}
+                  title="Copy this prompt"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="prompt-content">
+                <p className="the-prompt">{prompt.the_prompt}</p>
+                
+                <div className="prompt-meta">
+                  <div className="why-powerful">
+                    <strong>Why This Works:</strong>
+                    <p>{prompt.why_powerful}</p>
+                  </div>
+                  
+                  <div className="expected-insights">
+                    <strong>Expected Results:</strong>
+                    <p>{prompt.expected_insights}</p>
+                  </div>
+                </div>
+                
+                {prompt.follow_up_prompt && (
+                  <div className="follow-up">
+                    <strong>Follow-up Prompt:</strong>
+                    <p>{prompt.follow_up_prompt}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* AI Mastery Tips */}
+      {metaAI.ai_mastery_tips && (
+        <div className="ai-tips-card">
+          <h3>AI Mastery Tips</h3>
+          <ul className="tips-list">
+            {metaAI.ai_mastery_tips.map((tip: string, idx: number) => (
+              <li key={idx}>{tip}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Prompt Evolution Strategy */}
+      {metaAI.prompt_evolution_strategy && (
+        <div className="evolution-card">
+          <h3>How to Evolve These Prompts</h3>
+          <p>{metaAI.prompt_evolution_strategy}</p>
         </div>
       )}
     </div>
