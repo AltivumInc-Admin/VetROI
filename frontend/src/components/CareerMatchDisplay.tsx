@@ -90,9 +90,11 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
     <div className="career-match-container">
       <div className="career-match-header">
         <h2>Your Career Opportunities</h2>
+        <div className="veteran-title">
+          <span className="highlight">{mosTitle}</span>
+        </div>
         <p className="thank-you-message">
-          First I'd be remiss if I didn't thank you for your service as a{' '}
-          <span className="highlight">{mosTitle}</span>.
+          First I'd be remiss if I didn't thank you for your service.
           <br /><br />
           Your military experience provides you with several options in the civilian sector. 
           Scroll through these options below and click on the SOC codes that spark your interest. 
