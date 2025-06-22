@@ -47,6 +47,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   const [showAgreement, setShowAgreement] = useState(false)
   const [hasAcceptedAgreement, setHasAcceptedAgreement] = useState(false)
   const [showEngagementModal, setShowEngagementModal] = useState(false)
+  const [showJudgeInfo, setShowJudgeInfo] = useState(false)
   const { isAuthenticated, user, checkAuth, signOutUser, sessionExpired, clearSessionExpired, loading } = useAuth()
 
   // Check authentication status on mount
@@ -530,26 +531,151 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       </div>
 
       {/* Demo link for judges */}
-      <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-        <button
-          onClick={() => navigate('/demo')}
-          style={{ 
-            background: 'none',
-            border: 'none',
-            color: '#6A6D73', 
-            fontSize: '0.875rem', 
-            textDecoration: 'none',
-            opacity: 0.7,
-            transition: 'opacity 0.2s',
-            cursor: 'pointer',
-            padding: 0
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-          onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
-        >
-          For Judges: View Demo Report →
-        </button>
+      <div style={{ marginTop: '2rem', textAlign: 'center', position: 'relative' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+          <button
+            onClick={() => navigate('/demo')}
+            style={{ 
+              background: 'none',
+              border: 'none',
+              color: '#6A6D73', 
+              fontSize: '0.875rem', 
+              textDecoration: 'none',
+              opacity: 0.7,
+              transition: 'opacity 0.2s',
+              cursor: 'pointer',
+              padding: 0
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+          >
+            For Judges: View Demo Report →
+          </button>
+          <button
+            onClick={() => setShowJudgeInfo(true)}
+            style={{
+              background: 'rgba(0, 212, 255, 0.1)',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
+              borderRadius: '50%',
+              width: '20px',
+              height: '20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              color: '#00d4ff',
+              fontWeight: 'bold',
+              animation: 'pulseSlow 4s ease-in-out infinite',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.2)'
+              e.currentTarget.style.transform = 'scale(1.1)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.1)'
+              e.currentTarget.style.transform = 'scale(1)'
+            }}
+            aria-label="Information about demo mode"
+          >
+            i
+          </button>
+        </div>
       </div>
+
+      {/* Judge Info Modal */}
+      {showJudgeInfo && (
+        <div 
+          className="auth-modal-overlay" 
+          onClick={() => setShowJudgeInfo(false)}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(5px)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '2rem'
+          }}
+        >
+          <div 
+            className="info-modal"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#0f1420',
+              border: '1px solid rgba(0, 212, 255, 0.3)',
+              borderRadius: '20px',
+              padding: '2rem',
+              maxWidth: '600px',
+              width: '90%',
+              maxHeight: '80vh',
+              overflow: 'auto',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
+            }}
+          >
+            <h3 style={{ 
+              color: '#00d4ff', 
+              marginBottom: '1.5rem',
+              fontSize: '1.5rem',
+              fontWeight: '300'
+            }}>
+              Important Information for Judges
+            </h3>
+            
+            <div style={{ 
+              color: '#9CA3AF', 
+              lineHeight: '1.8',
+              fontSize: '1rem'
+            }}>
+              <p style={{ marginBottom: '1rem' }}>
+                We respectfully request that you download the available DD214 and process it through the Step Function workflow. This takes approximately 3 minutes and ensures that you experience the full potential of the software as designed.
+              </p>
+              
+              <p style={{ marginBottom: '1rem' }}>
+                However, if you encounter technical issues with the download, if the Step Function is temporarily unavailable, if time constraints are a factor, or if you've already completed a successful run and simply wish to review the end result, you may instead view a pre-generated report here.
+              </p>
+              
+              <p style={{ marginBottom: '1.5rem' }}>
+                This sample was produced using a real, official DD214 and accurately reflects the output generated by the full processing pipeline.
+              </p>
+            </div>
+            
+            <button
+              onClick={() => setShowJudgeInfo(false)}
+              style={{
+                background: 'linear-gradient(135deg, #00d4ff 0%, #0099cc 100%)',
+                color: '#0a0e1a',
+                border: 'none',
+                padding: '0.75rem 2rem',
+                borderRadius: '10px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                width: '100%',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              Understood
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes pulseSlow {
+          0% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
+          100% { opacity: 0.6; transform: scale(1); }
+        }
+      `}</style>
     </div>
   )
 }
