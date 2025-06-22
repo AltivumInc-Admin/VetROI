@@ -566,16 +566,19 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               fontSize: '0.75rem',
               color: '#00d4ff',
               fontWeight: 'bold',
-              animation: 'pulseSlow 4s ease-in-out infinite',
-              transition: 'all 0.2s'
+              animation: 'pulseGlow 4s ease-in-out infinite',
+              transition: 'all 0.2s',
+              boxShadow: '0 0 15px rgba(0, 212, 255, 0.5)'
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'rgba(0, 212, 255, 0.2)'
               e.currentTarget.style.transform = 'scale(1.1)'
+              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 212, 255, 0.7)'
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.background = 'rgba(0, 212, 255, 0.1)'
               e.currentTarget.style.transform = 'scale(1)'
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.5)'
             }}
             aria-label="Information about demo mode"
           >
@@ -670,10 +673,22 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       )}
 
       <style>{`
-        @keyframes pulseSlow {
-          0% { opacity: 0.6; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.05); }
-          100% { opacity: 0.6; transform: scale(1); }
+        @keyframes pulseGlow {
+          0% { 
+            opacity: 0.8; 
+            transform: scale(1); 
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+          }
+          50% { 
+            opacity: 1; 
+            transform: scale(1.05); 
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.8), 0 0 35px rgba(0, 212, 255, 0.4);
+          }
+          100% { 
+            opacity: 0.8; 
+            transform: scale(1); 
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+          }
         }
       `}</style>
     </div>
