@@ -32,7 +32,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   veteranId 
 }) => {
   const navigate = useNavigate()
-  const fileInputRef = React.useRef<HTMLInputElement>(null)
   const [uploadState, setUploadState] = useState<UploadState>({
     status: 'idle',
     progress: 0,
@@ -224,6 +223,13 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     noKeyboard: !isAuthenticated || !hasAcceptedAgreement // Prevent keyboard activation if not authenticated or agreement not accepted
   })
 
+  // Debug logging
+  console.log('Dropzone open function:', open)
+  console.log('Is authenticated:', isAuthenticated)
+  console.log('Has accepted agreement:', hasAcceptedAgreement)
+  console.log('Upload state:', uploadState.status)
+  console.log('Is dropzone disabled?', uploadState.status !== 'idle' && uploadState.status !== 'error')
+
   const handleAuthSuccess = async () => {
     await checkAuth()
     setShowAuthModal(false)
@@ -413,29 +419,25 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               <p>Drop your DD214 here...</p>
             ) : (
               <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  style={{ display: 'none' }}
-                  onChange={(e) => {
-                    const files = e.target.files
-                    if (files && files.length > 0) {
-                      onDrop(Array.from(files))
-                    }
-                  }}
-                />
                 <button 
                   type="button"
                   className="upload-button-primary"
+                  style={{ position: 'relative', zIndex: 100 }}
                   onClick={(e) => {
+                    console.log('Button clicked!')
+                    console.log('Event:', e)
+                    console.log('Open function from dropzone:', open)
                     e.stopPropagation()
                     if (!isAuthenticated) {
+                      console.log('Not authenticated, showing auth modal')
                       setShowAuthModal(true)
                     } else if (!hasAcceptedAgreement) {
+                      console.log('Not accepted agreement, showing agreement modal')
                       setShowAgreement(true)
                     } else {
-                      fileInputRef.current?.click()
+                      console.log('Trying to open file picker...')
+                      console.log('Using dropzone open function')
+                      open()
                     }
                   }}
                 >
@@ -539,11 +541,14 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
 
       <div className="judges-download-section" style={{
         marginTop: '2rem',
+        marginBottom: '2rem',
         padding: '1.5rem',
         background: 'rgba(0, 212, 255, 0.05)',
         border: '1px solid rgba(0, 212, 255, 0.2)',
         borderRadius: '10px',
-        textAlign: 'center'
+        textAlign: 'center',
+        position: 'relative',
+        zIndex: 1
       }}>
         <p style={{
           color: '#00d4ff',
