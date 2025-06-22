@@ -534,24 +534,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       <div style={{ marginTop: '2rem', textAlign: 'center', position: 'relative' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
-            onClick={() => navigate('/demo')}
-            style={{ 
-              background: 'none',
-              border: 'none',
-              color: '#6A6D73', 
-              fontSize: '0.875rem', 
-              textDecoration: 'none',
-              opacity: 0.7,
-              transition: 'opacity 0.2s',
-              cursor: 'pointer',
-              padding: 0
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
-          >
-            For Judges: View Demo Report →
-          </button>
-          <button
             onClick={() => setShowJudgeInfo(true)}
             style={{
               background: 'rgba(0, 212, 255, 0.1)',
@@ -583,6 +565,24 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             aria-label="Information about demo mode"
           >
             i
+          </button>
+          <button
+            onClick={() => navigate('/demo')}
+            style={{ 
+              background: 'none',
+              border: 'none',
+              color: '#6A6D73', 
+              fontSize: '0.875rem', 
+              textDecoration: 'none',
+              opacity: 0.7,
+              transition: 'opacity 0.2s',
+              cursor: 'pointer',
+              padding: 0
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+          >
+            For Judges: View Demo Report →
           </button>
         </div>
       </div>
