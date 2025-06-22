@@ -32,6 +32,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   veteranId 
 }) => {
   const navigate = useNavigate()
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
   const [uploadState, setUploadState] = useState<UploadState>({
     status: 'idle',
     progress: 0,
@@ -218,7 +219,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     },
     maxFiles: 1,
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
-    noClick: false, // Allow clicking anywhere in the dropzone
+    noClick: true, // We handle clicks manually with our button
     noDrag: !isAuthenticated || !hasAcceptedAgreement, // Prevent drag if not authenticated or agreement not accepted
     noKeyboard: !isAuthenticated || !hasAcceptedAgreement // Prevent keyboard activation if not authenticated or agreement not accepted
   })
@@ -400,18 +401,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             </div>
           )}
           <div 
-            {...getRootProps({
-              onClick: (e) => {
-                if (!isAuthenticated) {
-                  e.preventDefault();
-                  setShowAuthModal(true);
-                } else if (!hasAcceptedAgreement) {
-                  e.preventDefault();
-                  setShowAgreement(true);
-                }
-                // Otherwise, let dropzone handle the click
-              }
-            })} 
+            {...getRootProps()} 
             className={`dropzone ${isDragActive ? 'active' : ''} ${!isAuthenticated ? 'unauthenticated' : ''}`}
           >
             <input {...getInputProps()} />
@@ -423,9 +413,31 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               <p>Drop your DD214 here...</p>
             ) : (
               <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const files = e.target.files
+                    if (files && files.length > 0) {
+                      onDrop(Array.from(files))
+                    }
+                  }}
+                />
                 <button 
                   type="button"
                   className="upload-button-primary"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (!isAuthenticated) {
+                      setShowAuthModal(true)
+                    } else if (!hasAcceptedAgreement) {
+                      setShowAgreement(true)
+                    } else {
+                      fileInputRef.current?.click()
+                    }
+                  }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
