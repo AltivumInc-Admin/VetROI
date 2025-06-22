@@ -16,7 +16,8 @@ const ParticleBackground: React.FC = () => {
       width: '100%', 
       height: '100vh', 
       pointerEvents: 'none',
-      zIndex: 0 
+      zIndex: 0,
+      overflow: 'hidden'
     }}>
       <Particles
         id="tsparticles"
@@ -24,6 +25,7 @@ const ParticleBackground: React.FC = () => {
         options={{
         fullScreen: {
           enable: false,
+          zIndex: -1,
         },
         background: {
           color: {
@@ -31,10 +33,12 @@ const ParticleBackground: React.FC = () => {
           },
         },
         fpsLimit: 60,
+        pauseOnBlur: false,
+        pauseOnOutsideViewport: false,
         interactivity: {
           events: {
             onHover: {
-              enable: true,
+              enable: false,
               mode: "grab",
             },
             resize: false,
@@ -45,7 +49,7 @@ const ParticleBackground: React.FC = () => {
               enable: false,
             },
           },
-          detectsOn: "window",
+          detectsOn: "canvas",
           modes: {
             grab: {
               distance: 140,
@@ -71,11 +75,12 @@ const ParticleBackground: React.FC = () => {
             direction: "none",
             enable: true,
             outModes: {
-              default: "out",
+              default: "bounce",
             },
             random: false,
             speed: 0.5,
             straight: false,
+            bounce: true,
           },
           number: {
             density: {
@@ -103,7 +108,7 @@ const ParticleBackground: React.FC = () => {
           height: "100%",
           top: 0,
           left: 0,
-          pointerEvents: 'auto',
+          pointerEvents: 'none',
         }}
       />
     </div>
