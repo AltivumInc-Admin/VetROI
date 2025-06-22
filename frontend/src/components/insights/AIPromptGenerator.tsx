@@ -109,10 +109,16 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
   const extractPromptTitle = (prompt: string) => {
     // Extract a meaningful title from the prompt
     const firstSentence = prompt.split('.')[0]
-    if (firstSentence.length > 50) {
-      return firstSentence.substring(0, 50) + '...'
+    // Clean up the title
+    const cleanTitle = firstSentence
+      .replace(/^(I'm a|I am a|As a|You are a|Act as a)/i, '')
+      .replace(/^(Help me|Please help me|Can you help me)/i, '')
+      .trim()
+    
+    if (cleanTitle.length > 60) {
+      return cleanTitle.substring(0, 60) + '...'
     }
-    return firstSentence
+    return cleanTitle || 'AI Prompt'
   }
   
   const copyPrompt = (prompt: string, promptId: string) => {
@@ -151,12 +157,16 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
       <div className="section-header">
         <h1>AI Prompt Generator</h1>
         <p>Custom AI prompts tailored to your military background for career success</p>
+        <div className="usage-instructions">
+          <span className="instruction-icon">💡</span>
+          <span>Click any prompt to copy it to your clipboard, then paste into your favorite AI tool</span>
+        </div>
       </div>
       
       {/* Quick Generate Section */}
       <section className="quick-generate">
         <h2>Quick Prompt Generator</h2>
-        <p>Generate instant prompts based on your profile</p>
+        <p>Generate instant prompts based on your profile - Click to copy!</p>
         
         <div className="quick-prompt-buttons">
           <button 
@@ -199,7 +209,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
       
       {/* Category Filter */}
       <div className="category-filter">
-        <h3>Filter by Category</h3>
+        <h3>Browse AI Prompts by Category</h3>
         <div className="category-buttons">
           {promptCategories.map((category) => (
             <button
@@ -223,7 +233,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
                 <span className="platform-badge">{promptItem.platform}</span>
                 <span className="prompt-icon">{promptItem.icon}</span>
               </div>
-              <h3>{promptItem.title}</h3>
+              <h3 title={promptItem.prompt}>{promptItem.title}</h3>
             </div>
             
             <div className="prompt-content">
@@ -235,7 +245,10 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
                 className={`copy-button ${copiedPrompt === promptItem.id ? 'copied' : ''}`}
                 onClick={() => copyPrompt(promptItem.prompt, promptItem.id)}
               >
-                {copiedPrompt === promptItem.id ? '✓ Copied' : 'Copy Prompt'}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                </svg>
+                {copiedPrompt === promptItem.id ? '✓ Copied!' : 'Copy Prompt'}
               </button>
               
               <button
