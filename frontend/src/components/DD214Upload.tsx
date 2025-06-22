@@ -401,65 +401,53 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             </div>
           )}
           <div 
-            className={`dropzone ${!isAuthenticated ? 'unauthenticated' : ''}`}
-            onDrop={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              if (isAuthenticated && hasAcceptedAgreement) {
-                const files = Array.from(e.dataTransfer.files)
-                if (files.length > 0) {
-                  onDrop(files)
-                }
-              }
-            }}
-            onDragOver={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-            }}
-            onDragEnter={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-            }}
+            {...getRootProps()} 
+            className={`dropzone ${isDragActive ? 'active' : ''} ${!isAuthenticated ? 'unauthenticated' : ''}`}
           >
+            <input {...getInputProps()} />
             <div className="dropzone-content">
-              <svg className="upload-icon" viewBox="0 0 24 24" width="48" height="48">
-                <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill="currentColor"/>
-              </svg>
-              
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png"
-                style={{ display: 'none' }}
-                onChange={(e) => {
-                  const files = e.target.files
-                  if (files && files.length > 0) {
-                    onDrop(Array.from(files))
-                  }
-                }}
-              />
-              
-              <button 
-                type="button"
-                className="upload-button-primary"
-                onClick={() => {
-                  if (!isAuthenticated) {
-                    setShowAuthModal(true)
-                  } else if (!hasAcceptedAgreement) {
-                    setShowAgreement(true)
-                  } else {
-                    fileInputRef.current?.click()
-                  }
-                }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
-                </svg>
-                Click to Select File
-              </button>
-              
-              <p className="upload-or">or drag & drop your DD214 here</p>
-              <p className="upload-formats">Supports PDF, JPG, PNG (max 10MB)</p>
+            <svg className="upload-icon" viewBox="0 0 24 24" width="48" height="48">
+              <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" fill="currentColor"/>
+            </svg>
+            {isDragActive ? (
+              <p>Drop your DD214 here...</p>
+            ) : (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const files = e.target.files
+                    if (files && files.length > 0) {
+                      onDrop(Array.from(files))
+                    }
+                  }}
+                />
+                <button 
+                  type="button"
+                  className="upload-button-primary"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (!isAuthenticated) {
+                      setShowAuthModal(true)
+                    } else if (!hasAcceptedAgreement) {
+                      setShowAgreement(true)
+                    } else {
+                      fileInputRef.current?.click()
+                    }
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
+                  </svg>
+                  Click to Select File
+                </button>
+                <p className="upload-or">or drag & drop your DD214 here</p>
+                <p className="upload-formats">Supports PDF, JPG, PNG (max 10MB)</p>
+              </>
+            )}
             </div>
           </div>
           
