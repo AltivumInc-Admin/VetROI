@@ -327,7 +327,7 @@ function App() {
                   textAlign: 'center'
                 }}>
                   <p style={{ color: '#22c55e', margin: 0 }}>
-                    ✓ DD214 processed successfully - Your career matches are enhanced with your service record
+                    ✓ DD214 processed successfully - You'll receive exclusive career insights tailored specifically to your experience after speaking with Sentra, our AI-enhanced career counselor.
                   </p>
                 </div>
               )}
