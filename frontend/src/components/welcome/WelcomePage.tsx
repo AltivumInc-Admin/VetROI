@@ -128,9 +128,7 @@ const WelcomePage: React.FC = () => {
           </div>
           
           <div className="onet-attribution">
-            <img src="/onet-in-it.svg" 
-                 alt="O*NET in-it" />
-            <span>
+            <p>
               This site incorporates information from{' '}
               <a href="https://services.onetcenter.org/" 
                  target="_blank" 
@@ -138,7 +136,7 @@ const WelcomePage: React.FC = () => {
                 O*NET Web Services
               </a>{' '}
               by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA).
-            </span>
+            </p>
           </div>
           
           <p className="security-note">
