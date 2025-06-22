@@ -220,15 +220,10 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
     noClick: true, // We handle clicks manually with our button
     noDrag: !isAuthenticated || !hasAcceptedAgreement, // Prevent drag if not authenticated or agreement not accepted
-    noKeyboard: !isAuthenticated || !hasAcceptedAgreement // Prevent keyboard activation if not authenticated or agreement not accepted
+    noKeyboard: !isAuthenticated || !hasAcceptedAgreement, // Prevent keyboard activation if not authenticated or agreement not accepted
+    useFsAccessApi: false // Force use of legacy file input instead of File System Access API
   })
 
-  // Debug logging
-  console.log('Dropzone open function:', open)
-  console.log('Is authenticated:', isAuthenticated)
-  console.log('Has accepted agreement:', hasAcceptedAgreement)
-  console.log('Upload state:', uploadState.status)
-  console.log('Is dropzone disabled?', uploadState.status !== 'idle' && uploadState.status !== 'error')
 
   const handleAuthSuccess = async () => {
     await checkAuth()
@@ -424,19 +419,12 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
                   className="upload-button-primary"
                   style={{ position: 'relative', zIndex: 100 }}
                   onClick={(e) => {
-                    console.log('Button clicked!')
-                    console.log('Event:', e)
-                    console.log('Open function from dropzone:', open)
                     e.stopPropagation()
                     if (!isAuthenticated) {
-                      console.log('Not authenticated, showing auth modal')
                       setShowAuthModal(true)
                     } else if (!hasAcceptedAgreement) {
-                      console.log('Not accepted agreement, showing agreement modal')
                       setShowAgreement(true)
                     } else {
-                      console.log('Trying to open file picker...')
-                      console.log('Using dropzone open function')
                       open()
                     }
                   }}
