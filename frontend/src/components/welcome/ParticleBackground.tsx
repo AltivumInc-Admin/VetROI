@@ -9,10 +9,19 @@ const ParticleBackground: React.FC = () => {
   };
 
   return (
-    <Particles
-      id="tsparticles"
-      init={particlesInit}
-      options={{
+    <div style={{ 
+      position: 'fixed', 
+      top: 0, 
+      left: 0, 
+      width: '100%', 
+      height: '100vh', 
+      pointerEvents: 'none',
+      zIndex: 0 
+    }}>
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        options={{
         fullScreen: {
           enable: false,
         },
@@ -29,8 +38,14 @@ const ParticleBackground: React.FC = () => {
               mode: "grab",
             },
             resize: false,
+            onDiv: {
+              enable: false,
+            },
+            onClick: {
+              enable: false,
+            },
           },
-          detectsOn: "canvas",
+          detectsOn: "window",
           modes: {
             grab: {
               distance: 140,
@@ -82,15 +97,16 @@ const ParticleBackground: React.FC = () => {
         },
         detectRetina: true,
       }}
-      style={{
-        position: "fixed",
-        width: "100%",
-        height: "100vh",
-        top: 0,
-        left: 0,
-        zIndex: 0,
-      }}
-    />
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          top: 0,
+          left: 0,
+          pointerEvents: 'auto',
+        }}
+      />
+    </div>
   );
 };
 
