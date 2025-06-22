@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { getDD214InsightsData } from '../api'
 import { SkeletonLoader } from './SkeletonLoader'
 import { ExecutiveSummary } from './insights/ExecutiveSummary'
@@ -49,7 +49,8 @@ const navigationItems = [
 ]
 
 export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
-  const { documentId } = useParams<{ documentId: string }>()
+  const { documentId: paramDocumentId } = useParams<{ documentId: string }>()
+  const location = useLocation()
   const navigate = useNavigate()
   const [insights, setInsights] = useState<InsightsData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -57,6 +58,11 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
   const [selectedSection, setSelectedSection] = useState<string>('executive-summary')
   const [showDownloadModal, setShowDownloadModal] = useState(false)
   const [generatingPDF, setGeneratingPDF] = useState(false)
+
+  // Use demo documentId if on /demo route
+  const documentId = location.pathname === '/demo' 
+    ? '8a3d770f-af01-4601-bca3-f5cbe7c9ee62' 
+    : paramDocumentId
 
   useEffect(() => {
     fetchInsights()
@@ -161,8 +167,24 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
   const veteranName = insights.veteranProfile?.name || 
     `${insights.insights.extracted_profile?.rank || ''} ${insights.insights.extracted_profile?.branch || 'Veteran'}`.trim()
 
+  const isDemo = location.pathname === '/demo'
+
   return (
     <div className="insights-view">
+      {/* Demo Mode Banner */}
+      {isDemo && (
+        <div style={{
+          background: 'rgba(0, 212, 255, 0.1)',
+          border: '1px solid rgba(0, 212, 255, 0.3)',
+          padding: '0.75rem',
+          textAlign: 'center',
+          fontSize: '0.875rem',
+          color: '#00d4ff'
+        }}>
+          🎯 Demo Mode - Pre-processed Report for Judges
+        </div>
+      )}
+      
       {/* Header Section */}
       <div className="insights-header-section">
         <div className="header-content">

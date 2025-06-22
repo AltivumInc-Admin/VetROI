@@ -21,6 +21,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<WelcomePage />} />
           <Route path="/app" element={<App />} />
           <Route path="/dd214-insights/:documentId" element={<DD214InsightsView />} />
+          <Route path="/demo" element={<DD214InsightsView />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

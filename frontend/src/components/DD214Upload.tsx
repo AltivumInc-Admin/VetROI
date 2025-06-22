@@ -526,6 +526,24 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         </svg>
         <p>Your document is encrypted and processed securely. PII is automatically redacted.</p>
       </div>
+
+      {/* Demo link for judges */}
+      <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+        <a 
+          href="/demo" 
+          style={{ 
+            color: '#6A6D73', 
+            fontSize: '0.875rem', 
+            textDecoration: 'none',
+            opacity: 0.7,
+            transition: 'opacity 0.2s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+          onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+        >
+          For Judges: View Demo Report →
+        </a>
+      </div>
     </div>
   )
 }
