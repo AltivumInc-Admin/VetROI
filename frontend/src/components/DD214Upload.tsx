@@ -523,11 +523,54 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         </div>
       )}
 
-      <div className="security-notice">
-        <svg className="lock-icon" viewBox="0 0 24 24" width="16" height="16">
-          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" fill="currentColor"/>
-        </svg>
-        <p>Your document is encrypted and processed securely. PII is automatically redacted.</p>
+      <div className="judges-download-section" style={{
+        marginTop: '2rem',
+        padding: '1.5rem',
+        background: 'rgba(0, 212, 255, 0.05)',
+        border: '1px solid rgba(0, 212, 255, 0.2)',
+        borderRadius: '10px',
+        textAlign: 'center'
+      }}>
+        <p style={{
+          color: '#00d4ff',
+          fontSize: '0.875rem',
+          marginBottom: '1rem',
+          fontWeight: '500',
+          letterSpacing: '0.5px'
+        }}>
+          AWS Lambda Hackathon Judges
+        </p>
+        <a
+          href="/DD214 PDF_SSN-Redacted_by_AdobeAcrobat.pdf"
+          download="DD214_Sample_Redacted.pdf"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            background: 'linear-gradient(135deg, #00d4ff 0%, #0099cc 100%)',
+            color: '#0a0e1a',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 15px rgba(0, 212, 255, 0.3)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-2px)'
+            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 212, 255, 0.4)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)'
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 212, 255, 0.3)'
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+          </svg>
+          Download DD214
+        </a>
       </div>
 
       {/* Demo link for judges */}
