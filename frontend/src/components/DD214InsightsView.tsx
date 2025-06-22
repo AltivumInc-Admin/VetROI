@@ -181,7 +181,7 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
           fontSize: '0.875rem',
           color: '#00d4ff'
         }}>
-          🎯 Demo Mode - Pre-processed Report for Judges
+          🎯 For Judges: Viewing Actual DD214 Analysis - Pre-Generated from Real Document
         </div>
       )}
       
