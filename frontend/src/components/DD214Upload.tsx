@@ -402,6 +402,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
           <div 
             {...getRootProps()} 
             className={`dropzone ${isDragActive ? 'active' : ''} ${!isAuthenticated ? 'unauthenticated' : ''}`}
+            onClick={(e) => e.preventDefault()} // Prevent dropzone click
           >
             <input {...getInputProps()} />
             <div className="dropzone-content">
@@ -413,9 +414,12 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             ) : (
               <>
                 <button 
+                  type="button"
                   className="upload-button-primary"
+                  style={{ position: 'relative', zIndex: 10 }}
                   onClick={(e) => {
                     e.stopPropagation();
+                    e.preventDefault();
                     if (!isAuthenticated) {
                       setShowAuthModal(true);
                     } else if (!hasAcceptedAgreement) {
