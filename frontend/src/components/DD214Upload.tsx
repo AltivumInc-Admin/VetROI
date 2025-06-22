@@ -218,7 +218,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     },
     maxFiles: 1,
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
-    noClick: true, // We'll handle clicks manually with the button
+    noClick: false, // Allow clicking anywhere in the dropzone
     noDrag: !isAuthenticated || !hasAcceptedAgreement, // Prevent drag if not authenticated or agreement not accepted
     noKeyboard: !isAuthenticated || !hasAcceptedAgreement // Prevent keyboard activation if not authenticated or agreement not accepted
   })
@@ -400,9 +400,19 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             </div>
           )}
           <div 
-            {...getRootProps()} 
+            {...getRootProps({
+              onClick: (e) => {
+                if (!isAuthenticated) {
+                  e.preventDefault();
+                  setShowAuthModal(true);
+                } else if (!hasAcceptedAgreement) {
+                  e.preventDefault();
+                  setShowAgreement(true);
+                }
+                // Otherwise, let dropzone handle the click
+              }
+            })} 
             className={`dropzone ${isDragActive ? 'active' : ''} ${!isAuthenticated ? 'unauthenticated' : ''}`}
-            onClick={(e) => e.preventDefault()} // Prevent dropzone click
           >
             <input {...getInputProps()} />
             <div className="dropzone-content">
@@ -416,18 +426,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
                 <button 
                   type="button"
                   className="upload-button-primary"
-                  style={{ position: 'relative', zIndex: 10 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if (!isAuthenticated) {
-                      setShowAuthModal(true);
-                    } else if (!hasAcceptedAgreement) {
-                      setShowAgreement(true);
-                    } else {
-                      open();
-                    }
-                  }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M19 7v3h-2V7h-3V5h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
