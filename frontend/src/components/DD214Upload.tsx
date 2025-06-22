@@ -669,7 +669,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         @keyframes pulseSlow {
           0% { opacity: 0.6; transform: scale(1); }
           50% { opacity: 1; transform: scale(1.05); }
