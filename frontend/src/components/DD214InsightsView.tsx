@@ -8,6 +8,7 @@ import { LeadershipProfile } from './insights/LeadershipProfile'
 import { ActionCenter } from './insights/ActionCenter'
 import { PsychologicalPreparation } from './insights/PsychologicalPreparation'
 import { TimelineRoadmap } from './insights/TimelineRoadmap'
+import { GeoIntelligence } from './insights/GeoIntelligence'
 import { LegacyIntelligenceReport } from './insights/LegacyIntelligenceReport'
 import { AIPromptGenerator } from './insights/AIPromptGenerator'
 import { generatePDF } from '../utils/pdfGenerator-enhanced'
@@ -42,6 +43,7 @@ const navigationItems = [
   { id: 'action-center', label: 'Action Center', icon: '🚀' },
   { id: 'psychological-prep', label: 'Psychological Preparation', icon: '🧠' },
   { id: 'timeline', label: 'Timeline & Roadmap', icon: '📅' },
+  { id: 'geo-intelligence', label: '3D Geo-Intelligence', icon: '🌐' },
   { id: 'legacy-report', label: 'Legacy Intelligence', icon: '📜' },
   { id: 'ai-prompts', label: 'AI Prompt Generator', icon: '🤖' }
 ]
@@ -116,6 +118,8 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
         return <PsychologicalPreparation data={insights} />
       case 'timeline':
         return <TimelineRoadmap data={insights} />
+      case 'geo-intelligence':
+        return <GeoIntelligence />
       case 'legacy-report':
         return <LegacyIntelligenceReport data={insights} />
       case 'ai-prompts':
