@@ -83,8 +83,8 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
           <div className="stat-card">
             <div className="stat-label">Target Salary Range</div>
             <div className="stat-value">
-              ${compensation.base_salary_targets?.conservative || '80K'} - 
-              ${compensation.base_salary_targets?.aggressive || '150K'}
+              {compensation.base_salary_targets?.conservative || '$80K'} - 
+              {compensation.base_salary_targets?.aggressive || '$150K'}
             </div>
           </div>
           <div className="stat-card">
