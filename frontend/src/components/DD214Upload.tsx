@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { useNavigate } from 'react-router-dom'
 import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import { AuthModal } from './AuthModal'
@@ -30,6 +31,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   onUploadComplete,
   veteranId 
 }) => {
+  const navigate = useNavigate()
   const [uploadState, setUploadState] = useState<UploadState>({
     status: 'idle',
     progress: 0,
@@ -529,20 +531,24 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
 
       {/* Demo link for judges */}
       <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-        <a 
-          href="/demo" 
+        <button
+          onClick={() => navigate('/demo')}
           style={{ 
+            background: 'none',
+            border: 'none',
             color: '#6A6D73', 
             fontSize: '0.875rem', 
             textDecoration: 'none',
             opacity: 0.7,
-            transition: 'opacity 0.2s'
+            transition: 'opacity 0.2s',
+            cursor: 'pointer',
+            padding: 0
           }}
           onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
           onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
         >
           For Judges: View Demo Report →
-        </a>
+        </button>
       </div>
     </div>
   )
