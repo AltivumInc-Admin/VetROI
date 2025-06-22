@@ -220,8 +220,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
     disabled: uploadState.status !== 'idle' && uploadState.status !== 'error',
     noClick: true, // We handle clicks manually with our button
     noDrag: !isAuthenticated || !hasAcceptedAgreement, // Prevent drag if not authenticated or agreement not accepted
-    noKeyboard: !isAuthenticated || !hasAcceptedAgreement, // Prevent keyboard activation if not authenticated or agreement not accepted
-    useFsAccessApi: false // Force use of legacy file input instead of File System Access API
+    noKeyboard: !isAuthenticated || !hasAcceptedAgreement // Prevent keyboard activation if not authenticated or agreement not accepted
   })
 
 
@@ -722,25 +721,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         </div>
       )}
 
-      <style>{`
-        @keyframes pulseGlow {
-          0% { 
-            opacity: 0.8; 
-            transform: scale(1); 
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
-          }
-          50% { 
-            opacity: 1; 
-            transform: scale(1.05); 
-            box-shadow: 0 0 25px rgba(0, 212, 255, 0.8), 0 0 35px rgba(0, 212, 255, 0.4);
-          }
-          100% { 
-            opacity: 0.8; 
-            transform: scale(1); 
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
-          }
-        }
-      `}</style>
     </div>
   )
 }

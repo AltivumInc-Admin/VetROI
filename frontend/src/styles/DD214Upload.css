@@ -587,3 +587,22 @@
     font-size: 0.75rem;
   }
 }
+
+/* Animation for info button */
+@keyframes pulseGlow {
+  0% { 
+    opacity: 0.8; 
+    transform: scale(1); 
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.05); 
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.8), 0 0 35px rgba(0, 212, 255, 0.4);
+  }
+  100% { 
+    opacity: 0.8; 
+    transform: scale(1); 
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
+  }
+}
