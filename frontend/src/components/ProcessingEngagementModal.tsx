@@ -82,7 +82,6 @@ export const ProcessingEngagementModal: React.FC<ProcessingEngagementModalProps>
                   <div className="option-content">
                     <h3>Help Us Improve</h3>
                     <p>Answer 2 quick questions about your transition</p>
-                    <span className="option-reward">Earn priority processing</span>
                   </div>
                 </button>
 
