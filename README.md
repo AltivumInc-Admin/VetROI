@@ -65,8 +65,8 @@ positioned in the civilian workforce.
 ### Watch Our Demo
 [Demo Video Link] - See VetROI process a real DD214 and generate career insights
 
-## For the Judges
-### Navigating VetROI™
+## ⚖️ For the Judges
+### 🗺️ Navigating VetROI™
 
 When you land on the Welcome page, you’ll have the option to sign in or continue as a guest.  
 For full access, I’ve created a dedicated judge account for your use:
@@ -137,13 +137,14 @@ There, you’ll find:
 
 Thank you for exploring VetROI™. I look forward to your evaluation.
 
-## 🗺️ Repository Navigation
-
-📍 **New to the project?** Start with our [Repository Guide](REPOSITORY_GUIDE.md) for a complete map of the codebase, key files, and where to find everything.
-
 ## The Origin Story
 
-VetROI™ was created by a former Green Beret who experienced firsthand the challenges of translating military service into civilian opportunity. What began as a personal struggle has become a mission to build smarter, more human transition tools for veterans everywhere. Learn more about the story and solution [on Devpost](https://devpost.com/software/vetroi).
+VetROI™ was created by a former Green Beret who experienced firsthand the challenges of translating military service into civilian opportunity. What began as a personal struggle has become a mission to build smarter, more human transition tools for veterans
+everywhere. Learn more about the story and solution [on Devpost](https://devpost.com/software/vetroi).
+
+## 🧭 Repository Navigation
+
+📍 **New to the project?** Start with our [Repository Guide](REPOSITORY_GUIDE.md) for a complete map of the codebase, key files, and where to find everything.
 
 ## 🏗️ Architecture & AWS Services
 
