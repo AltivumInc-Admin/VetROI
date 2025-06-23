@@ -5,26 +5,145 @@
 
 ![VetROI Architecture](https://img.shields.io/badge/AWS-Lambda-orange) ![Serverless](https://img.shields.io/badge/Serverless-100%25-brightgreen) ![Status](https://img.shields.io/badge/Status-Production--Ready-blue)
 
-## 🎯 The Problem We're Solving
+_This project is released under the MIT License. See [LICENSE](LICENSE) for details._
 
-Every year, 200,000+ veterans transition from military to civilian careers. They face a critical challenge: **translating their military experience into language civilian employers understand**. 
+## The Problem
 
-Traditional solutions fail because:
-- Manual DD214 review takes 2+ weeks
-- Generic career counseling misses specialized skills
-- High-achievers (surgeons, pilots, special forces) are told "you'll be fine"
-- Veterans struggle to articulate their value in civilian terms
+Every year, over 200,000 veterans transition from military to civilian careers. And every 
+year, the vast majority of that talent is misaligned, misunderstood, or outright missed 
+by the job market.
+
+At the core is a communication failure: **civilian employers don’t understand military 
+experience—and veterans struggle to translate it**.
+
+The result is a systemic business inefficiency. High-performing individuals—many with 
+leadership, technical, medical, or security backgrounds—are routinely placed into roles 
+far below their capability. This isn’t just a personal loss for the veteran. It’s a 
+missed opportunity for the workforce.
+
+Traditional approaches fail to address this at scale:
+- **Manual DD214 reviews** can take 2+ weeks and are rarely comprehensive
+- **Generic career counseling** often overlooks nuanced, specialized skills
+- **Elite veterans** (surgeons, pilots, special forces) are told "you’ll be fine"—and 
+  then left without support
+- **Employers lack tools** to interpret military roles, ranks, and MOS codes into 
+  business-relevant qualifications
+
+This is not just a human capital challenge—it’s a **strategic labor market failure**.
+
+VetROI™ solves this by providing instant, AI-powered career intelligence that **translates 
+military service into civilian opportunity with precision, security, and narrative depth**. 
+It replaces weeks of vague advice with actionable, personalized insight—in under three 
+minutes. Whether you're an airborne infantryman seeking your first job or a retiring colonel targeting a boardroom, the system 
+provides tailored, data-rich intelligence that elevates your unique military experience into 
+actionable civilian opportunity.
 
 ## 💡 Our Serverless Solution
 
-VetROI uses AWS Lambda and serverless architecture to transform a veteran's DD214 (military service record) into actionable career intelligence in under 3 minutes.
+VetROI uses AWS Lambda and a fully serverless architecture to transform a veteran’s DD214—
+the official record of military service—into actionable career intelligence in under 
+three minutes. This automation replaces weeks of slow, manual counseling with instant, 
+personalized insight.
+
+Once uploaded, the DD214 is scanned for sensitive information using Amazon Macie, parsed 
+into structured data via Amazon Textract, and enriched through a coordinated series of 
+Lambda functions, Step Functions, and Amazon Bedrock AI-powered analysis. Each component 
+is designed to scale securely and cost-effectively—making the system accessible whether 
+you're an E-1 separating after a single enlistment or an O-6 retiring after 25 years.
+
+By eliminating the bottlenecks of traditional career transition systems, VetROI ensures that:
+- **Junior enlisted veterans** aren’t left guessing which careers match their skills
+- **Senior NCOs and officers** aren’t pushed into generic roles below their potential
+- **Specialized professionals** like military physicians, pilots, or cyber operators receive 
+  targeted guidance based on their real qualifications—not generic assumptions
+
+In short, VetROI doesn't offer one-size-fits-all advice. It delivers **real-time, rank-agnostic, 
+and role-specific guidance**—making military experience legible, valuable, and strategically 
+positioned in the civilian workforce.
+
 
 ### Watch Our Demo
 [Demo Video Link] - See VetROI process a real DD214 and generate career insights
 
+## For the Judges
+### Navigating VetROI™
+
+When you land on the Welcome page, you’ll have the option to sign in or continue as a guest.  
+For full access, I’ve created a dedicated judge account for your use:
+
+- **Email**: judges@altivum.io  
+- **Password**: AWS_Lambda2025
+
+Upon signing in, you’ll be prompted to select:
+- Your branch of service  
+- Military occupation code (MOS, AFSC, NEC, etc.)  
+- State of residence  
+- Highest education level
+
+A pre-filled list of valid military occupation codes is included, but feel free to Google any valid code from any branch. The selected code will be sent to the O*NET Web Services API, which will return all matching **Standard Occupational Classification (SOC) codes** as defined by the U.S. Department of Labor.
+
+> You can view the full O*NET API response in real time by clicking the tab on the right side of the screen labeled **"O*NET DATA"**.
+
+**Example military occupation codes you can use for testing:**
+
+- **Army**:  
+  - `11B` – Infantryman  
+  - `68W` – Combat Medic Specialist  
+  - `12B` – Combat Engineer  
+  - `35F` – Intelligence Analyst  
+  - `25B` – IT Specialist   
+
+- **Marine Corps**:  
+  - `0311` – Rifleman  
+  - `0321` – Reconnaissance Marine  
+  - `0681` – Cybersecurity Technician  
+  - `0231` – Intelligence Specialist  
+  - `1371` – Combat Engineer  
+
+You’ll then confirm your input before proceeding.
+
+Next, you’ll have the opportunity to upload a DD214 for processing.  
+For convenience, I’ve included a sample DD214 (with SSN and other PII redacted). Additional sensitive information will be automatically flagged and redacted by **Amazon Macie**.
+
+- Please download and upload the sample to initiate full system processing.
+
+The full analysis pipeline (Step Functions + Lambda + Bedrock) averages **2 minutes and 45 seconds**.  
+While you wait, I’ve enabled a preview carousel showcasing other supporting features and technical artifacts.
+
+On the DD214 upload page, you’ll also find an option to **view a real, pre-processed DD214**.  
+This is available in case you’ve already gone through the processing flow and simply want to revisit the final results, or if you’re short on time and need to bypass the 2–3 minute processing window. It also serves as a fallback in case of any unexpected technical issues during live document analysis.
+
+Once processing is complete, you’ll be prompted to select **1–4 civilian career options** from the list provided by O*NET. These options are tailored to your selected military code.
+
+A second API call will then be made to retrieve full labor market intelligence for each chosen SOC code.  
+This data will be:
+- Rendered in a clean, side-by-side comparative format  
+- Visualized for better alignment analysis  
+- Backed by the original JSON API payload (accessible under the **"Career Data"** tab)
+
+After reviewing your matches, you can interact with **Sentra**, our beta-phase career counselor chatbot powered by **Amazon Lex**.  
+Click **"Meet with Sentra, our state-of-the-art career counselor"** and then click **"What is my next mission?"** inside the chat window.  
+This will activate Lex’s `GetNextMission` intent, which will return contextual guidance for your transition journey.
+
+Finally, to access the full DD214 career report, click the yellow button labeled **"Get your DD214 Insight"** in the bottom-right corner.  
+There, you’ll find:
+- A leadership profile  
+- Civilian career translations  
+- A 30-60-90 day roadmap  
+- Regional salary data  
+- Geo-intelligence overlays
+
+> Our experimental 3D career intelligence module is also available in this section. It’s designed to help visualize veteran talent distribution across sectors, states, and skill domains—making it easier to connect veterans with mission-aligned employers.
+
+Thank you for exploring VetROI™. I look forward to your evaluation.
+
 ## 🗺️ Repository Navigation
 
 📍 **New to the project?** Start with our [Repository Guide](REPOSITORY_GUIDE.md) for a complete map of the codebase, key files, and where to find everything.
+
+## The Origin Story
+
+VetROI™ was created by a former Green Beret who experienced firsthand the challenges of translating military service into civilian opportunity. What began as a personal struggle has become a mission to build smarter, more human transition tools for veterans everywhere. Learn more about the story and solution [on Devpost](https://devpost.com/software/vetroi).
 
 ## 🏗️ Architecture & AWS Services
 
@@ -101,66 +220,6 @@ Step Functions State Machine:
 - **Secrets Manager** - O*NET API credentials
 - **CloudWatch** - Monitoring & alerts
 
-## 🚀 Key Features
-
-### For Veterans
-- **Under 3-Minute Processing** - DD214 → Career insights (avg 2.5 minutes)
-- **AI-Powered Translation** - Military experience → Civilian terms
-- **Personalized Outputs**:
-  - 3 resume bullets (achievement-focused)
-  - Professional bio for LinkedIn
-  - 3 interview questions with answers
-  - Career recommendations with salary data
-  - Skills translation matrix
-
-### For the E-1 to O-6 Spectrum
-- **Private (E-1)**: Entry-level career paths with training recommendations
-- **NCO (E-5/E-6)**: Leadership roles leveraging management experience  
-- **Special Forces**: High-skill technical positions
-- **Military Surgeons**: Research opportunities, fellowships, partnerships
-
-## 📊 Performance & Scale
-
-- **Processing Time**: Under 3 minutes end-to-end
-- **Cost Efficiency**: Pay-per-use Lambda pricing
-- **Auto-scaling**: Handles any load without configuration
-- **Zero Infrastructure**: 100% serverless architecture
-
-## 🛠️ Technical Implementation
-
-### Lambda Triggers
-- **API Gateway** → User-facing endpoints
-- **S3 Events** → Document upload processing
-- **Step Functions** → Workflow coordination
-- **EventBridge** → Scheduled data refreshes
-
-### Serverless Best Practices
-✅ Event-driven architecture  
-✅ Microservices design pattern  
-✅ Pay-per-execution pricing  
-✅ Automatic scaling  
-✅ No server management  
-✅ Built-in high availability
-
-### Security & Compliance
-- PII automatically detected and redacted (Macie)
-- Encrypted data at rest and in transit
-- Cognito authentication with session management
-- Least privilege IAM roles
-- HIPAA-compliant architecture ready
-
-## 📈 Real-World Impact
-
-From our beta testing with actual veterans:
-
-**Case Study: Special Forces Medical Sergeant (18D)**
-- Input: 10-page DD214 with combat experience
-- Output: 
-  - 3 targeted healthcare/security careers
-  - Resume: "Led 10-person medical team in combat, improving patient outcomes by 20%"
-  - Interview prep for high-stress scenarios
-  - Salary range: $60K-$100K based on chosen path
-
 ## 🔧 Local Development & Testing
 
 ```bash
@@ -213,38 +272,6 @@ VetROI/
 └── infrastructure/       # Additional AWS config
 ```
 
-## 🎖️ Why This Matters
-
-**The Mission**: I'm Christian Perez, a former Special Forces Medical Sergeant (18D) with a Bronze Star from Afghanistan. After transitioning out, I watched fellow veterans struggle to translate their incredible experience into civilian opportunities. 
-
-VetROI isn't just a hackathon project - it's a production-ready platform designed to serve every veteran, from the 18-year-old infantry soldier to the 33-year-old military surgeon, helping them articulate their value and achieve their ambitions.
-
-## 🏆 Hackathon Alignment
-
-### Quality of Idea
-- Solves real problem affecting 200,000+ veterans annually
-- Unique approach: DD214 → AI insights → Career materials
-- Practical value: Veterans get interview-ready in under 3 minutes
-
-### Architecture & Design
-- 100% serverless implementation
-- Event-driven microservices
-- AWS Lambda as core orchestrator
-- Best practices: auto-scaling, pay-per-use, managed services
-
-### Completeness
-- Production-ready application (https://vetroi.altivum.ai)
-- End-to-end workflow functioning
-- Comprehensive documentation
-- Live demo available
-
-## 🚀 Future Roadmap
-
-- GI Bill benefit calculator integration
-- Veteran employer marketplace
-- AI-powered interview simulator
-- Mobile application
-- Enterprise partnerships for veteran hiring
 
 ## 📄 License
 
@@ -255,10 +282,10 @@ MIT License - enabling both open-source community and commercial deployment
 - AWS for the Lambda platform enabling this serverless architecture
 - O*NET for providing comprehensive career data
 - The veteran community for invaluable feedback
-- My wife (military surgeon) for highlighting the need beyond entry-level transitions
+- My wife and my son for their cintinuous support of my endeavors.
 
 ---
 
-**VetROI™** - Because every veteran deserves to understand and articulate their value in the civilian world.
+**VetROI™**
 
 *Trademark: Serial Number 99211176 | Owner: Altivum Inc.*
