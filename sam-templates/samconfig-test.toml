@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "VetROI-ProperFix"
+resolve_s3 = true
+s3_prefix = "VetROI-ProperFix"
+region = "us-east-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM CAPABILITY_NAMED_IAM"
+parameter_overrides = "BedrockModelId=\"anthropic.claude-3-sonnet-20240229\" ONetApiUrl=\"https://services.onetcenter.org/ws\""
+image_repositories = []
