@@ -195,7 +195,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref SessionsTable
           DD214_BUCKET: !Ref DD214UploadBucket
-          STATE_MACHINE_ARN: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${AWS::StackName}-DD214-Processing'
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
       Policies:
         - S3ReadPolicy:
             BucketName: !Ref DD214UploadBucket
@@ -318,7 +318,7 @@ Resources:
       Timeout: 30
       Environment:
         Variables:
-          STATE_MACHINE_ARN: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${AWS::StackName}-DD214-Processing'
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
           TABLE_NAME: !Ref SessionsTable
       Policies:
         - Version: '2012-10-17'
@@ -340,7 +340,7 @@ Resources:
       Action: lambda:InvokeFunction
       Principal: s3.amazonaws.com
       SourceAccount: !Ref AWS::AccountId
-      SourceArn: !Sub 'arn:aws:s3:::${AWS::StackName}-dd214-uploads-${AWS::AccountId}'
+      SourceArn: !Sub 'arn:aws:s3:::vetroi-dd214-uploads-${AWS::AccountId}'
 
   # DD214 API Functions
   DD214PresignedUrlFunction:
@@ -376,7 +376,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref SessionsTable
-          STATE_MACHINE_ARN: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:${AWS::StackName}-DD214-Processing'
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref SessionsTable
