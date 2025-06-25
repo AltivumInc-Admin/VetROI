@@ -37,6 +37,7 @@ interface InsightsData {
 }
 
 const navigationItems = [
+  { id: 'back-to-careers', label: 'Career Matches', icon: '🔙', isBackButton: true },
   { id: 'executive-summary', label: 'Executive Summary', icon: '🎯' },
   { id: 'career-intelligence', label: 'Career Intelligence', icon: '💼' },
   { id: 'leadership-profile', label: 'Leadership Profile', icon: '⭐' },
@@ -224,7 +225,13 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
               <button
                 key={item.id}
                 className={`nav-item ${selectedSection === item.id ? 'active' : ''}`}
-                onClick={() => setSelectedSection(item.id)}
+                onClick={() => {
+                  if (item.isBackButton) {
+                    navigate('/app', { state: { showCareerMatches: true } })
+                  } else {
+                    setSelectedSection(item.id)
+                  }
+                }}
               >
                 <span className="nav-icon">{item.icon}</span>
                 <span className="nav-label">{item.label}</span>
