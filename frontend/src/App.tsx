@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import VeteranForm from './components/VeteranForm'
 import { ChatInterface } from './components/ChatInterface'
 import { ConfirmationStep } from './components/ConfirmationStep'
@@ -23,7 +23,6 @@ interface ChatSession {
 
 function App() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { sessionWarning, sessionExpired } = useAuth()
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
@@ -72,16 +71,6 @@ function App() {
       }, 100)
     }
   }, [needsConfirmation])
-
-  // Handle navigation back from DD214 insights
-  useEffect(() => {
-    if (location.state?.showCareerMatches) {
-      setShowCareerMatches(true)
-      setShowDD214Upload(true)
-      // Clear the state to prevent re-triggering
-      navigate(location.pathname, { replace: true })
-    }
-  }, [location.state, navigate, location.pathname])
 
   const handleConfirm = async () => {
     if (!profileData || !apiResponse) return
@@ -348,27 +337,6 @@ function App() {
                 matches={apiResponse.onet_careers?.match?.[0]?.occupations?.occupation || []}
                 onSOCClick={handleSOCClick}
               />
-              
-              {dd214Processed && dd214DocumentId && (
-                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                  <button
-                    onClick={() => navigate(`/dd214-insights/${dd214DocumentId}`)}
-                    style={{
-                      background: 'linear-gradient(135deg, #00d4ff, #0066ff)',
-                      border: 'none',
-                      color: 'white',
-                      padding: '1rem 2rem',
-                      borderRadius: '0.5rem',
-                      fontSize: '1.1rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s'
-                    }}
-                  >
-                    View DD214 Analysis →
-                  </button>
-                </div>
-              )}
             </div>
           )}
           

@@ -227,7 +227,7 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
                 className={`nav-item ${selectedSection === item.id ? 'active' : ''}`}
                 onClick={() => {
                   if (item.isBackButton) {
-                    navigate('/app', { state: { showCareerMatches: true } })
+                    navigate(-1) // Go back to previous page with state intact
                   } else {
                     setSelectedSection(item.id)
                   }
