@@ -5,6 +5,10 @@
 
 ![VetROI Architecture](https://img.shields.io/badge/AWS-Lambda-orange) ![Serverless](https://img.shields.io/badge/Serverless-100%25-brightgreen) ![Status](https://img.shields.io/badge/Status-Production--Ready-blue)
 
+> **⚠️ IMPORTANT**: This application requires O*NET API credentials (free) to function. 
+> Register at: https://services.onetcenter.org/developer/signup
+> See [DEPLOYMENT.md](DEPLOYMENT.md) for setup instructions.
+
 _This project is released under the MIT License. See [LICENSE](LICENSE) for details._
 
 ## The Problem
@@ -218,7 +222,7 @@ Step Functions State Machine:
 - **Cognito** - User authentication & authorization
 - **CloudFront** - Custom domain (vetroi.altivum.ai)
 - **Amplify** - Frontend hosting with CI/CD
-- **Secrets Manager** - O*NET API credentials
+- **Secrets Manager** - O*NET API credentials (registration required)
 - **CloudWatch** - Monitoring & alerts
 
 ## 🔧 Local Development & Testing
@@ -238,6 +242,10 @@ export AWS_REGION=us-east-2
 
 # Deploy SAM template
 sam build && sam deploy
+
+# IMPORTANT: Register for O*NET API credentials
+# https://services.onetcenter.org/developer/signup
+# Update credentials in AWS Secrets Manager after deployment
 
 # Run frontend locally
 cd frontend && npm run dev

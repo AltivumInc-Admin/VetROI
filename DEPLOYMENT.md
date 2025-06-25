@@ -35,8 +35,13 @@ When prompted during `sam deploy --guided`:
 The application requires O*NET API credentials to function. After deployment:
 
 1. **Get O*NET Credentials** (if you don't have them):
-   - Visit https://www.onetcenter.org/developers/
-   - Click "Get Started" and register for free
+   - Visit https://services.onetcenter.org/developer/signup
+   - Fill out the registration form:
+     - Organization information
+     - Technical contact details
+     - Project description (e.g., "VetROI - Veteran career matching platform")
+     - Accept Terms of Service and Data License
+   - Check your email for credentials (ensure updates@services.onetcenter.org is allowed)
    - You'll receive a username and password
 
 2. **Update the Secret in AWS**:
