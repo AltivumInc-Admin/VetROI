@@ -69,7 +69,7 @@ Resources:
   DD214UploadBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub 'vetroi-dd214-uploads-${AWS::AccountId}'
+      BucketName: !Sub '${AWS::StackName}-dd214-uploads-${AWS::AccountId}'
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -246,7 +246,7 @@ Resources:
   ONetCacheBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub 'vetroi-onet-cache-${AWS::AccountId}'
+      BucketName: !Sub '${AWS::StackName}-onet-cache-${AWS::AccountId}'
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
@@ -264,19 +264,19 @@ Resources:
   RecommendLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /aws/lambda/VetROI_Recommend
+      LogGroupName: !Sub '/aws/lambda/${RecommendFunction}'
       RetentionInDays: 30
 
   DD214ParserLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /aws/lambda/VetROI_DD214_Parser
+      LogGroupName: !Sub '/aws/lambda/${DD214ParserFunction}'
       RetentionInDays: 30
 
   ONetRefreshLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: /aws/lambda/VetROI_ONET_Refresh
+      LogGroupName: !Sub '/aws/lambda/${ONetRefreshFunction}'
       RetentionInDays: 30
 
   # Macie Handler Function
