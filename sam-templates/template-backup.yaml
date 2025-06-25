@@ -1,0 +1,622 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: VetROI™ - AWS Lambda Hackathon Application by Altivum Inc.
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: python3.12
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        POWERTOOLS_SERVICE_NAME: VetROI
+        POWERTOOLS_METRICS_NAMESPACE: VetROI
+        LOG_LEVEL: INFO
+    Tracing: Active
+    Layers:
+      - !Ref SharedLibrariesLayer
+
+Parameters:
+  BedrockModelId:
+    Type: String
+    Default: anthropic.claude-3-sonnet-20240229
+    Description: Bedrock model ID for recommendations
+  ONetApiUrl:
+    Type: String
+    Default: https://services.onetcenter.org/ws
+    Description: O*NET Web Services base URL
+
+Resources:
+  # Shared Lambda Layer
+  SharedLibrariesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub '${AWS::StackName}-SharedLibs'
+      Description: Common dependencies for VetROI™ Lambda functions
+      ContentUri: ../lambda/shared/
+      CompatibleRuntimes:
+        - python3.12
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: python3.12
+
+  # DynamoDB Table
+  SessionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-Sessions'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: session_id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: N
+      KeySchema:
+        - AttributeName: session_id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # S3 Bucket for DD-214 uploads
+  DD214UploadBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-dd214-uploads-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: aws:kms
+              KMSMasterKeyID: alias/aws/s3
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: DeleteOldFiles
+            Status: Enabled
+            ExpirationInDays: 90
+      Tags:
+        - Key: Application
+          Value: VetROI
+      # NOTE: NotificationConfiguration moved to separate resource to avoid circular dependency
+
+  # Secrets Manager for O*NET credentials
+  ONetApiSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub '${AWS::StackName}/ONet/ApiCredentials'
+      Description: O*NET Web Services API credentials
+      SecretString: |
+        {
+          "username": "REPLACE_WITH_USERNAME",
+          "password": "REPLACE_WITH_PASSWORD"
+        }
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # API Gateway
+  VetROIApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub '${AWS::StackName}-API'
+      StageName: prod
+      Cors:
+        AllowMethods: "'GET,POST,PUT,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
+      TracingEnabled: true
+      Auth:
+        ApiKeyRequired: false
+      Models:
+        VeteranRequest:
+          type: object
+          required:
+            - branch
+            - code
+            - homeState
+            - relocate
+            - education
+          properties:
+            branch:
+              type: string
+              enum: [army, navy, marine_corps, air_force, space_force, coast_guard]
+            code:
+              type: string
+            homeState:
+              type: string
+            relocate:
+              type: boolean
+            relocateState:
+              type: string
+            education:
+              type: string
+              enum: [high_school, associate, bachelor, master, doctorate]
+
+  # Lambda Functions
+  RecommendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-Recommend'
+      CodeUri: ../lambda/recommend/
+      Handler: src.handler.lambda_handler
+      MemorySize: 1024
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          ONET_API_URL: !Ref ONetApiUrl
+          ONET_SECRET_NAME: !Ref ONetApiSecret
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/${BedrockModelId}'
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref ONetApiSecret
+            - Effect: Allow
+              Action:
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+              Resource: '*'
+      Events:
+        RecommendApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref VetROIApi
+            Path: /recommend
+            Method: POST
+
+  DD214ParserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-DD214-Parser'
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.handler.lambda_handler
+      MemorySize: 2048
+      Timeout: 60
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+          DD214_BUCKET: !Ref DD214UploadBucket
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref DD214UploadBucket
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - textract:AnalyzeDocument
+                - comprehend:DetectEntities
+                - comprehend:DetectKeyPhrases
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - events:PutEvents
+              Resource: !Sub 'arn:aws:events:${AWS::Region}:${AWS::AccountId}:event-bus/default'
+            - Effect: Allow
+              Action:
+                - states:StartExecution
+              Resource: !Ref DD214ProcessingStateMachine
+
+  ONetRefreshFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-ONET-Refresh'
+      CodeUri: ../lambda/onet_refresh/
+      Handler: src.handler.lambda_handler
+      MemorySize: 1024
+      Timeout: 900
+      Environment:
+        Variables:
+          ONET_API_URL: !Ref ONetApiUrl
+          ONET_SECRET_NAME: !Ref ONetApiSecret
+          CACHE_BUCKET: !Ref ONetCacheBucket
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref ONetCacheBucket
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref ONetApiSecret
+
+
+  # O*NET Cache Bucket
+  ONetCacheBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${AWS::StackName}-onet-cache-${AWS::AccountId}'
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # CloudWatch Log Groups
+  RecommendLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-Recommend'
+      RetentionInDays: 30
+
+  DD214ParserLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-DD214-Parser'
+      RetentionInDays: 30
+
+  ONetRefreshLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/${AWS::StackName}-ONET-Refresh'
+      RetentionInDays: 30
+
+  # Macie Handler Function
+  MacieHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-Macie-Handler'
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.macie_handler.lambda_handler
+      MemorySize: 1024
+      Timeout: 300
+      Environment:
+        Variables:
+          DD214_BUCKET: !Ref DD214UploadBucket
+          TABLE_NAME: !Ref SessionsTable
+          FINDINGS_BUCKET: !Sub '${DD214UploadBucket}-macie-findings'
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - macie2:*
+              Resource: '*'
+        - S3CrudPolicy:
+            BucketName: !Ref DD214UploadBucket
+        - S3CrudPolicy:
+            BucketName: !Sub '${DD214UploadBucket}-macie-findings'
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+
+  # DD214 Upload Trigger Function
+  DD214UploadTriggerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-DD214-UploadTrigger'
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.upload_trigger.lambda_handler
+      MemorySize: 512
+      Timeout: 30
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
+          TABLE_NAME: !Ref SessionsTable
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - states:StartExecution
+              Resource: !Ref DD214ProcessingStateMachine
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SessionsTable
+        - S3ReadPolicy:
+            BucketName: !Ref DD214UploadBucket
+
+  # Lambda permission for S3 to invoke upload trigger
+  DD214UploadTriggerS3Permission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt DD214UploadTriggerFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: s3.amazonaws.com
+      SourceAccount: !Ref AWS::AccountId
+      SourceArn: !Sub 'arn:aws:s3:::vetroi-dd214-uploads-${AWS::AccountId}'
+
+  # DD214 API Functions
+  DD214PresignedUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-DD214-PresignedUrl'
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.presigned_handler.lambda_handler
+      MemorySize: 512
+      Timeout: 10
+      Environment:
+        Variables:
+          DD214_BUCKET: !Ref DD214UploadBucket
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref DD214UploadBucket
+      Events:
+        PresignedUrlApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref VetROIApi
+            Path: /dd214/presigned-url
+            Method: POST
+
+  DD214StatusFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-DD214-Status'
+      CodeUri: ../lambda/dd214_parser/
+      Handler: src.status_handler.lambda_handler
+      MemorySize: 512
+      Timeout: 10
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref SessionsTable
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref SessionsTable
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - states:DescribeExecution
+              Resource: !Sub '${DD214ProcessingStateMachine}:*'
+      Events:
+        StatusApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref VetROIApi
+            Path: /dd214/status/{documentId}
+            Method: GET
+
+  # Step Function for DD214 Processing
+  DD214ProcessingStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Name: !Sub '${AWS::StackName}-DD214-Processing'
+      Type: STANDARD
+      DefinitionUri: statemachine/dd214_processing.asl.json
+      DefinitionSubstitutions:
+        DD214ProcessorFunction: !GetAtt DD214ParserFunction.Arn
+        ProfileTableName: !Ref SessionsTable
+        NotificationTopicArn: !Ref DD214NotificationTopic
+        DD214BucketName: !Ref DD214UploadBucket
+        MacieHandlerFunction: !GetAtt MacieHandlerFunction.Arn
+      Tracing:
+        Enabled: true
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref DD214ParserFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref MacieHandlerFunction
+        - DynamoDBWritePolicy:
+            TableName: !Ref SessionsTable
+        - S3FullAccessPolicy:
+            BucketName: !Ref DD214UploadBucket
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - textract:*
+                - comprehend:*
+                - bedrock:InvokeModel
+                - sns:Publish
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+              Resource: '*'
+
+  # Sentra Conversation Table
+  SentraConversationTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub '${AWS::StackName}-Sentra-Conversations'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: conversationId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: conversationId
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+      Tags:
+        - Key: Application
+          Value: VetROI
+
+  # Sentra AI Career Counselor Function
+  SentraConversationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-Sentra-Conversation'
+      CodeUri: ../lambda/sentra/
+      Handler: src.conversation_handler.lambda_handler
+      MemorySize: 2048
+      Timeout: 30
+      Runtime: python3.12
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: anthropic.claude-3-5-sonnet-20241022-v2:0
+          CONVERSATION_TABLE: !Ref SentraConversationTable
+          SESSION_TABLE: !Ref SessionsTable
+          DD214_BUCKET: !Ref DD214UploadBucket
+          DATA_BUCKET: altroi-data
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref SentraConversationTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref SessionsTable
+        - S3ReadPolicy:
+            BucketName: !Ref DD214UploadBucket
+        - S3ReadPolicy:
+            BucketName: altroi-data
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: !Sub 'arn:aws:bedrock:${AWS::Region}::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0'
+      Events:
+        ConversationApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref VetROIApi
+            Path: /sentra/conversation
+            Method: POST
+
+  # SNS Topic for DD214 notifications
+  DD214NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${AWS::StackName}-DD214-Notifications'
+      DisplayName: DD214 Processing Notifications
+
+  # Step Function for nightly O*NET refresh
+  ONetRefreshStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Name: !Sub '${AWS::StackName}-ONetRefresh'
+      Type: STANDARD
+      DefinitionUri: statemachine/onet_refresh.asl.json
+      DefinitionSubstitutions:
+        ONetRefreshFunctionArn: !GetAtt ONetRefreshFunction.Arn
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ONetRefreshFunction
+      Events:
+        NightlySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 2 * * ? *)  # 2 AM UTC daily
+
+  # S3 Bucket Notification - Separate resource to avoid circular dependency
+  DD214BucketNotification:
+    Type: AWS::CloudFormation::CustomResource
+    DependsOn:
+      - DD214UploadTriggerFunction
+      - DD214UploadTriggerS3Permission
+      - DD214UploadBucket
+      - S3NotificationLambda
+    Properties:
+      ServiceToken: !GetAtt S3NotificationLambda.Arn
+      BucketName: !Ref DD214UploadBucket
+      LambdaArn: !GetAtt DD214UploadTriggerFunction.Arn
+      Prefix: uploads/
+
+  # Lambda to handle S3 notification configuration
+  S3NotificationLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub '${AWS::StackName}-S3NotificationHelper'
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt S3NotificationLambdaRole.Arn
+      Timeout: 60
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import cfnresponse
+          
+          s3 = boto3.client('s3')
+          
+          def handler(event, context):
+              try:
+                  bucket = event['ResourceProperties']['BucketName']
+                  lambda_arn = event['ResourceProperties']['LambdaArn']
+                  prefix = event['ResourceProperties'].get('Prefix', '')
+                  
+                  if event['RequestType'] == 'Delete':
+                      # Remove notification configuration
+                      s3.put_bucket_notification_configuration(
+                          Bucket=bucket,
+                          NotificationConfiguration={}
+                      )
+                  else:
+                      # Create/Update notification configuration
+                      config = {
+                          'LambdaFunctionConfigurations': [{
+                              'LambdaFunctionArn': lambda_arn,
+                              'Events': ['s3:ObjectCreated:*']
+                          }]
+                      }
+                      
+                      if prefix:
+                          config['LambdaFunctionConfigurations'][0]['Filter'] = {
+                              'Key': {
+                                  'FilterRules': [{
+                                      'Name': 'prefix',
+                                      'Value': prefix
+                                  }]
+                              }
+                          }
+                      
+                      s3.put_bucket_notification_configuration(
+                          Bucket=bucket,
+                          NotificationConfiguration=config
+                      )
+                  
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+              except Exception as e:
+                  print(f"Error: {str(e)}")
+                  cfnresponse.send(event, context, cfnresponse.FAILED, {'Error': str(e)})
+
+  S3NotificationLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3NotificationPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetBucketNotification
+                  - s3:PutBucketNotification
+                  - s3:PutBucketNotificationConfiguration
+                Resource: !GetAtt DD214UploadBucket.Arn
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${VetROIApi}.execute-api.${AWS::Region}.amazonaws.com/prod'
+  SessionsTableName:
+    Description: DynamoDB table name
+    Value: !Ref SessionsTable
+  DD214BucketName:
+    Description: S3 bucket for DD-214 uploads
+    Value: !Ref DD214UploadBucket
