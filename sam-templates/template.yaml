@@ -32,7 +32,7 @@ Resources:
   SharedLibrariesLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: VetROI-SharedLibs
+      LayerName: !Sub '${AWS::StackName}-SharedLibs'
       Description: Common dependencies for VetROI™ Lambda functions
       ContentUri: ../lambda/shared/
       CompatibleRuntimes:
@@ -45,7 +45,7 @@ Resources:
   SessionsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: VetROI_Sessions
+      TableName: !Sub '${AWS::StackName}-Sessions'
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: session_id
@@ -94,7 +94,7 @@ Resources:
   ONetApiSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      Name: VetROI/ONet/ApiCredentials
+      Name: !Sub '${AWS::StackName}/ONet/ApiCredentials'
       Description: O*NET Web Services API credentials
       SecretString: |
         {
@@ -109,7 +109,7 @@ Resources:
   VetROIApi:
     Type: AWS::Serverless::Api
     Properties:
-      Name: VetROI-API
+      Name: !Sub '${AWS::StackName}-API'
       StageName: prod
       Cors:
         AllowMethods: "'GET,POST,PUT,OPTIONS'"
@@ -147,7 +147,7 @@ Resources:
   RecommendFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_Recommend
+      FunctionName: !Sub '${AWS::StackName}-Recommend'
       CodeUri: ../lambda/recommend/
       Handler: src.handler.lambda_handler
       MemorySize: 1024
@@ -186,7 +186,7 @@ Resources:
   DD214ParserFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_DD214_Parser
+      FunctionName: !Sub '${AWS::StackName}-DD214-Parser'
       CodeUri: ../lambda/dd214_parser/
       Handler: src.handler.lambda_handler
       MemorySize: 2048
@@ -216,12 +216,12 @@ Resources:
             - Effect: Allow
               Action:
                 - states:StartExecution
-              Resource: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI-DD214-Processing'
+              Resource: !Ref DD214ProcessingStateMachine
 
   ONetRefreshFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_ONET_Refresh
+      FunctionName: !Sub '${AWS::StackName}-ONET-Refresh'
       CodeUri: ../lambda/onet_refresh/
       Handler: src.handler.lambda_handler
       MemorySize: 1024
@@ -260,30 +260,14 @@ Resources:
         - Key: Application
           Value: VetROI
 
-  # CloudWatch Log Groups
-  RecommendLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub '/aws/lambda/${RecommendFunction}'
-      RetentionInDays: 30
-
-  DD214ParserLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub '/aws/lambda/${DD214ParserFunction}'
-      RetentionInDays: 30
-
-  ONetRefreshLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub '/aws/lambda/${ONetRefreshFunction}'
-      RetentionInDays: 30
+  # CloudWatch Log Groups - Automatically created by Lambda
+  # Note: Logs are retained indefinitely by default. Buyers can add retention policies post-deployment.
 
   # Macie Handler Function
   MacieHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_Macie_Handler
+      FunctionName: !Sub '${AWS::StackName}-Macie-Handler'
       CodeUri: ../lambda/dd214_parser/
       Handler: src.macie_handler.lambda_handler
       MemorySize: 1024
@@ -311,14 +295,14 @@ Resources:
   DD214UploadTriggerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_DD214_UploadTrigger
+      FunctionName: !Sub '${AWS::StackName}-DD214-UploadTrigger'
       CodeUri: ../lambda/dd214_parser/
       Handler: src.upload_trigger.lambda_handler
       MemorySize: 512
       Timeout: 30
       Environment:
         Variables:
-          STATE_MACHINE_ARN: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI-DD214-Processing'
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
           TABLE_NAME: !Ref SessionsTable
       Policies:
         - Version: '2012-10-17'
@@ -326,7 +310,7 @@ Resources:
             - Effect: Allow
               Action:
                 - states:StartExecution
-              Resource: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI-DD214-Processing'
+              Resource: !Ref DD214ProcessingStateMachine
         - DynamoDBCrudPolicy:
             TableName: !Ref SessionsTable
         - S3ReadPolicy:
@@ -346,7 +330,7 @@ Resources:
   DD214PresignedUrlFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_DD214_PresignedUrl
+      FunctionName: !Sub '${AWS::StackName}-DD214-PresignedUrl'
       CodeUri: ../lambda/dd214_parser/
       Handler: src.presigned_handler.lambda_handler
       MemorySize: 512
@@ -368,7 +352,7 @@ Resources:
   DD214StatusFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_DD214_Status
+      FunctionName: !Sub '${AWS::StackName}-DD214-Status'
       CodeUri: ../lambda/dd214_parser/
       Handler: src.status_handler.lambda_handler
       MemorySize: 512
@@ -376,7 +360,7 @@ Resources:
       Environment:
         Variables:
           TABLE_NAME: !Ref SessionsTable
-          STATE_MACHINE_ARN: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:stateMachine:VetROI-DD214-Processing'
+          STATE_MACHINE_ARN: !Ref DD214ProcessingStateMachine
       Policies:
         - DynamoDBReadPolicy:
             TableName: !Ref SessionsTable
@@ -385,7 +369,7 @@ Resources:
             - Effect: Allow
               Action:
                 - states:DescribeExecution
-              Resource: !Sub 'arn:aws:states:${AWS::Region}:${AWS::AccountId}:execution:VetROI-DD214-Processing:*'
+              Resource: !Sub '${DD214ProcessingStateMachine}:*'
       Events:
         StatusApi:
           Type: Api
@@ -398,22 +382,22 @@ Resources:
   DD214ProcessingStateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
-      Name: VetROI-DD214-Processing
+      Name: !Sub '${AWS::StackName}-DD214-Processing'
       Type: STANDARD
       DefinitionUri: statemachine/dd214_processing.asl.json
       DefinitionSubstitutions:
-        DD214ProcessorFunction: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_DD214_Parser'
+        DD214ProcessorFunction: !GetAtt DD214ParserFunction.Arn
         ProfileTableName: !Ref SessionsTable
         NotificationTopicArn: !Ref DD214NotificationTopic
         DD214BucketName: !Ref DD214UploadBucket
-        MacieHandlerFunction: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:VetROI_Macie_Handler'
+        MacieHandlerFunction: !GetAtt MacieHandlerFunction.Arn
       Tracing:
         Enabled: true
       Policies:
         - LambdaInvokePolicy:
-            FunctionName: VetROI_DD214_Parser
+            FunctionName: !Ref DD214ParserFunction
         - LambdaInvokePolicy:
-            FunctionName: VetROI_Macie_Handler
+            FunctionName: !Ref MacieHandlerFunction
         - DynamoDBWritePolicy:
             TableName: !Ref SessionsTable
         - S3FullAccessPolicy:
@@ -434,7 +418,7 @@ Resources:
   SentraConversationTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: VetROI_Sentra_Conversations
+      TableName: !Sub '${AWS::StackName}-Sentra-Conversations'
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: conversationId
@@ -453,7 +437,7 @@ Resources:
   SentraConversationFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: VetROI_Sentra_Conversation
+      FunctionName: !Sub '${AWS::StackName}-Sentra-Conversation'
       CodeUri: ../lambda/sentra/
       Handler: src.conversation_handler.lambda_handler
       MemorySize: 2048
@@ -493,14 +477,14 @@ Resources:
   DD214NotificationTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: VetROI-DD214-Notifications
+      TopicName: !Sub '${AWS::StackName}-DD214-Notifications'
       DisplayName: DD214 Processing Notifications
 
   # Step Function for nightly O*NET refresh
   ONetRefreshStateMachine:
     Type: AWS::Serverless::StateMachine
     Properties:
-      Name: VetROI-ONetRefresh
+      Name: !Sub '${AWS::StackName}-ONetRefresh'
       Type: STANDARD
       DefinitionUri: statemachine/onet_refresh.asl.json
       DefinitionSubstitutions:
@@ -521,6 +505,7 @@ Resources:
       - DD214UploadTriggerFunction
       - DD214UploadTriggerS3Permission
       - DD214UploadBucket
+      - S3NotificationLambda
     Properties:
       ServiceToken: !GetAtt S3NotificationLambda.Arn
       BucketName: !Ref DD214UploadBucket
