@@ -63,7 +63,6 @@ export const VideoIntro: React.FC<VideoIntroProps> = ({ onComplete }) => {
               <span className="title-main">VetROI</span>
               <span className="title-tm">™</span>
             </h1>
-            <p className="video-subtitle">A deep dive into your career</p>
           </motion.div>
         </motion.div>
       )}
