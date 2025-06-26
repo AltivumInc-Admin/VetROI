@@ -4,6 +4,7 @@ import ReactFlow, {
   Edge,
   addEdge,
   Background,
+  BackgroundVariant,
   Controls,
   MiniMap,
   useNodesState,
@@ -17,25 +18,101 @@ import ReactFlow, {
   getOutgoers,
   getIncomers,
   getConnectedEdges,
+  MarkerType,
+  EdgeTypes,
+  getBezierPath,
+  EdgeProps,
+  BaseEdge,
+  EdgeLabelRenderer,
+  getSmoothStepPath,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import '../styles/CareerMapCanvas.css';
 
-// Custom node component
+// Custom node component with enhanced styling
 const CareerNode = ({ data, selected }: any) => {
+  const [hover, setHover] = React.useState(false);
+  
   return (
-    <div className={`career-node ${selected ? 'selected' : ''}`}>
-      <Handle type="target" position={Position.Left} />
-      <div className="node-content">
-        {data.label || 'New Node'}
+    <div 
+      className={`career-node ${selected ? 'selected' : ''} ${hover ? 'hover' : ''}`}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <Handle 
+        type="target" 
+        position={Position.Left}
+        className="career-handle career-handle-target"
+      />
+      <div className="node-gradient-border">
+        <div className="node-inner">
+          <div className="node-icon">🎯</div>
+          <div className="node-content">
+            <div className="node-title">{data.label || 'New Node'}</div>
+            {data.subtitle && <div className="node-subtitle">{data.subtitle}</div>}
+          </div>
+          {data.progress && (
+            <div className="node-progress">
+              <div className="progress-bar" style={{ width: `${data.progress}%` }} />
+            </div>
+          )}
+        </div>
       </div>
-      <Handle type="source" position={Position.Right} />
+      <Handle 
+        type="source" 
+        position={Position.Right}
+        className="career-handle career-handle-source"
+      />
     </div>
+  );
+};
+
+// Custom edge with animated gradient
+const AnimatedEdge = ({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style = {},
+  markerEnd,
+}: EdgeProps) => {
+  const [edgePath, labelX, labelY] = getSmoothStepPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <>
+      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <EdgeLabelRenderer>
+        <div
+          style={{
+            position: 'absolute',
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            pointerEvents: 'all',
+          }}
+          className="nodrag nopan edge-label-wrapper"
+        >
+          <button className="edge-button">+</button>
+        </div>
+      </EdgeLabelRenderer>
+    </>
   );
 };
 
 const nodeTypes: NodeTypes = {
   careerNode: CareerNode,
+};
+
+const edgeTypes: EdgeTypes = {
+  animated: AnimatedEdge,
 };
 
 const initialNodes: Node[] = [];
@@ -79,7 +156,16 @@ const CareerMapCanvasInner = () => {
   }, [nodes, edges]);
 
   const onConnect = useCallback(
-    (params: Connection) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
+    (params: Connection) => setEdges((eds) => addEdge({
+      ...params,
+      type: 'animated',
+      animated: true,
+      style: { stroke: '#00d4ff', strokeWidth: 2 },
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: '#00d4ff',
+      },
+    }, eds)),
     [setEdges]
   );
 
@@ -142,7 +228,11 @@ const CareerMapCanvasInner = () => {
         id: `node-${nodeIdCounter}`,
         type: 'careerNode',
         position,
-        data: { label: `Node ${nodeIdCounter}` },
+        data: { 
+          label: `Node ${nodeIdCounter}`,
+          subtitle: 'Click to edit',
+          progress: 0,
+        },
       };
 
       setNodes((nds) => nds.concat(newNode));
@@ -230,14 +320,21 @@ const CareerMapCanvasInner = () => {
         onPaneClick={onPaneClick}
         onNodesDelete={onNodesDelete}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         fitView
+        proOptions={{ hideAttribution: true }}
         deleteKeyCode={isMobile ? [] : ['Delete', 'Backspace']}
         panOnScroll={!isMobile}
         zoomOnScroll={!isMobile}
         zoomOnPinch={true}
         zoomOnDoubleClick={false}
       >
-        <Background color="#e0e0e0" gap={20} size={1} />
+        <Background 
+          variant={BackgroundVariant.Dots} 
+          gap={30} 
+          size={2}
+          color="rgba(0, 212, 255, 0.03)"
+        />
         <Controls />
         <MiniMap 
           nodeColor={() => '#00d4ff'}
