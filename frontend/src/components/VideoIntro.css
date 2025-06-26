@@ -35,6 +35,9 @@
   transform: translate(-50%, -50%);
   text-align: center;
   z-index: 10;
+  width: 100%;
+  padding: 0 2rem;
+  box-sizing: border-box;
 }
 
 .video-title {
@@ -55,6 +58,9 @@
   letter-spacing: 3px;
   text-transform: uppercase;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .title-main {
@@ -74,7 +80,6 @@
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .video-overlay {
-    width: 90%;
     padding: 0 1rem;
   }
   
@@ -89,10 +94,12 @@
   }
   
   .video-tagline {
-    font-size: 0.75rem;
-    letter-spacing: 0.5px;
+    font-size: 0.7rem;
+    letter-spacing: 0;
     margin-top: 1rem;
     line-height: 1.4;
+    white-space: normal;
+    padding: 0 0.5rem;
   }
   
   .wl-logo {
@@ -108,19 +115,22 @@
 /* Extra small mobile */
 @media (max-width: 480px) {
   .video-title {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
+    letter-spacing: -2px;
   }
   
   .title-tm {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    margin-left: 0.1rem;
   }
   
   .video-tagline {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
+    letter-spacing: 0;
+    padding: 0 0.25rem;
   }
   
   .video-overlay {
-    padding: 0 1rem;
-    width: calc(100% - 2rem);
+    padding: 0 0.5rem;
   }
 }
