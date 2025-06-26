@@ -6,9 +6,9 @@ interface DataPanelProps {
   data: any
   isOpen: boolean
   onToggle: () => void
-  mode?: 'api' | 's3' | 'careermap'
+  mode?: 'onet' | 'careermap'
   selectedSOCs?: string[]
-  onModeChange?: (mode: 'api' | 's3' | 'careermap') => void
+  onModeChange?: (mode: 'onet' | 'careermap') => void
 }
 
 interface SOCData {
@@ -19,12 +19,13 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   data, 
   isOpen, 
   onToggle, 
-  mode = 'api',
+  mode = 'onet',
   selectedSOCs = [],
   onModeChange
 }) => {
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
   const [socData, setSocData] = useState<SOCData>({})
+  const [onetView, setOnetView] = useState<'mos' | 'soc'>('mos')
   const panelRef = useRef<HTMLDivElement>(null)
   const tabsRef = useRef<HTMLDivElement>(null)
   
@@ -68,17 +69,15 @@ export const DataPanel: React.FC<DataPanelProps> = ({
 
   const getTabText = () => {
     switch(mode) {
-      case 's3': return 'SOC DATA'
       case 'careermap': return 'CAREER MAP'
-      default: return 'MOS DATA'
+      default: return 'O*NET DATA'
     }
   }
 
   const getHeaderText = () => {
     switch(mode) {
-      case 's3': return 'Detailed Career Analysis'
       case 'careermap': return 'Visual Career Planning'
-      default: return 'Live O*NET API Response'
+      default: return onetView === 'mos' ? 'MOS Data - O*NET API Response' : 'SOC Data - Career Details'
     }
   }
 
@@ -88,24 +87,14 @@ export const DataPanel: React.FC<DataPanelProps> = ({
         {onModeChange ? (
           <div className="data-panel-mode-tabs">
             <div 
-              className={`data-panel-tab ${mode === 'api' ? 'active' : ''}`}
+              className={`data-panel-tab ${mode === 'onet' ? 'active' : ''}`}
               onClick={() => {
-                onModeChange('api')
+                onModeChange('onet')
                 if (!isOpen) onToggle()
               }}
             >
-              <span className="tab-text">MOS DATA</span>
-              <span className="tab-icon">{isOpen && mode === 'api' ? '›' : '‹'}</span>
-            </div>
-            <div 
-              className={`data-panel-tab ${mode === 's3' ? 'active' : ''}`}
-              onClick={() => {
-                onModeChange('s3')
-                if (!isOpen) onToggle()
-              }}
-            >
-              <span className="tab-text">SOC DATA</span>
-              <span className="tab-icon">{isOpen && mode === 's3' ? '›' : '‹'}</span>
+              <span className="tab-text">O*NET DATA</span>
+              <span className="tab-icon">{isOpen && mode === 'onet' ? '›' : '‹'}</span>
             </div>
             <div 
               className={`data-panel-tab ${mode === 'careermap' ? 'active' : ''}`}
@@ -135,35 +124,65 @@ export const DataPanel: React.FC<DataPanelProps> = ({
         <div className="data-panel-content">
           {mode === 'careermap' ? (
             <CareerMapCanvas />
-          ) : mode === 's3' && selectedSOCs.length > 0 ? (
-            <div className="soc-list">
-              {selectedSOCs.map(soc => (
-                <div key={soc} className="soc-item">
-                  <div 
-                    className="soc-header"
-                    onClick={() => toggleSOC(soc)}
-                  >
-                    <span className="soc-toggle">
-                      {expandedSOCs.includes(soc) ? '▼' : '▶'}
-                    </span>
-                    <span className="soc-code">{soc}</span>
-                    {socData[soc]?.title && (
-                      <span className="soc-title">{socData[soc].title}</span>
-                    )}
-                  </div>
-                  {expandedSOCs.includes(soc) && (
-                    <div className="soc-data">
-                      <pre className="json-display">
-                        {socData[soc] 
-                          ? JSON.stringify(socData[soc], null, 2)
-                          : 'Loading S3 data...'
-                        }
-                      </pre>
+          ) : mode === 'onet' ? (
+            <>
+              <div className="onet-view-toggle">
+                <button 
+                  className={`view-toggle-btn ${onetView === 'mos' ? 'active' : ''}`}
+                  onClick={() => setOnetView('mos')}
+                >
+                  MOS Data
+                </button>
+                <button 
+                  className={`view-toggle-btn ${onetView === 'soc' ? 'active' : ''}`}
+                  onClick={() => setOnetView('soc')}
+                  disabled={selectedSOCs.length === 0}
+                >
+                  SOC Data {selectedSOCs.length > 0 && `(${selectedSOCs.length})`}
+                </button>
+              </div>
+              {onetView === 'mos' ? (
+                <pre className="json-display">
+                  {JSON.stringify(data, null, 2)}
+                </pre>
+              ) : (
+                <div className="soc-list">
+                  {selectedSOCs.length > 0 ? (
+                    selectedSOCs.map(soc => (
+                      <div key={soc} className="soc-item">
+                        <div 
+                          className="soc-header"
+                          onClick={() => toggleSOC(soc)}
+                        >
+                          <span className="soc-toggle">
+                            {expandedSOCs.includes(soc) ? '▼' : '▶'}
+                          </span>
+                          <span className="soc-code">{soc}</span>
+                          {socData[soc]?.title && (
+                            <span className="soc-title">{socData[soc].title}</span>
+                          )}
+                        </div>
+                        {expandedSOCs.includes(soc) && (
+                          <div className="soc-data">
+                            <pre className="json-display">
+                              {socData[soc] 
+                                ? JSON.stringify(socData[soc], null, 2)
+                                : 'Loading S3 data...'
+                              }
+                            </pre>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="empty-soc-message">
+                      <p>No careers selected yet.</p>
+                      <p>Click on career matches to view detailed SOC data.</p>
                     </div>
                   )}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           ) : (
             <pre className="json-display">
               {JSON.stringify(data, null, 2)}

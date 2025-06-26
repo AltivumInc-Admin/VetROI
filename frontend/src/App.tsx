@@ -34,7 +34,7 @@ function App() {
   const [apiResponse, setApiResponse] = useState<any>(null)
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
   const [selectedSOCs, setSelectedSOCs] = useState<string[]>([])
-  const [dataPanelMode, setDataPanelMode] = useState<'api' | 's3' | 'careermap'>('api')
+  const [dataPanelMode, setDataPanelMode] = useState<'onet' | 'careermap'>('onet')
   const [showDD214Upload, setShowDD214Upload] = useState(false)
   const [dd214Processed, setDD214Processed] = useState(false)
   const [dd214DocumentId, setDD214DocumentId] = useState<string>()
@@ -131,7 +131,7 @@ function App() {
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
-    setDataPanelMode('api')
+    setDataPanelMode('onet')
   }
 
   const handleSOCClick = (code: string) => {
@@ -150,7 +150,7 @@ function App() {
       console.log('Detailed Analysis requested:', event.detail)
       setShowCareerMatches(false)
       setShowDetailedAnalysis(true)
-      setDataPanelMode('s3')
+      setDataPanelMode('onet')
       // Don't auto-open the panel - let user toggle it manually
     }
 
@@ -198,7 +198,7 @@ function App() {
   const handleBackToCareerSelection = () => {
     setShowDetailedAnalysis(false)
     setShowCareerMatches(true)
-    setDataPanelMode('api')
+    setDataPanelMode('onet')
   }
   
   const handleMeetSentra = () => {
@@ -259,7 +259,7 @@ function App() {
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
-    setDataPanelMode('api')
+    setDataPanelMode('onet')
     setCareerDataCache({})
   }
   
