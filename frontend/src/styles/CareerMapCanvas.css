@@ -69,20 +69,36 @@
   box-shadow: 0 1px 4px rgba(255, 107, 107, 0.2);
 }
 
+.edit-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  cursor: default;
+}
+
 .node-edit-input {
-  background: white;
+  background: rgba(10, 14, 26, 0.95);
   border: 2px solid #00d4ff;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 14px;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 16px;
   font-family: 'Inter', system-ui, sans-serif;
   outline: none;
-  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.2);
-  min-width: 100px;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4), 0 0 40px rgba(0, 212, 255, 0.2);
+  min-width: 200px;
   text-align: center;
+  color: #00d4ff;
+}
+
+.node-edit-input::placeholder {
+  color: rgba(0, 212, 255, 0.4);
 }
 
 .node-edit-input:focus {
-  border-color: #0099cc;
-  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1), 0 2px 8px rgba(0, 212, 255, 0.3);
+  border-color: #00ffff;
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.6), 0 0 60px rgba(0, 212, 255, 0.3);
 }

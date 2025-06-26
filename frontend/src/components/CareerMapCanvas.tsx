@@ -215,10 +215,26 @@ export const CareerMapCanvas: React.FC = () => {
       ctx.stroke();
 
       // Draw text
-      ctx.fillStyle = '#1a1a1a';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(node.text || 'New Node', node.x, node.y);
+      
+      // Show different states
+      if (node.id === state.editingNodeId) {
+        // Show editing state
+        ctx.fillStyle = '#00d4ff';
+        ctx.font = 'italic 14px Inter, system-ui, sans-serif';
+        ctx.fillText('editing...', node.x, node.y);
+      } else if (!node.text) {
+        // Show placeholder for empty nodes
+        ctx.fillStyle = '#999';
+        ctx.font = 'italic 14px Inter, system-ui, sans-serif';
+        ctx.fillText('Double-click to edit', node.x, node.y);
+      } else {
+        // Show normal text
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = '14px Inter, system-ui, sans-serif';
+        ctx.fillText(node.text, node.x, node.y);
+      }
     });
 
     ctx.restore();
@@ -290,6 +306,14 @@ export const CareerMapCanvas: React.FC = () => {
     return null;
   };
 
+  // Focus input when editing starts
+  useEffect(() => {
+    if (state.editingNodeId && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [state.editingNodeId]);
+
   // Handle keyboard events
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -343,14 +367,16 @@ export const CareerMapCanvas: React.FC = () => {
           id: `node-${Date.now()}`,
           x: worldX,
           y: worldY,
-          text: 'New Node'
+          text: ''
         };
 
         setState(prev => ({
           ...prev,
           nodes: [...prev.nodes, newNode],
           selectedNodeId: newNode.id,
-          connectingFromNodeId: null
+          connectingFromNodeId: null,
+          editingNodeId: newNode.id,
+          editingText: ''
         }));
       } else if (clickedNode) {
         // Handle node click
@@ -450,7 +476,7 @@ export const CareerMapCanvas: React.FC = () => {
         ...prev,
         nodes: prev.nodes.map(node =>
           node.id === prev.editingNodeId
-            ? { ...node, text: prev.editingText || 'New Node' }
+            ? { ...node, text: prev.editingText }
             : node
         ),
         editingNodeId: null,
@@ -493,10 +519,10 @@ export const CareerMapCanvas: React.FC = () => {
 
     return {
       position: 'fixed',
-      left: x,
-      top: y,
+      left: `${x}px`,
+      top: `${y}px`,
       transform: 'translate(-50%, -50%)',
-      zIndex: 1000
+      zIndex: 1001
     };
   };
 
@@ -521,24 +547,28 @@ export const CareerMapCanvas: React.FC = () => {
         onWheel={handleWheel}
       />
       {state.editingNodeId && (
-        <input
-          ref={inputRef}
-          type="text"
-          className="node-edit-input"
-          value={state.editingText}
-          onChange={e => setState(prev => ({ ...prev, editingText: e.target.value }))}
-          onKeyDown={e => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              handleEditingSubmit();
-            } else if (e.key === 'Escape') {
-              setState(prev => ({ ...prev, editingNodeId: null, editingText: '' }));
-            }
-          }}
-          onBlur={handleEditingSubmit}
-          style={getEditingInputStyle()}
-          autoFocus
-        />
+        <>
+          <div className="edit-overlay" onClick={handleEditingSubmit} />
+          <input
+            ref={inputRef}
+            type="text"
+            className="node-edit-input"
+            value={state.editingText}
+            onChange={e => setState(prev => ({ ...prev, editingText: e.target.value }))}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleEditingSubmit();
+              } else if (e.key === 'Escape') {
+                setState(prev => ({ ...prev, editingNodeId: null, editingText: '' }));
+              }
+            }}
+            onBlur={handleEditingSubmit}
+            style={getEditingInputStyle()}
+            placeholder="Enter node text..."
+            autoFocus
+          />
+        </>
       )}
     </div>
   );
