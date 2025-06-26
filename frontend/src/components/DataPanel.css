@@ -31,7 +31,7 @@
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
   white-space: nowrap;
-  min-width: 60px;
+  min-width: 80px;
   text-align: center;
 }
 
@@ -243,8 +243,10 @@
     transform: translateY(-50%) translateX(90vw);
   }
   
-  .data-panel-mode-tabs {
-    display: none; /* Hide mode tabs on mobile to save space */
+  .mode-tab {
+    font-size: 0.65rem;
+    padding: 0.4rem 0.5rem;
+    min-width: 65px;
   }
   
   .json-display {

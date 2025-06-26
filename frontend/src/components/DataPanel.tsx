@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { CareerMapCanvas } from './CareerMapCanvas'
 import './DataPanel.css'
 
@@ -25,6 +25,8 @@ export const DataPanel: React.FC<DataPanelProps> = ({
 }) => {
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
   const [socData, setSocData] = useState<SOCData>({})
+  const panelRef = useRef<HTMLDivElement>(null)
+  const tabsRef = useRef<HTMLDivElement>(null)
   
   // Listen for S3 data updates
   React.useEffect(() => {
@@ -37,6 +39,24 @@ export const DataPanel: React.FC<DataPanelProps> = ({
       window.removeEventListener('s3DataFetched', handleS3Data as EventListener)
     }
   }, [])
+
+  // Click outside to close panel
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && 
+          panelRef.current && 
+          !panelRef.current.contains(event.target as Node) &&
+          tabsRef.current &&
+          !tabsRef.current.contains(event.target as Node)) {
+        onToggle()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen, onToggle])
 
   const toggleSOC = (soc: string) => {
     setExpandedSOCs(prev => 
@@ -64,26 +84,26 @@ export const DataPanel: React.FC<DataPanelProps> = ({
 
   return (
     <>
-      <div className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
-        {isOpen && onModeChange && (
+      <div ref={tabsRef} className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
+        {onModeChange && (
           <div className="data-panel-mode-tabs">
             <button 
               className={`mode-tab ${mode === 'api' ? 'active' : ''}`}
               onClick={() => onModeChange('api')}
             >
-              O*NET
+              MOS DATA
             </button>
             <button 
               className={`mode-tab ${mode === 's3' ? 'active' : ''}`}
               onClick={() => onModeChange('s3')}
             >
-              Careers
+              SOC DATA
             </button>
             <button 
               className={`mode-tab ${mode === 'careermap' ? 'active' : ''}`}
               onClick={() => onModeChange('careermap')}
             >
-              Map
+              Career Map
             </button>
           </div>
         )}
@@ -93,7 +113,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({
         </div>
       </div>
       
-      <div className={`data-panel ${isOpen ? 'open' : ''}`}>
+      <div ref={panelRef} className={`data-panel ${isOpen ? 'open' : ''}`}>
         <div className="data-panel-header">
           <h3>{getHeaderText()}</h3>
           <button className="close-btn" onClick={onToggle}>×</button>
