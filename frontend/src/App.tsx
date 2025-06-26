@@ -45,6 +45,25 @@ function App() {
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
 
+  // Restore from sessionStorage on mount
+  useEffect(() => {
+    const savedProfile = sessionStorage.getItem('veteranProfile')
+    const savedMatches = sessionStorage.getItem('careerMatches')
+    const savedDD214Processed = sessionStorage.getItem('dd214Processed')
+    const savedDD214DocumentId = sessionStorage.getItem('dd214DocumentId')
+    
+    if (savedProfile && savedMatches) {
+      setProfileData(JSON.parse(savedProfile))
+      setApiResponse(JSON.parse(savedMatches))
+      setShowCareerMatches(true)
+      
+      if (savedDD214Processed === 'true' && savedDD214DocumentId) {
+        setDD214Processed(true)
+        setDD214DocumentId(savedDD214DocumentId)
+      }
+    }
+  }, [])
+
   const handleSubmit = async (formData: VeteranRequest) => {
     setLoading(true)
     setError(null)
@@ -54,6 +73,11 @@ function App() {
       // Make API call immediately to get MOS translation
       const response = await getRecommendations(formData)
       setApiResponse(response)
+      
+      // Save to sessionStorage
+      sessionStorage.setItem('veteranProfile', JSON.stringify(formData))
+      sessionStorage.setItem('careerMatches', JSON.stringify(response))
+      
       setNeedsConfirmation(true)
       setIsDataPanelOpen(false) // Start with panel closed
     } catch (err) {
@@ -243,6 +267,11 @@ function App() {
     console.log('DD214 processed:', documentId)
     setDD214Processed(true)
     setDD214DocumentId(documentId)
+    
+    // Save DD214 state to sessionStorage
+    sessionStorage.setItem('dd214Processed', 'true')
+    sessionStorage.setItem('dd214DocumentId', documentId)
+    
     setShowDD214Upload(false)
     setShowCareerMatches(true)
     
