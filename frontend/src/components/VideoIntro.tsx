@@ -54,6 +54,15 @@ export const VideoIntro: React.FC<VideoIntroProps> = ({ onComplete }) => {
           </video>
           
           <motion.div 
+            className="video-logo"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
+            <img src="/WL.png" alt="Logo" className="wl-logo" />
+          </motion.div>
+          
+          <motion.div 
             className="video-overlay"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -63,6 +72,9 @@ export const VideoIntro: React.FC<VideoIntroProps> = ({ onComplete }) => {
               <span className="title-main">VetROI</span>
               <span className="title-tm">™</span>
             </h1>
+            <p className="video-tagline">
+              AI-Powered | Data-Driven | Veteran-Focused
+            </p>
           </motion.div>
         </motion.div>
       )}
