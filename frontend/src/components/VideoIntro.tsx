@@ -59,7 +59,7 @@ export const VideoIntro: React.FC<VideoIntroProps> = ({ onComplete }) => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            <img src="/WL.png" alt="Logo" className="wl-logo" />
+            <img src="/WP2.png" alt="Logo" className="wl-logo" />
           </motion.div>
           
           <motion.div 
