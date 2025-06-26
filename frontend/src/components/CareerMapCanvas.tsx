@@ -186,16 +186,40 @@ export const CareerMapCanvas: React.FC = () => {
     ctx.scale(state.scale, state.scale);
 
     state.nodes.forEach(node => {
-      // Node background
-      ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = node.selected || node.id === state.selectedNodeId ? '#ff6b6b' : '#00d4ff';
-      ctx.lineWidth = node.selected || node.id === state.selectedNodeId ? 3 : 2;
+      const isEditing = node.id === state.editingNodeId;
+      const isSelected = node.selected || node.id === state.selectedNodeId;
       
-      const padding = 10;
+      // Determine text to display
+      let displayText = '';
+      if (isEditing) {
+        displayText = state.editingText || '';
+      } else if (!node.text) {
+        displayText = 'Double-click to edit';
+      } else {
+        displayText = node.text;
+      }
+      
+      // Measure text for dynamic width
+      const padding = 20;
       ctx.font = '14px Inter, system-ui, sans-serif';
-      const textMetrics = ctx.measureText(node.text || 'New Node');
-      const width = textMetrics.width + padding * 2;
-      const height = 30;
+      const textMetrics = ctx.measureText(displayText);
+      const minWidth = 120; // Minimum width to ensure "Double-click to edit" fits
+      const maxWidth = 300; // Maximum width to prevent nodes from being too wide
+      let width = Math.max(minWidth, Math.min(maxWidth, textMetrics.width + padding * 2));
+      const height = 40;
+      
+      // Add glow effect for editing nodes
+      if (isEditing) {
+        ctx.shadowColor = '#00d4ff';
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+      }
+      
+      // Node background
+      ctx.fillStyle = isEditing ? '#f0f9ff' : '#ffffff';
+      ctx.strokeStyle = isEditing ? '#00ffff' : (isSelected ? '#ff6b6b' : '#00d4ff');
+      ctx.lineWidth = isEditing ? 3 : (isSelected ? 3 : 2);
 
       // Draw rounded rectangle
       const radius = 5;
@@ -214,31 +238,50 @@ export const CareerMapCanvas: React.FC = () => {
       ctx.fill();
       ctx.stroke();
 
+      // Clear shadow after drawing the node background
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      
       // Draw text
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
-      // Show different states
-      if (node.id === state.editingNodeId) {
-        // Show editing state
-        ctx.fillStyle = '#00d4ff';
-        ctx.font = 'italic 14px Inter, system-ui, sans-serif';
-        ctx.fillText('editing...', node.x, node.y);
+      // Set text style based on state
+      if (isEditing) {
+        // Show current editing text
+        ctx.fillStyle = '#0088cc';
+        ctx.font = '14px Inter, system-ui, sans-serif';
       } else if (!node.text) {
         // Show placeholder for empty nodes
         ctx.fillStyle = '#999';
         ctx.font = 'italic 14px Inter, system-ui, sans-serif';
-        ctx.fillText('Double-click to edit', node.x, node.y);
       } else {
         // Show normal text
         ctx.fillStyle = '#1a1a1a';
         ctx.font = '14px Inter, system-ui, sans-serif';
-        ctx.fillText(node.text, node.x, node.y);
       }
+      
+      // Truncate text if it's too long
+      let finalText = displayText;
+      const maxTextWidth = width - padding * 2;
+      if (textMetrics.width > maxTextWidth) {
+        // Truncate text with ellipsis
+        const ellipsis = '...';
+        const ellipsisWidth = ctx.measureText(ellipsis).width;
+        let truncatedText = displayText;
+        
+        while (ctx.measureText(truncatedText).width + ellipsisWidth > maxTextWidth && truncatedText.length > 0) {
+          truncatedText = truncatedText.slice(0, -1);
+        }
+        
+        finalText = truncatedText + ellipsis;
+      }
+      
+      ctx.fillText(finalText, node.x, node.y);
     });
 
     ctx.restore();
-  }, [state.nodes, state.offset, state.scale, state.selectedNodeId]);
+  }, [state.nodes, state.offset, state.scale, state.selectedNodeId, state.editingNodeId, state.editingText]);
 
   // Main render loop
   const render = useCallback(() => {
@@ -287,11 +330,34 @@ export const CareerMapCanvas: React.FC = () => {
     const worldX = (x - state.offset.x) / state.scale;
     const worldY = (y - state.offset.y) / state.scale;
     
+    // Create a temporary canvas context to measure text
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    
+    ctx.font = '14px Inter, system-ui, sans-serif';
+    
     // Check nodes in reverse order (top to bottom)
     for (let i = state.nodes.length - 1; i >= 0; i--) {
       const node = state.nodes[i];
-      const nodeWidth = 100; // Approximate width
-      const nodeHeight = 30;
+      
+      // Calculate actual node dimensions
+      const isEditing = node.id === state.editingNodeId;
+      let displayText = '';
+      if (isEditing) {
+        displayText = state.editingText || '';
+      } else if (!node.text) {
+        displayText = 'Double-click to edit';
+      } else {
+        displayText = node.text;
+      }
+      
+      const padding = 20;
+      const textMetrics = ctx.measureText(displayText);
+      const minWidth = 120;
+      const maxWidth = 300;
+      const nodeWidth = Math.max(minWidth, Math.min(maxWidth, textMetrics.width + padding * 2));
+      const nodeHeight = 40;
       
       if (
         worldX >= node.x - nodeWidth / 2 &&
@@ -517,11 +583,19 @@ export const CareerMapCanvas: React.FC = () => {
     const x = node.x * state.scale + state.offset.x + rect.left;
     const y = node.y * state.scale + state.offset.y + rect.top;
 
+    // Calculate dynamic width based on text content
+    const minWidth = 120;
+    const maxWidth = 300;
+    const padding = 40; // Account for input padding
+    const charWidth = 8; // Approximate character width
+    const textWidth = Math.max(minWidth, Math.min(maxWidth, (state.editingText.length || 20) * charWidth + padding));
+
     return {
       position: 'fixed',
       left: `${x}px`,
       top: `${y}px`,
       transform: 'translate(-50%, -50%)',
+      width: `${textWidth}px`,
       zIndex: 1001
     };
   };
