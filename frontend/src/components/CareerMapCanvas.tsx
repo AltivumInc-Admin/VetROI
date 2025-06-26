@@ -20,7 +20,6 @@ import ReactFlow, {
   getConnectedEdges,
   MarkerType,
   EdgeTypes,
-  getBezierPath,
   EdgeProps,
   BaseEdge,
   EdgeLabelRenderer,
@@ -69,7 +68,6 @@ const CareerNode = ({ data, selected }: any) => {
 
 // Custom edge with animated gradient
 const AnimatedEdge = ({
-  id,
   sourceX,
   sourceY,
   targetX,
