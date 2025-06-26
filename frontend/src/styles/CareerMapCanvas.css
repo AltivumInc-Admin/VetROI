@@ -44,3 +44,45 @@
 .career-map-canvas.create-mode {
   cursor: crosshair;
 }
+
+.clear-button {
+  background: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.clear-button:hover {
+  background: #ff5252;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.clear-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(255, 107, 107, 0.2);
+}
+
+.node-edit-input {
+  background: white;
+  border: 2px solid #00d4ff;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0, 212, 255, 0.2);
+  min-width: 100px;
+  text-align: center;
+}
+
+.node-edit-input:focus {
+  border-color: #0099cc;
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1), 0 2px 8px rgba(0, 212, 255, 0.3);
+}
