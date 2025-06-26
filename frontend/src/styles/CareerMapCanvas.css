@@ -182,3 +182,65 @@
 .react-flow__attribution {
   display: none;
 }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .career-map-panel {
+    font-size: 11px;
+    padding: 8px 12px;
+    margin: 5px;
+  }
+
+  .toolbar-hint {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+
+  .toolbar-buttons {
+    gap: 6px;
+  }
+
+  .export-button,
+  .clear-button {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  /* Larger controls for mobile */
+  .react-flow__controls {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .react-flow__controls-button {
+    width: 44px;
+    height: 44px;
+    margin: 2px;
+  }
+
+  /* Larger nodes for easier tapping */
+  .career-node {
+    min-width: 120px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  /* Bigger handles for touch */
+  .react-flow__handle {
+    width: 16px;
+    height: 16px;
+  }
+
+  .react-flow__handle-left {
+    left: -10px;
+  }
+
+  .react-flow__handle-right {
+    right: -10px;
+  }
+
+  /* Hide minimap on mobile to save space */
+  .react-flow__minimap {
+    display: none;
+  }
+}

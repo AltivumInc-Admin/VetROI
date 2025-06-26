@@ -265,12 +265,13 @@
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .data-panel {
-    width: 90vw;
-    right: -90vw;
+    width: 85vw;
+    right: -85vw;
+    max-width: 400px;
   }
   
   .data-panel-tabs-container.open {
-    transform: translateY(-50%) translateX(90vw);
+    transform: translateY(-50%) translateX(min(85vw, 400px));
   }
   
   .data-panel-mode-tabs {
@@ -286,6 +287,18 @@
   }
   
   .json-display {
+    font-size: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  .onet-view-toggle {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+  }
+  
+  .view-toggle-btn {
     font-size: 0.7rem;
+    padding: 0.5rem;
   }
 }

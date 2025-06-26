@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import ParticleBackground from './ParticleBackground';
@@ -10,6 +10,16 @@ const WelcomePage: React.FC = () => {
   const navigate = useNavigate();
   const { checkAuth } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleContinueWithoutAuth = () => {
     navigate('/app');
@@ -26,7 +36,7 @@ const WelcomePage: React.FC = () => {
 
   return (
     <div className="welcome-container">
-      <ParticleBackground />
+      {!isMobile && <ParticleBackground />}
       
       <motion.div 
         className="welcome-content"

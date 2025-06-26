@@ -676,11 +676,17 @@ input[type="checkbox"] {
   }
   
   .chat-input-container {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+  
+  .chat-input {
+    font-size: 14px;
   }
   
   .send-button {
-    width: 100%;
+    width: auto;
+    padding: 0.75rem 1rem;
   }
   
   .navigation-buttons {

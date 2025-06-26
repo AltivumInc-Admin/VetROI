@@ -46,6 +46,17 @@ const CareerMapCanvasInner = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [nodeIdCounter, setNodeIdCounter] = React.useState(1);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  // Detect mobile device
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Load from localStorage on mount
   React.useEffect(() => {
@@ -72,8 +83,9 @@ const CareerMapCanvasInner = () => {
     [setEdges]
   );
 
-  const onNodeDoubleClick = useCallback(
-    (_event: React.MouseEvent, node: Node) => {
+  // Mobile: Single tap to edit, Desktop: Double click
+  const handleNodeEdit = useCallback(
+    (node: Node) => {
       const newLabel = prompt('Enter node text:', node.data.label || '');
       if (newLabel !== null) {
         setNodes((nds) =>
@@ -95,10 +107,30 @@ const CareerMapCanvasInner = () => {
     [setNodes]
   );
 
+  const onNodeDoubleClick = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      if (!isMobile) {
+        handleNodeEdit(node);
+      }
+    },
+    [handleNodeEdit, isMobile]
+  );
+
+  const onNodeClick = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      if (isMobile) {
+        // On mobile, single tap edits the node
+        handleNodeEdit(node);
+      }
+    },
+    [handleNodeEdit, isMobile]
+  );
+
   const onPaneClick = useCallback(
     (event: React.MouseEvent) => {
-      // Only create node if shift is held
-      if (!event.shiftKey) return;
+      // Mobile: Always create node on tap
+      // Desktop: Only create if shift is held
+      if (!isMobile && !event.shiftKey) return;
 
       const reactFlowBounds = reactFlowWrapper.current!.getBoundingClientRect();
       const position = {
@@ -115,8 +147,25 @@ const CareerMapCanvasInner = () => {
 
       setNodes((nds) => nds.concat(newNode));
       setNodeIdCounter(nodeIdCounter + 1);
+
+      // On mobile, immediately edit the new node
+      if (isMobile) {
+        setTimeout(() => {
+          const newLabel = prompt('Enter node text:', `Node ${nodeIdCounter}`);
+          if (newLabel !== null) {
+            setNodes((nds) =>
+              nds.map((n) => {
+                if (n.id === newNode.id) {
+                  return { ...n, data: { ...n.data, label: newLabel } };
+                }
+                return n;
+              })
+            );
+          }
+        }, 100);
+      }
     },
-    [nodeIdCounter, setNodes]
+    [nodeIdCounter, setNodes, isMobile]
   );
 
   const onNodesDelete = useCallback(
@@ -177,11 +226,16 @@ const CareerMapCanvasInner = () => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeDoubleClick={onNodeDoubleClick}
+        onNodeClick={onNodeClick}
         onPaneClick={onPaneClick}
         onNodesDelete={onNodesDelete}
         nodeTypes={nodeTypes}
         fitView
-        deleteKeyCode={['Delete', 'Backspace']}
+        deleteKeyCode={isMobile ? [] : ['Delete', 'Backspace']}
+        panOnScroll={!isMobile}
+        zoomOnScroll={!isMobile}
+        zoomOnPinch={true}
+        zoomOnDoubleClick={false}
       >
         <Background color="#e0e0e0" gap={20} size={1} />
         <Controls />
@@ -194,14 +248,17 @@ const CareerMapCanvasInner = () => {
         />
         <Panel position="top-left" className="career-map-panel">
           <div className="toolbar-hint">
-            Shift+Click to create node • Double-click to edit • Delete key to remove • Drag to connect
+            {isMobile 
+              ? 'Tap to create • Tap node to edit • Drag to connect'
+              : 'Shift+Click to create • Double-click to edit • Delete key to remove • Drag to connect'
+            }
           </div>
           <div className="toolbar-buttons">
             <button className="export-button" onClick={handleExport}>
-              Export JSON
+              Export
             </button>
             <button className="clear-button" onClick={handleClear}>
-              Clear Canvas
+              Clear
             </button>
           </div>
         </Panel>
