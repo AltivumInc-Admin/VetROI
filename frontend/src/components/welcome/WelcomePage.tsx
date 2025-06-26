@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import ParticleBackground from './ParticleBackground';
 import { AuthModal } from '../AuthModal';
+import { VideoIntro } from '../VideoIntro';
 import { motion } from 'framer-motion';
 import './WelcomePage.css';
 
@@ -11,6 +12,10 @@ const WelcomePage: React.FC = () => {
   const { checkAuth } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  // Check if we should skip intro (for development or if already seen)
+  const skipIntro = localStorage.getItem('skipVideoIntro') === 'true' || 
+                    new URLSearchParams(window.location.search).get('skipIntro') === 'true';
+  const [showVideoIntro, setShowVideoIntro] = useState(!skipIntro);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -35,8 +40,18 @@ const WelcomePage: React.FC = () => {
   };
 
   return (
-    <div className="welcome-container">
-      {!isMobile && <ParticleBackground />}
+    <>
+      {showVideoIntro && (
+        <VideoIntro onComplete={() => setShowVideoIntro(false)} />
+      )}
+      
+      <motion.div 
+        className="welcome-container"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showVideoIntro ? 0 : 1 }}
+        transition={{ duration: 1 }}
+      >
+        {!isMobile && <ParticleBackground />}
       
       <motion.div 
         className="welcome-content"
@@ -160,7 +175,8 @@ const WelcomePage: React.FC = () => {
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleAuthSuccess}
       />
-    </div>
+      </motion.div>
+    </>
   );
 };
 
