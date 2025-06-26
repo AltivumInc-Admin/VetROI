@@ -73,7 +73,7 @@ const CareerMapCanvasInner = () => {
   );
 
   const onNodeDoubleClick = useCallback(
-    (event: React.MouseEvent, node: Node) => {
+    (_event: React.MouseEvent, node: Node) => {
       const newLabel = prompt('Enter node text:', node.data.label || '');
       if (newLabel !== null) {
         setNodes((nds) =>
@@ -186,7 +186,7 @@ const CareerMapCanvasInner = () => {
         <Background color="#e0e0e0" gap={20} size={1} />
         <Controls />
         <MiniMap 
-          nodeColor={(node) => '#00d4ff'}
+          nodeColor={() => '#00d4ff'}
           style={{
             backgroundColor: 'rgba(10, 14, 26, 0.8)',
             border: '1px solid rgba(0, 212, 255, 0.3)',
