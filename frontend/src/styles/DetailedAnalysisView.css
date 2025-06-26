@@ -222,6 +222,8 @@
 @media (max-width: 768px) {
   .detailed-analysis-container {
     padding: 0.75rem;
+    max-width: 100%;
+    margin: 0;
   }
   
   .analysis-header {

@@ -41,6 +41,14 @@
   box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
 }
 
+@media (max-width: 768px) {
+  .veteran-title .highlight {
+    font-size: 1.25rem;
+    padding: 0.5rem 1rem;
+    letter-spacing: 0.5px;
+  }
+}
+
 .thank-you-message {
   font-size: 1.125rem;
   line-height: 1.8;
@@ -228,6 +236,8 @@
 @media (max-width: 768px) {
   .career-match-container {
     padding: 1rem;
+    max-width: 100%;
+    margin: 0;
   }
   
   .tab-button {

@@ -663,7 +663,9 @@ input[type="checkbox"] {
   .career-match-container,
   .detailed-analysis-container,
   .sentra-chat-container,
-  .confirmation-container {
+  .confirmation-container,
+  .dd214-upload-container,
+  .engagement-modal {
     max-width: 100%;
     padding: 1rem;
   }

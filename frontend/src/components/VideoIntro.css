@@ -118,4 +118,9 @@
   .video-tagline {
     font-size: 0.65rem;
   }
+  
+  .video-overlay {
+    padding: 0 1rem;
+    width: calc(100% - 2rem);
+  }
 }

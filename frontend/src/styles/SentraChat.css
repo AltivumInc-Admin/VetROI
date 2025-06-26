@@ -14,6 +14,14 @@
   min-height: auto;
 }
 
+@media (max-width: 768px) {
+  .sentra-chat-container {
+    max-width: 100%;
+    margin: 0.5rem;
+    width: calc(100% - 1rem);
+  }
+}
+
 /* Header */
 .sentra-header {
   display: flex;
@@ -518,7 +526,6 @@
   .sentra-chat-container {
     height: calc(100vh - 120px);
     max-height: 600px;
-    margin: 0.5rem;
     border-radius: 12px;
     min-height: 400px;
   }
