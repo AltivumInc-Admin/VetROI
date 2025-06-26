@@ -7,59 +7,40 @@
   transform: translateY(-50%);
   z-index: 1000;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: flex-end;
 }
 
 .data-panel-mode-tabs {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin-right: -1px;
+  gap: 1rem;
 }
 
-.mode-tab {
-  background: rgba(0, 212, 255, 0.05);
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  border-radius: 4px 0 0 4px;
-  border-right: none;
-  color: rgba(0, 212, 255, 0.6);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
-  white-space: nowrap;
-  min-width: 80px;
-  text-align: center;
-}
-
-.mode-tab:hover {
-  background: rgba(0, 212, 255, 0.1);
-  color: #00d4ff;
-}
-
-.mode-tab.active {
+/* Tab active state styles */
+.data-panel-tab.active {
   background: rgba(0, 212, 255, 0.15);
-  color: #00d4ff;
   border-color: #00d4ff;
 }
 
+.data-panel-tab.active .tab-text {
+  color: #00d4ff;
+}
+
 .data-panel-tab {
-  position: fixed;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative;
   background: rgba(0, 212, 255, 0.1);
   border: 1px solid rgba(0, 212, 255, 0.3);
   border-right: none;
   border-radius: 8px 0 0 8px;
   padding: 1rem 0.5rem;
   cursor: pointer;
-  z-index: 1000;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
+}
+
+/* Pulse animation for first tab only */
+.data-panel-mode-tabs .data-panel-tab:first-child {
   animation: tabPulse 2s ease-in-out 3;
 }
 
@@ -77,7 +58,7 @@
   padding-left: 1rem;
 }
 
-.data-panel-tabs-container.open .data-panel-tab {
+.data-panel-tabs-container.open {
   transform: translateY(-50%) translateX(40vw);
 }
 
@@ -239,14 +220,20 @@
     right: -90vw;
   }
   
-  .data-panel-tabs-container.open .data-panel-tab {
+  .data-panel-tabs-container.open {
     transform: translateY(-50%) translateX(90vw);
   }
   
-  .mode-tab {
+  .data-panel-mode-tabs {
+    gap: 0.5rem;
+  }
+  
+  .data-panel-tab {
+    padding: 0.75rem 0.25rem;
+  }
+  
+  .tab-text {
     font-size: 0.65rem;
-    padding: 0.4rem 0.5rem;
-    min-width: 65px;
   }
   
   .json-display {

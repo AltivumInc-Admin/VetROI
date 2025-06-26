@@ -68,9 +68,9 @@ export const DataPanel: React.FC<DataPanelProps> = ({
 
   const getTabText = () => {
     switch(mode) {
-      case 's3': return 'CAREER DATA'
+      case 's3': return 'SOC DATA'
       case 'careermap': return 'CAREER MAP'
-      default: return 'O*NET DATA'
+      default: return 'MOS DATA'
     }
   }
 
@@ -85,32 +85,45 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   return (
     <>
       <div ref={tabsRef} className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
-        {onModeChange && (
+        {onModeChange ? (
           <div className="data-panel-mode-tabs">
-            <button 
-              className={`mode-tab ${mode === 'api' ? 'active' : ''}`}
-              onClick={() => onModeChange('api')}
+            <div 
+              className={`data-panel-tab ${mode === 'api' ? 'active' : ''}`}
+              onClick={() => {
+                onModeChange('api')
+                if (!isOpen) onToggle()
+              }}
             >
-              MOS DATA
-            </button>
-            <button 
-              className={`mode-tab ${mode === 's3' ? 'active' : ''}`}
-              onClick={() => onModeChange('s3')}
+              <span className="tab-text">MOS DATA</span>
+              <span className="tab-icon">{isOpen && mode === 'api' ? '›' : '‹'}</span>
+            </div>
+            <div 
+              className={`data-panel-tab ${mode === 's3' ? 'active' : ''}`}
+              onClick={() => {
+                onModeChange('s3')
+                if (!isOpen) onToggle()
+              }}
             >
-              SOC DATA
-            </button>
-            <button 
-              className={`mode-tab ${mode === 'careermap' ? 'active' : ''}`}
-              onClick={() => onModeChange('careermap')}
+              <span className="tab-text">SOC DATA</span>
+              <span className="tab-icon">{isOpen && mode === 's3' ? '›' : '‹'}</span>
+            </div>
+            <div 
+              className={`data-panel-tab ${mode === 'careermap' ? 'active' : ''}`}
+              onClick={() => {
+                onModeChange('careermap')
+                if (!isOpen) onToggle()
+              }}
             >
-              Career Map
-            </button>
+              <span className="tab-text">CAREER MAP</span>
+              <span className="tab-icon">{isOpen && mode === 'careermap' ? '›' : '‹'}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="data-panel-tab" onClick={onToggle}>
+            <span className="tab-text">{getTabText()}</span>
+            <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
           </div>
         )}
-        <div className="data-panel-tab" onClick={onToggle}>
-          <span className="tab-text">{getTabText()}</span>
-          <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
-        </div>
       </div>
       
       <div ref={panelRef} className={`data-panel ${isOpen ? 'open' : ''}`}>
