@@ -113,6 +113,14 @@ MISSION: Transform this veteran's DD214 into a comprehensive career intelligence
 REDACTED DD214 DOCUMENT:
 {redacted_text}
 
+CRITICAL RANK CLARIFICATION (USE THIS TO INTERPRET RANKS CORRECTLY):
+Army Enlisted Ranks: E-5 = Sergeant (SGT), E-6 = Staff Sergeant (SSG), E-7 = Sergeant First Class (SFC), E-8 = Master Sergeant (MSG) or First Sergeant (1SG), E-9 = Sergeant Major (SGM) or Command Sergeant Major (CSM)
+Marine Corps: E-5 = Sergeant (Sgt), E-6 = Staff Sergeant (SSgt), E-7 = Gunnery Sergeant (GySgt), E-8 = Master Sergeant (MSgt) or First Sergeant (1stSgt), E-9 = Master Gunnery Sergeant (MGySgt) or Sergeant Major (SgtMaj)
+Navy/Coast Guard: E-5 = Petty Officer Second Class (PO2), E-6 = Petty Officer First Class (PO1), E-7 = Chief Petty Officer (CPO), E-8 = Senior Chief Petty Officer (SCPO), E-9 = Master Chief Petty Officer (MCPO)
+Air Force/Space Force: E-5 = Staff Sergeant (SSgt), E-6 = Technical Sergeant (TSgt), E-7 = Master Sergeant (MSgt), E-8 = Senior Master Sergeant (SMSgt), E-9 = Chief Master Sergeant (CMSgt)
+
+NEVER confuse Army SSG (E-6) with SFC (E-7) or MSG (E-8). These represent vastly different leadership levels and years of experience.
+
 ANALYSIS REQUIREMENTS:
 
 1. FORENSIC DATA EXTRACTION

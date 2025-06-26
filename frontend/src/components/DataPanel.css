@@ -1,5 +1,51 @@
 /* Data Panel - Collapsible API Response Display */
 
+.data-panel-tabs-container {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.data-panel-mode-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-right: -1px;
+}
+
+.mode-tab {
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 4px 0 0 4px;
+  border-right: none;
+  color: rgba(0, 212, 255, 0.6);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  min-width: 60px;
+  text-align: center;
+}
+
+.mode-tab:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: #00d4ff;
+}
+
+.mode-tab.active {
+  background: rgba(0, 212, 255, 0.15);
+  color: #00d4ff;
+  border-color: #00d4ff;
+}
+
 .data-panel-tab {
   position: fixed;
   right: 0;
@@ -31,7 +77,7 @@
   padding-left: 1rem;
 }
 
-.data-panel-tab.open {
+.data-panel-tabs-container.open .data-panel-tab {
   transform: translateY(-50%) translateX(40vw);
 }
 
@@ -193,8 +239,12 @@
     right: -90vw;
   }
   
-  .data-panel-tab.open {
+  .data-panel-tabs-container.open .data-panel-tab {
     transform: translateY(-50%) translateX(90vw);
+  }
+  
+  .data-panel-mode-tabs {
+    display: none; /* Hide mode tabs on mobile to save space */
   }
   
   .json-display {

@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
+import { CareerMapCanvas } from './CareerMapCanvas'
 import './DataPanel.css'
 
 interface DataPanelProps {
   data: any
   isOpen: boolean
   onToggle: () => void
-  mode?: 'api' | 's3'
+  mode?: 'api' | 's3' | 'careermap'
   selectedSOCs?: string[]
+  onModeChange?: (mode: 'api' | 's3' | 'careermap') => void
 }
 
 interface SOCData {
@@ -18,7 +20,8 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   isOpen, 
   onToggle, 
   mode = 'api',
-  selectedSOCs = []
+  selectedSOCs = [],
+  onModeChange
 }) => {
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
   const [socData, setSocData] = useState<SOCData>({})
@@ -43,24 +46,63 @@ export const DataPanel: React.FC<DataPanelProps> = ({
     )
   }
 
-  const tabText = mode === 's3' ? 'CAREER DATA' : 'O*NET DATA'
-  const headerText = mode === 's3' ? 'Detailed Career Analysis' : 'Live O*NET API Response'
+  const getTabText = () => {
+    switch(mode) {
+      case 's3': return 'CAREER DATA'
+      case 'careermap': return 'CAREER MAP'
+      default: return 'O*NET DATA'
+    }
+  }
+
+  const getHeaderText = () => {
+    switch(mode) {
+      case 's3': return 'Detailed Career Analysis'
+      case 'careermap': return 'Visual Career Planning'
+      default: return 'Live O*NET API Response'
+    }
+  }
 
   return (
     <>
-      <div className={`data-panel-tab ${isOpen ? 'open' : ''}`} onClick={onToggle}>
-        <span className="tab-text">{tabText}</span>
-        <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
+      <div className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
+        {isOpen && onModeChange && (
+          <div className="data-panel-mode-tabs">
+            <button 
+              className={`mode-tab ${mode === 'api' ? 'active' : ''}`}
+              onClick={() => onModeChange('api')}
+            >
+              O*NET
+            </button>
+            <button 
+              className={`mode-tab ${mode === 's3' ? 'active' : ''}`}
+              onClick={() => onModeChange('s3')}
+            >
+              Careers
+            </button>
+            <button 
+              className={`mode-tab ${mode === 'careermap' ? 'active' : ''}`}
+              onClick={() => onModeChange('careermap')}
+            >
+              Map
+            </button>
+          </div>
+        )}
+        <div className="data-panel-tab" onClick={onToggle}>
+          <span className="tab-text">{getTabText()}</span>
+          <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
+        </div>
       </div>
       
       <div className={`data-panel ${isOpen ? 'open' : ''}`}>
         <div className="data-panel-header">
-          <h3>{headerText}</h3>
+          <h3>{getHeaderText()}</h3>
           <button className="close-btn" onClick={onToggle}>×</button>
         </div>
         
         <div className="data-panel-content">
-          {mode === 's3' && selectedSOCs.length > 0 ? (
+          {mode === 'careermap' ? (
+            <CareerMapCanvas />
+          ) : mode === 's3' && selectedSOCs.length > 0 ? (
             <div className="soc-list">
               {selectedSOCs.map(soc => (
                 <div key={soc} className="soc-item">

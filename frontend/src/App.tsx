@@ -34,7 +34,7 @@ function App() {
   const [apiResponse, setApiResponse] = useState<any>(null)
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
   const [selectedSOCs, setSelectedSOCs] = useState<string[]>([])
-  const [dataPanelMode, setDataPanelMode] = useState<'api' | 's3'>('api')
+  const [dataPanelMode, setDataPanelMode] = useState<'api' | 's3' | 'careermap'>('api')
   const [showDD214Upload, setShowDD214Upload] = useState(false)
   const [dd214Processed, setDD214Processed] = useState(false)
   const [dd214DocumentId, setDD214DocumentId] = useState<string>()
@@ -432,6 +432,7 @@ function App() {
           onToggle={() => setIsDataPanelOpen(!isDataPanelOpen)}
           mode={dataPanelMode}
           selectedSOCs={selectedSOCs}
+          onModeChange={setDataPanelMode}
         />
       )}
       
