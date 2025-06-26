@@ -1,29 +1,9 @@
-/* Career Map Canvas Styles - Enhanced */
+/* Career Map Canvas Styles - Professional */
 .career-map-flow-wrapper {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, 
-    #0a0e1a 0%, 
-    #0f1420 25%, 
-    #0a0e1a 50%, 
-    #0f1420 75%, 
-    #0a0e1a 100%);
+  background: #0a0e1a;
   position: relative;
-}
-
-/* Add subtle grid overlay */
-.career-map-flow-wrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    linear-gradient(rgba(0, 212, 255, 0.01) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 212, 255, 0.01) 1px, transparent 1px);
-  background-size: 50px 50px;
-  pointer-events: none;
 }
 
 /* Enhanced node styling */
@@ -31,7 +11,7 @@
   position: relative;
   cursor: grab;
   min-width: 220px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .career-node:active {
@@ -39,50 +19,37 @@
 }
 
 .career-node.hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
 }
 
 .node-gradient-border {
-  background: linear-gradient(135deg, #00d4ff 0%, #0099ff 50%, #00d4ff 100%);
-  padding: 2px;
-  border-radius: 16px;
-  box-shadow: 
-    0 4px 20px rgba(0, 212, 255, 0.25),
-    0 0 60px rgba(0, 212, 255, 0.1);
-  transition: all 0.3s ease;
-  animation: subtle-glow 3s ease-in-out infinite;
-}
-
-@keyframes subtle-glow {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 1; }
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 
 .career-node.hover .node-gradient-border {
-  box-shadow: 
-    0 8px 32px rgba(0, 212, 255, 0.4),
-    0 0 80px rgba(0, 212, 255, 0.2);
-  background: linear-gradient(135deg, #00ff88 0%, #00d4ff 50%, #00ff88 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: transparent;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .node-inner {
-  background: linear-gradient(135deg, 
-    rgba(13, 17, 33, 0.98) 0%,
-    rgba(20, 25, 40, 0.95) 50%,
-    rgba(13, 17, 33, 0.98) 100%);
-  border-radius: 14px;
-  padding: 20px;
+  background: rgba(20, 24, 38, 0.95);
+  border-radius: 11px;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  backdrop-filter: blur(10px);
+  gap: 8px;
 }
 
 .node-icon {
-  font-size: 28px;
+  font-size: 24px;
   text-align: center;
   margin-bottom: 4px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  opacity: 0.8;
 }
 
 .node-content {
@@ -91,106 +58,72 @@
 
 .node-title {
   color: #ffffff;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
   line-height: 1.4;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
 .node-subtitle {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   font-size: 12px;
-  margin-top: 4px;
-  font-style: italic;
+  margin-top: 2px;
 }
 
 .node-progress {
   width: 100%;
-  height: 6px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
-  margin-top: 12px;
-  position: relative;
+  margin-top: 8px;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, 
-    #00d4ff 0%, 
-    #00ff88 50%, 
-    #00d4ff 100%);
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
-  background-size: 200% 100%;
-  animation: shimmer 2s linear infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  background: rgba(255, 255, 255, 0.3);
+  transition: width 0.3s ease;
 }
 
 /* Selected state */
 .career-node.selected .node-gradient-border {
-  background: linear-gradient(135deg, #00ff88 0%, #00d4ff 33%, #ff00ff 66%, #00ff88 100%);
-  box-shadow: 
-    0 8px 40px rgba(0, 255, 136, 0.5),
-    0 0 100px rgba(0, 212, 255, 0.3);
-  animation: rainbow-shift 3s linear infinite;
-}
-
-@keyframes rainbow-shift {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
+  border-color: rgba(255, 255, 255, 0.3);
+  background: transparent;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 .career-node.selected .node-inner {
-  background: linear-gradient(135deg, 
-    rgba(0, 212, 255, 0.15) 0%,
-    rgba(0, 255, 136, 0.1) 50%,
-    rgba(255, 0, 255, 0.05) 100%);
+  background: rgba(25, 30, 45, 0.98);
 }
 
 /* React Flow handles */
 .career-handle {
-  width: 14px;
-  height: 14px;
-  border: 2px solid #0a0e1a;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  width: 12px;
+  height: 12px;
+  background: #2a2f3e;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
 }
 
 .career-handle-source {
-  background: linear-gradient(135deg, #00d4ff, #00ff88);
+  background: #2a2f3e;
 }
 
 .career-handle-target {
-  background: linear-gradient(135deg, #ff00ff, #00d4ff);
+  background: #2a2f3e;
 }
 
 .career-node:hover .career-handle {
-  width: 18px;
-  height: 18px;
-  box-shadow: 
-    0 0 20px rgba(0, 212, 255, 0.8),
-    0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.career-handle:hover {
-  transform: scale(1.3);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
 }
 
 /* React Flow controls */
 .react-flow__controls {
   background: rgba(13, 17, 33, 0.95);
-  backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 212, 255, 0.2);
-  border-radius: 16px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(0, 212, 255, 0.1);
-  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   bottom: 20px;
   right: 20px;
 }
@@ -198,35 +131,16 @@
 .react-flow__controls-button {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.6);
   transition: all 0.2s ease;
-  position: relative;
-  overflow: hidden;
   width: 36px;
   height: 36px;
   margin: 2px;
 }
 
-.react-flow__controls-button::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
-  transform: translate(-50%, -50%);
-  transition: all 0.3s;
-}
-
 .react-flow__controls-button:hover {
   color: #00d4ff;
   background: rgba(0, 212, 255, 0.1);
-}
-
-.react-flow__controls-button:hover::before {
-  width: 100px;
-  height: 100px;
 }
 
 .react-flow__controls-button svg {
@@ -235,20 +149,19 @@
 
 /* Custom edge styles */
 .react-flow__edge-path {
-  stroke: #00d4ff;
-  stroke-width: 3;
-  filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.5));
+  stroke: rgba(0, 212, 255, 0.4);
+  stroke-width: 2;
   stroke-linecap: round;
 }
 
 .react-flow__edge.animated path {
-  stroke-dasharray: 8 4;
+  stroke-dasharray: 5 5;
   animation: flow 1s linear infinite;
 }
 
 @keyframes flow {
   to {
-    stroke-dashoffset: -12;
+    stroke-dashoffset: -10;
   }
 }
 
@@ -258,198 +171,128 @@
 }
 
 .edge-button {
-  width: 24px;
-  height: 24px;
-  background: linear-gradient(135deg, 
-    rgba(13, 17, 33, 0.98) 0%,
-    rgba(20, 25, 40, 0.95) 100%);
-  border: 2px solid #00d4ff;
+  width: 20px;
+  height: 20px;
+  background: #1a1f2e;
+  border: 1px solid rgba(0, 212, 255, 0.4);
   border-radius: 50%;
-  color: #00d4ff;
+  color: rgba(0, 212, 255, 0.8);
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.4),
-    0 0 30px rgba(0, 212, 255, 0.3);
+  transition: all 0.2s ease;
 }
 
 .edge-button:hover {
-  background: linear-gradient(135deg, #00d4ff, #00ff88);
-  color: #0a0e1a;
-  transform: scale(1.3) rotate(90deg);
-  box-shadow: 
-    0 6px 24px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(0, 212, 255, 0.5);
+  background: rgba(0, 212, 255, 0.1);
+  border-color: #00d4ff;
+  color: #00d4ff;
+  transform: scale(1.1);
 }
 
 /* Panel styling */
 .career-map-panel {
   background: rgba(13, 17, 33, 0.95);
-  backdrop-filter: blur(20px);
   border: 1px solid rgba(0, 212, 255, 0.2);
-  border-radius: 16px;
-  padding: 16px 20px;
+  border-radius: 8px;
+  padding: 12px 16px;
   margin: 16px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(0, 212, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .toolbar-hint {
-  font-size: 13px;
-  color: rgba(0, 212, 255, 0.9);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
   font-family: 'Inter', system-ui, sans-serif;
-  margin-bottom: 12px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  font-weight: 500;
+  margin-bottom: 8px;
 }
 
 .toolbar-buttons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .export-button,
 .clear-button {
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 600;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   font-family: 'Inter', system-ui, sans-serif;
-  position: relative;
-  overflow: hidden;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.export-button {
-  background: linear-gradient(135deg, #00d4ff, #0099ff);
-  color: #0a0e1a;
-  box-shadow: 
-    0 4px 16px rgba(0, 212, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.export-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.3), 
-    transparent);
-  transition: left 0.5s;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .export-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 6px 24px rgba(0, 212, 255, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.export-button:hover::before {
-  left: 100%;
+  background: rgba(0, 212, 255, 0.1);
+  border-color: #00d4ff;
+  color: #00d4ff;
 }
 
 .clear-button {
-  background: linear-gradient(135deg, #ff6b6b, #ff5252);
-  color: white;
-  box-shadow: 
-    0 4px 16px rgba(255, 107, 107, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.clear-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.3), 
-    transparent);
-  transition: left 0.5s;
+  border-color: rgba(255, 107, 107, 0.3);
+  color: rgba(255, 107, 107, 0.8);
 }
 
 .clear-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 6px 24px rgba(255, 107, 107, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.clear-button:hover::before {
-  left: 100%;
+  background: rgba(255, 107, 107, 0.1);
+  border-color: #ff6b6b;
+  color: #ff6b6b;
 }
 
 /* MiniMap styling */
 .react-flow__minimap {
   background: rgba(10, 14, 26, 0.9) !important;
-  border: 1px solid rgba(0, 212, 255, 0.3) !important;
-  border-radius: 12px;
+  border: 1px solid rgba(0, 212, 255, 0.2) !important;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .react-flow__minimap-mask {
-  fill: rgba(0, 212, 255, 0.15);
-  stroke: #00d4ff;
-  stroke-width: 2;
+  fill: rgba(0, 212, 255, 0.1);
+  stroke: rgba(0, 212, 255, 0.4);
+  stroke-width: 1;
 }
 
 /* Background dots */
 .react-flow__background pattern circle {
-  fill: rgba(0, 212, 255, 0.1);
-  animation: pulse 4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.2; }
+  fill: rgba(0, 212, 255, 0.03);
 }
 
 /* Selection box */
 .react-flow__selection {
-  background: rgba(0, 212, 255, 0.1);
-  border: 2px dashed #00d4ff;
+  background: rgba(0, 212, 255, 0.05);
+  border: 1px dashed rgba(0, 212, 255, 0.4);
   border-radius: 4px;
 }
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
   .career-map-panel {
-    font-size: 12px;
-    padding: 12px 16px;
+    font-size: 11px;
+    padding: 10px 12px;
     margin: 8px;
   }
 
   .toolbar-hint {
     font-size: 11px;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .toolbar-buttons {
-    gap: 8px;
+    gap: 6px;
   }
 
   .export-button,
   .clear-button {
-    padding: 10px 16px;
-    font-size: 12px;
+    padding: 6px 10px;
+    font-size: 11px;
   }
 
   /* Larger controls for mobile */
@@ -459,9 +302,8 @@
   }
 
   .react-flow__controls-button {
-    width: 44px;
-    height: 44px;
-    margin: 2px;
+    width: 40px;
+    height: 40px;
   }
 
   /* Larger nodes for easier tapping */
@@ -470,25 +312,25 @@
   }
 
   .node-inner {
-    padding: 16px;
+    padding: 14px 16px;
   }
 
   .node-title {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   /* Bigger handles for touch */
   .career-handle {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 
   .career-handle-source {
-    right: -12px;
+    right: -10px;
   }
 
   .career-handle-target {
-    left: -12px;
+    left: -10px;
   }
 
   /* Hide minimap on mobile to save space */
