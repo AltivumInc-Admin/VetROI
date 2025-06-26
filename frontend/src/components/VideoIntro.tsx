@@ -49,7 +49,7 @@ export const VideoIntro: React.FC<VideoIntroProps> = ({ onComplete }) => {
             playsInline
             onEnded={handleVideoEnd}
           >
-            <source src="/DeepDive.mp4" type="video/mp4" />
+            <source src="https://altivum-media-assets.s3.amazonaws.com/vetroi/DeepDive.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
           
