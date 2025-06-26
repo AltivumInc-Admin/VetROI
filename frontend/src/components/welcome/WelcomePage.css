@@ -8,6 +8,9 @@
   overflow-x: hidden;
   overflow-y: auto;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Inter', sans-serif;
+  /* Optimize scrolling performance */
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
 }
 
 .welcome-content {

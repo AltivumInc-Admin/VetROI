@@ -3,10 +3,10 @@ import Particles from 'react-tsparticles';
 import { loadSlim } from "tsparticles-slim";
 import type { Engine } from "tsparticles-engine";
 
-const ParticleBackground: React.FC = () => {
-  const particlesInit = async (engine: Engine) => {
+const ParticleBackground: React.FC = React.memo(() => {
+  const particlesInit = React.useCallback(async (engine: Engine) => {
     await loadSlim(engine);
-  };
+  }, []);
 
   return (
     <div style={{ 
@@ -17,7 +17,10 @@ const ParticleBackground: React.FC = () => {
       height: '100vh', 
       pointerEvents: 'none',
       zIndex: 0,
-      overflow: 'hidden'
+      overflow: 'hidden',
+      transform: 'translateZ(0)', // Force GPU acceleration
+      backfaceVisibility: 'hidden', // Prevent flicker
+      perspective: 1000 // Enable 3D acceleration
     }}>
       <Particles
         id="tsparticles"
@@ -41,7 +44,7 @@ const ParticleBackground: React.FC = () => {
               enable: false,
               mode: "grab",
             },
-            resize: false,
+            resize: true,
             onDiv: {
               enable: false,
             },
@@ -113,6 +116,8 @@ const ParticleBackground: React.FC = () => {
       />
     </div>
   );
-};
+});
+
+ParticleBackground.displayName = 'ParticleBackground';
 
 export default ParticleBackground;
