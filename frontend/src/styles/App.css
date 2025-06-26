@@ -649,14 +649,45 @@ input[type="checkbox"] {
   color: #a78bfa;
 }
 
+/* Mobile utility classes */
+@media (max-width: 768px) {
+  /* Components that need full width on mobile */
+  .mobile-full-width {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Reduce desktop constraints on mobile */
+  .career-match-container,
+  .detailed-analysis-container,
+  .sentra-chat-container,
+  .confirmation-container {
+    max-width: 100%;
+    padding: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
   .app-header h1 {
     font-size: 2rem;
   }
   
+  /* Give mobile more breathing room */
+  .app-main {
+    padding: 1rem;
+  }
+  
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+  
   .veteran-form,
   .chat-messages {
     padding: 1rem;
+    border-radius: 0.5rem;
   }
   
   .career-header {
