@@ -18,9 +18,11 @@ import './CareerPlanner.css';
 import TooltipNodeDemo from './nodes/TooltipNode';
 import PlaceholderNodeDemo from './nodes/PlaceholderNode';
 import DatabaseSchemaDemo from './nodes/DatabaseSchemaNode';
+import AnnotationNodeDemo from './nodes/AnnotationNode';
 import './nodes/TooltipNode.css';
 import './nodes/PlaceholderNode.css';
 import './nodes/DatabaseSchemaNode.css';
+import './nodes/AnnotationNode.css';
  
 const initialNodes = [
   { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
@@ -45,6 +47,7 @@ const nodeTypes = {
   tooltipNode: TooltipNodeDemo,
   placeholderNode: PlaceholderNodeDemo,
   databaseNode: DatabaseSchemaDemo,
+  annotationNode: AnnotationNodeDemo,
 };
  
 // Add window interface for career communication
@@ -113,7 +116,7 @@ export default function CareerPlanner() {
   const addNode = (typeId: string) => {
     let nodeData: any = { label: `Node ${nodeCounter}` };
     
-    // Add specific data for database nodes
+    // Add specific data for different node types
     if (typeId === 'database') {
       nodeData = {
         label: 'Career Skills',
@@ -125,6 +128,12 @@ export default function CareerPlanner() {
           { name: 'years_exp', type: 'DECIMAL(3,1)' }
         ]
       };
+    } else if (typeId === 'annotation') {
+      nodeData = {
+        number: `${nodeCounter}.`,
+        content: 'Add your annotation here...\n- Use **bold** for emphasis\n- Use *italic* for notes\n- Start lines with - for lists',
+        variant: 'note'
+      };
     }
     
     const newNode = {
@@ -134,6 +143,7 @@ export default function CareerPlanner() {
       type: typeId === 'tooltip' ? 'tooltipNode' : 
             typeId === 'placeholder' ? 'placeholderNode' :
             typeId === 'database' ? 'databaseNode' :
+            typeId === 'annotation' ? 'annotationNode' :
             undefined
     };
     setNodes((nds) => [...nds, newNode]);
