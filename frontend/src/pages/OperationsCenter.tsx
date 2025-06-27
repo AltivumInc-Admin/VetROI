@@ -16,7 +16,7 @@ interface SessionData {
 
 export const OperationsCenter: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, signOutUser, user } = useAuth();
   const [sessionData, setSessionData] = useState<SessionData>({});
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -67,6 +67,15 @@ export const OperationsCenter: React.FC = () => {
     navigate('/app');
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOutUser();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   const togglePanel = (panelId: string) => {
     setCollapsedPanels(prev => ({
       ...prev,
@@ -96,6 +105,9 @@ export const OperationsCenter: React.FC = () => {
             <div className="profile-info">
               <span className="profile-mos">{sessionData.veteranProfile.code}</span>
               <span className="profile-branch">{sessionData.veteranProfile.branch}</span>
+              {isAuthenticated && user && (
+                <span className="profile-auth">• {user.username || user.email}</span>
+              )}
             </div>
           )}
         </div>
@@ -103,6 +115,11 @@ export const OperationsCenter: React.FC = () => {
           <button className="nav-button" onClick={handleBackToApp}>
             ← Back to Analysis
           </button>
+          {isAuthenticated && (
+            <button className="nav-button logout-button" onClick={handleLogout}>
+              Logout
+            </button>
+          )}
         </div>
       </header>
 

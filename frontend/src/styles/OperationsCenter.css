@@ -83,6 +83,12 @@
   font-size: 0.875rem;
 }
 
+.profile-auth {
+  color: #22c55e;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
 .nav-button {
   background: transparent;
   border: 1px solid rgba(0, 212, 255, 0.3);
@@ -98,6 +104,23 @@
   background: rgba(0, 212, 255, 0.1);
   border-color: #00d4ff;
   transform: translateX(-2px);
+}
+
+.header-right {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.logout-button {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.logout-button:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  transform: translateX(0);
 }
 
 /* Main Content Layout */
