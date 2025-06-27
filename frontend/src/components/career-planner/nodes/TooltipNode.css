@@ -128,3 +128,57 @@
   background: #00d4ff;
   border: 2px solid white;
 }
+
+/* Edit input styles */
+.trigger-edit-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  caret-color: #000;
+}
+
+.tooltip-edit-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 12px;
+  font-family: inherit;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  caret-color: white;
+}
+
+/* Ensure the tooltip stays visible when editing */
+.tooltip-content.editing {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+/* Cursor visibility */
+.trigger-edit-input:focus,
+.tooltip-edit-input:focus {
+  outline: 1px dashed rgba(0, 212, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Selection highlight */
+.trigger-edit-input::selection {
+  background: rgba(0, 212, 255, 0.3);
+  color: #000;
+}
+
+.tooltip-edit-input::selection {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
