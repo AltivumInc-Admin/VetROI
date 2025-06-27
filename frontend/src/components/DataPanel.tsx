@@ -9,6 +9,8 @@ interface DataPanelProps {
   mode?: 'onet' | 'careermap'
   selectedSOCs?: string[]
   onModeChange?: (mode: 'onet' | 'careermap') => void
+  viewStage?: 1 | 2 | 3
+  onStageChange?: (stage: 1 | 2 | 3) => void
 }
 
 interface SOCData {
@@ -21,7 +23,9 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   onToggle, 
   mode = 'onet',
   selectedSOCs = [],
-  onModeChange
+  onModeChange,
+  viewStage = 1,
+  onStageChange
 }) => {
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
   const [socData, setSocData] = useState<SOCData>({})
@@ -123,7 +127,31 @@ export const DataPanel: React.FC<DataPanelProps> = ({
         
         <div className="data-panel-content">
           {mode === 'careermap' ? (
-            <CareerMapCanvas />
+            <>
+              {onStageChange && (
+                <div className="stage-navigation">
+                  <button 
+                    className={`stage-tab ${viewStage === 1 ? 'active' : ''}`}
+                    onClick={() => onStageChange(1)}
+                  >
+                    Stage 1
+                  </button>
+                  <button 
+                    className={`stage-tab ${viewStage === 2 ? 'active' : ''}`}
+                    onClick={() => onStageChange(2)}
+                  >
+                    Stage 2
+                  </button>
+                  <button 
+                    className={`stage-tab ${viewStage === 3 ? 'active' : ''}`}
+                    onClick={() => onStageChange(3)}
+                  >
+                    Full Screen
+                  </button>
+                </div>
+              )}
+              <CareerMapCanvas />
+            </>
           ) : mode === 'onet' ? (
             <>
               <div className="onet-view-toggle">
