@@ -125,6 +125,41 @@
     top: 1rem;
     left: 1rem;
   }
+  
+  .skip-button {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+}
+
+/* Skip button */
+.skip-button {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  border-radius: 24px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 20;
+  outline: none;
+}
+
+.skip-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateX(-5px);
+}
+
+.skip-button:active {
+  transform: translateX(-3px);
 }
 
 /* Extra small mobile */
@@ -142,5 +177,12 @@
   .video-tagline {
     font-size: 0.55rem;
     letter-spacing: 0;
+  }
+  
+  .skip-button {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
   }
 }
