@@ -152,7 +152,9 @@ export const DataPanel: React.FC<DataPanelProps> = ({
                   </button>
                 </div>
               )}
-              <CareerPlanner />
+              <div className="career-planner-container">
+                <CareerPlanner />
+              </div>
             </>
           ) : mode === 'onet' ? (
             <>
