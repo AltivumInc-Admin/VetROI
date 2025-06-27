@@ -27,6 +27,9 @@ export const OperationsCenter: React.FC = () => {
     careers: false,
     stats: false
   });
+  const [expandedCareers, setExpandedCareers] = useState<Set<string>>(new Set());
+  const [dd214Loading, setDD214Loading] = useState(false);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
 
   // Load session data on mount
   useEffect(() => {
@@ -81,10 +84,17 @@ export const OperationsCenter: React.FC = () => {
     }
   };
 
+  const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
+  };
+
   const saveProgress = () => {
     // Progress is automatically saved to sessionStorage
     // This provides user feedback
-    alert('Your career planning progress has been saved!');
+    showNotification('success', 'Your career planning progress has been saved!');
   };
 
   const exportCareerPlan = () => {
@@ -112,6 +122,8 @@ export const OperationsCenter: React.FC = () => {
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
+    
+    showNotification('success', 'Career plan exported successfully!');
   };
 
   const togglePanel = (panelId: string) => {
@@ -119,6 +131,18 @@ export const OperationsCenter: React.FC = () => {
       ...prev,
       [panelId]: !prev[panelId]
     }));
+  };
+
+  const toggleCareerDetails = (soc: string) => {
+    setExpandedCareers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(soc)) {
+        newSet.delete(soc);
+      } else {
+        newSet.add(soc);
+      }
+      return newSet;
+    });
   };
 
   // Fetch DD214 insights if we have a document ID and are authenticated
@@ -137,6 +161,7 @@ export const OperationsCenter: React.FC = () => {
           }
 
           // Otherwise fetch from API
+          setDD214Loading(true);
           const response = await fetch(
             `${import.meta.env.VITE_API_URL}/dd214/insights/${sessionData.dd214DocumentId}`,
             {
@@ -153,9 +178,14 @@ export const OperationsCenter: React.FC = () => {
               ...prev,
               dd214Insights: insights
             }));
+          } else {
+            showNotification('error', 'Failed to load DD214 insights. Please try again later.');
           }
         } catch (error) {
           console.error('Error fetching DD214 insights:', error);
+          showNotification('error', 'Error loading DD214 insights. Please check your connection.');
+        } finally {
+          setDD214Loading(false);
         }
       }
     };
@@ -174,6 +204,19 @@ export const OperationsCenter: React.FC = () => {
 
   return (
     <div className="operations-center">
+      {/* Notification */}
+      {notification && (
+        <div className={`notification notification-${notification.type}`}>
+          <span>{notification.message}</span>
+          <button 
+            className="notification-close"
+            onClick={() => setNotification(null)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+      
       {/* Header */}
       <header className="operations-header">
         <div className="header-left">
@@ -246,7 +289,13 @@ export const OperationsCenter: React.FC = () => {
                       <span className="info-label">Analysis Status:</span>
                       <span className="info-value">Complete</span>
                     </div>
-                    {sessionData.dd214Insights && (
+                    {dd214Loading && (
+                      <div className="loading-insights">
+                        <div className="mini-spinner"></div>
+                        <span>Loading insights...</span>
+                      </div>
+                    )}
+                    {!dd214Loading && sessionData.dd214Insights && (
                       <>
                         <div className="info-item">
                           <span className="info-label">Service Years:</span>
@@ -291,26 +340,70 @@ export const OperationsCenter: React.FC = () => {
               <div className="panel-content">
               {sessionData.selectedSOCs && sessionData.selectedSOCs.length > 0 ? (
                 <div className="careers-list">
-                  {sessionData.selectedSOCs.map((soc) => (
-                    <div key={soc} className="career-item">
-                      <div className="career-item-header">
-                        <span className="career-code">{soc}</span>
-                        <button className="career-action-btn">View Details</button>
+                  {sessionData.selectedSOCs.map((soc) => {
+                    const isExpanded = expandedCareers.has(soc);
+                    const careerData = sessionData.careerDataCache?.[soc];
+                    
+                    return (
+                      <div key={soc} className={`career-item ${isExpanded ? 'expanded' : ''}`}>
+                        <div className="career-item-header">
+                          <span className="career-code">{soc}</span>
+                          <button 
+                            className="career-action-btn"
+                            onClick={() => toggleCareerDetails(soc)}
+                          >
+                            {isExpanded ? 'Hide Details' : 'View Details'}
+                          </button>
+                        </div>
+                        <div className="career-item-details">
+                          {careerData ? (
+                            <>
+                              <p className="career-title">{careerData.title}</p>
+                              {!isExpanded && careerData.description && (
+                                <p className="career-description">{careerData.description.substring(0, 100)}...</p>
+                              )}
+                              {isExpanded && (
+                                <div className="career-expanded-details">
+                                  {careerData.description && (
+                                    <div className="detail-section">
+                                      <h4>Description</h4>
+                                      <p>{careerData.description}</p>
+                                    </div>
+                                  )}
+                                  {careerData.typical_entry_level_education && (
+                                    <div className="detail-section">
+                                      <h4>Education Requirements</h4>
+                                      <p>{careerData.typical_entry_level_education}</p>
+                                    </div>
+                                  )}
+                                  {careerData.median_annual_wage && (
+                                    <div className="detail-section">
+                                      <h4>Median Salary</h4>
+                                      <p>${careerData.median_annual_wage?.toLocaleString()}</p>
+                                    </div>
+                                  )}
+                                  {careerData.projected_growth && (
+                                    <div className="detail-section">
+                                      <h4>Job Growth Outlook</h4>
+                                      <p>{careerData.projected_growth.outlook} ({careerData.projected_growth.percent_change}%)</p>
+                                    </div>
+                                  )}
+                                  <button 
+                                    className="explore-more-btn"
+                                    onClick={() => navigate('/app')}
+                                  >
+                                    Explore in Detail →
+                                  </button>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <p className="career-placeholder">Loading career data...</p>
+                          )}
+                        </div>
                       </div>
-                      <div className="career-item-details">
-                        {sessionData.careerDataCache?.[soc] ? (
-                          <>
-                            <p className="career-title">{sessionData.careerDataCache[soc].title}</p>
-                            {sessionData.careerDataCache[soc].description && (
-                              <p className="career-description">{sessionData.careerDataCache[soc].description.substring(0, 100)}...</p>
-                            )}
-                          </>
-                        ) : (
-                          <p className="career-placeholder">Loading career data...</p>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <p className="no-careers">No careers selected yet</p>
