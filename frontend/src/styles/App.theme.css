@@ -1,0 +1,377 @@
+/* App.theme.css - Theme colors that work with DarkTheme.css */
+
+/* Header Theme */
+.app-header {
+  background: linear-gradient(180deg, 
+    rgba(0, 212, 255, 0.12) 0%,
+    rgba(0, 212, 255, 0.08) 20%,
+    rgba(0, 212, 255, 0.05) 40%,
+    rgba(0, 212, 255, 0.02) 60%,
+    rgba(10, 14, 26, 0.5) 80%,
+    #0a0e1a 100%);
+  color: var(--vr-text-primary);
+}
+
+.app-header h1 {
+  background: linear-gradient(135deg, var(--vr-cyan) 0%, var(--vr-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--vr-cyan); /* Fallback */
+}
+
+.app-header p {
+  color: var(--vr-text-secondary);
+  opacity: 0.8;
+}
+
+/* Main Content Theme */
+.app-main {
+  background-color: transparent;
+  color: var(--vr-text-primary);
+}
+
+/* Footer Theme */
+.app-footer {
+  background-color: #000000;
+  color: var(--vr-text-secondary);
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.onet-attribution {
+  border-top-color: rgba(0, 212, 255, 0.1);
+}
+
+.onet-attribution a {
+  color: var(--vr-cyan);
+}
+
+.onet-attribution a:hover {
+  color: white;
+}
+
+/* Form Theme */
+.veteran-form {
+  background: var(--vr-surface);
+  backdrop-filter: var(--vr-glass-blur);
+  border: var(--vr-glass-border);
+  box-shadow: var(--vr-glass-shadow);
+}
+
+.veteran-form h2 {
+  color: white;
+  text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+}
+
+.veteran-form h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--vr-cyan), transparent);
+}
+
+.form-group label {
+  color: var(--vr-text-primary);
+}
+
+.form-group input[type="text"],
+.form-group select {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--vr-text-primary);
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+  border-color: var(--vr-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-group input[type="text"]::placeholder {
+  color: var(--vr-text-muted);
+}
+
+/* Select dropdown arrow */
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300d4ff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.checkbox-label {
+  color: var(--vr-text-primary);
+}
+
+.checkbox-label:hover {
+  color: var(--vr-cyan);
+}
+
+input[type="checkbox"] {
+  accent-color: var(--vr-cyan);
+}
+
+.submit-button {
+  background: linear-gradient(135deg, var(--vr-cyan), #0099cc);
+  color: white;
+  border: none;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--vr-cyan-glow);
+}
+
+/* Chat Theme */
+.recommendation-chat,
+.chat-interface {
+  background: var(--vr-surface);
+  backdrop-filter: var(--vr-glass-blur);
+  border: var(--vr-glass-border);
+  box-shadow: var(--vr-glass-shadow);
+  color: var(--vr-text-primary);
+}
+
+.chat-header {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-header h2 {
+  color: var(--vr-text-primary);
+}
+
+.new-request-button {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--vr-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.new-request-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--vr-cyan);
+  color: var(--vr-cyan);
+}
+
+.session-info {
+  color: var(--vr-text-secondary);
+}
+
+/* Messages Theme */
+.chat-messages {
+  background: transparent;
+  color: var(--vr-text-primary);
+}
+
+.bot-message p,
+.assistant-message .message-content {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--vr-text-primary);
+  border: var(--vr-glass-border);
+}
+
+.user-message .message-content {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 153, 204, 0.2));
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--vr-text-primary);
+}
+
+.message-timestamp {
+  color: var(--vr-text-secondary);
+}
+
+/* Typing Indicator Theme */
+.typing-indicator span {
+  background: var(--vr-cyan);
+  opacity: 0.6;
+}
+
+.typing-indicator .loading-text {
+  color: var(--vr-text-secondary);
+}
+
+/* Chat Input Theme */
+.chat-input-container {
+  background: rgba(255, 255, 255, 0.03);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.chat-input {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--vr-text-primary);
+}
+
+.chat-input:focus {
+  border-color: var(--vr-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.chat-input:disabled {
+  background: rgba(255, 255, 255, 0.02);
+  opacity: 0.5;
+}
+
+.send-button {
+  background: linear-gradient(135deg, var(--vr-cyan), #0099cc);
+  color: white;
+}
+
+.send-button:hover:not(:disabled) {
+  box-shadow: var(--vr-cyan-glow);
+  transform: translateY(-1px);
+}
+
+.chat-footer {
+  background: transparent;
+  color: var(--vr-text-muted);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Career Card Theme */
+.career-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-left-color: var(--vr-cyan);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.career-header h3 {
+  color: var(--vr-cyan);
+}
+
+.soc-code {
+  color: var(--vr-text-secondary);
+}
+
+.career-summary,
+.career-details > div {
+  color: var(--vr-text-primary);
+}
+
+.career-details strong {
+  color: var(--vr-text-primary);
+}
+
+.salary {
+  color: var(--vr-green);
+}
+
+.match-reason,
+.next-step {
+  color: var(--vr-text-primary);
+}
+
+/* SOC Data Theme */
+.soc-input-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.soc-input-label {
+  color: var(--vr-text-primary);
+}
+
+.soc-data-display {
+  background: var(--vr-surface);
+  border-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: var(--vr-glass-blur);
+}
+
+.soc-data-title {
+  color: var(--vr-text-primary);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Error Message Theme */
+.error-message {
+  background: rgba(255, 0, 110, 0.1);
+  border-color: rgba(255, 0, 110, 0.3);
+  color: var(--vr-red);
+}
+
+/* Navigation Buttons Theme */
+.restart-button,
+.welcome-button {
+  background: rgba(13, 17, 33, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.restart-button:hover,
+.welcome-button:hover {
+  background: rgba(13, 17, 33, 1);
+  border-color: rgba(0, 212, 255, 0.5);
+  color: var(--vr-cyan);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+}
+
+.welcome-button {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.welcome-button:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #a78bfa;
+}
+
+/* Text Selection Theme */
+::selection {
+  background-color: var(--vr-cyan) !important;
+  color: white !important;
+}
+
+::-moz-selection {
+  background-color: var(--vr-cyan) !important;
+  color: white !important;
+}
+
+/* Code Block Theme */
+.message-code-block,
+.soc-json-content .message-code-block {
+  background: #0a0a0a !important;
+  color: var(--vr-cyan) !important;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.message-code-block code {
+  color: var(--vr-cyan) !important;
+}
+
+/* Scrollbar Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Theme Adjustments */
+@media (max-width: 768px) {
+  .app-header h1 {
+    font-size: 2rem;
+  }
+  
+  .app-footer {
+    padding: 1.5rem 0.5rem;
+  }
+}

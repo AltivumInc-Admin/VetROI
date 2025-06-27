@@ -1,0 +1,518 @@
+/* VetROI™ Dark Theme Foundation */
+/* Phase 1: Sophisticated Dark Interface */
+
+/* Import Montserrat for branding */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap');
+
+:root {
+  /* Color System */
+  --vr-bg-primary: #0a0e1a;      /* Deep space black */
+  --vr-bg-secondary: #0f1419;     /* Slightly lighter */
+  --vr-surface: rgba(255, 255, 255, 0.05); /* Glassmorphic surface */
+  --vr-surface-hover: rgba(255, 255, 255, 0.08);
+  
+  /* Accent Colors */
+  --vr-cyan: #00d4ff;             /* Primary action */
+  --vr-cyan-glow: 0 0 20px rgba(0, 212, 255, 0.5);
+  --vr-green: #00ff88;            /* Success states */
+  --vr-red: #ff006e;              /* High priority */
+  --vr-purple: #f700ff;           /* Special accents */
+  
+  /* Text Colors */
+  --vr-text-primary: #e0e0e0;     /* Main text */
+  --vr-text-secondary: #a0a0a0;   /* Secondary text */
+  --vr-text-muted: #606060;       /* Muted text */
+  
+  /* Glassmorphism */
+  --vr-glass-blur: blur(10px);
+  --vr-glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --vr-glass-shadow: 0 8px 32px 0 rgba(0, 212, 255, 0.1);
+}
+
+/* Global Reset for Dark Theme */
+html {
+  background: var(--vr-bg-primary) !important;
+}
+
+body {
+  background: var(--vr-bg-primary) !important;
+  color: var(--vr-text-primary) !important;
+  transition: background-color 0.3s ease;
+}
+
+/* Main App Container */
+.App {
+  background: var(--vr-bg-primary) !important;
+  min-height: 100vh;
+}
+
+/* Override light theme from index.css */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--vr-text-primary) !important;
+    background-color: var(--vr-bg-primary) !important;
+  }
+}
+
+/* Header - Smooth Gradient Transition */
+.app-header {
+  background: linear-gradient(180deg, 
+    rgba(0, 212, 255, 0.12) 0%,
+    rgba(0, 212, 255, 0.08) 20%,
+    rgba(0, 212, 255, 0.05) 40%,
+    rgba(0, 212, 255, 0.02) 60%,
+    rgba(10, 14, 26, 0.5) 80%,
+    #0a0e1a 100%);
+  border-bottom: none !important;
+  padding: 2.5rem 0 3rem;
+  position: relative;
+  margin-bottom: -2rem;
+}
+
+.app-header h1 {
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, var(--vr-cyan) 0%, var(--vr-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  letter-spacing: -1px;
+  font-size: 2.5rem;
+  margin: 0;
+  text-align: center;
+}
+
+.tagline {
+  color: var(--vr-text-primary);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  text-align: center;
+  opacity: 0.7;
+  font-weight: 300;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Glassmorphic Form Container */
+.veteran-form {
+  background: var(--vr-surface) !important;
+  backdrop-filter: var(--vr-glass-blur);
+  border: var(--vr-glass-border) !important;
+  border-radius: 16px;
+  box-shadow: var(--vr-glass-shadow);
+  padding: 2.5rem;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+/* Form Title - Make it POP */
+.veteran-form h2 {
+  color: white !important;
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  position: relative;
+  text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+}
+
+.veteran-form h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--vr-cyan), transparent);
+}
+
+/* Override white backgrounds and borders */
+.app-main {
+  background: transparent !important;
+  position: relative;
+  z-index: 1;
+  border: none !important;
+}
+
+.container {
+  background: transparent !important;
+  padding-top: 1rem;
+}
+
+/* Remove any borders from App.css */
+.app-header,
+.app-main,
+.container {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Form Elements */
+.form-group label {
+  color: var(--vr-text-primary) !important;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  display: block;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Override any conflicting styles */
+.form-label,
+label {
+  color: var(--vr-text-primary) !important;
+}
+
+.form-control {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--vr-text-primary);
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--vr-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-control::placeholder {
+  color: var(--vr-text-muted);
+}
+
+/* Submit Button - Neon Style */
+.submit-button {
+  background: linear-gradient(135deg, var(--vr-cyan), #0099cc);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--vr-cyan-glow);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Chat Interface - Dark Theme */
+.chat-interface {
+  background: var(--vr-surface);
+  backdrop-filter: var(--vr-glass-blur);
+  border: var(--vr-glass-border);
+  border-radius: 16px;
+  box-shadow: var(--vr-glass-shadow);
+  color: var(--vr-text-primary);
+}
+
+.chat-header {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: var(--vr-glass-border);
+}
+
+.chat-header h2 {
+  color: var(--vr-text-primary);
+  font-weight: 600;
+}
+
+.session-info {
+  color: var(--vr-text-secondary);
+  font-family: 'SF Mono', 'Monaco', monospace;
+  font-size: 0.75rem;
+}
+
+/* Messages */
+.chat-messages {
+  background: transparent;
+}
+
+.assistant-message .message-content {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--vr-text-primary) !important;
+  border: var(--vr-glass-border);
+}
+
+.user-message .message-content {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 153, 204, 0.2));
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--vr-text-primary);
+}
+
+/* Input Area */
+.chat-input-container {
+  background: rgba(255, 255, 255, 0.03);
+  border-top: var(--vr-glass-border);
+}
+
+.chat-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--vr-text-primary);
+}
+
+.chat-input:focus {
+  border-color: var(--vr-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+}
+
+.send-button {
+  background: linear-gradient(135deg, var(--vr-cyan), #0099cc);
+  border: none;
+  color: white;
+}
+
+.send-button:hover:not(:disabled) {
+  box-shadow: var(--vr-cyan-glow);
+}
+
+/* SOC Input Section */
+.soc-input-section {
+  background: rgba(255, 255, 255, 0.03);
+  border-top: var(--vr-glass-border);
+}
+
+.soc-input-label {
+  color: var(--vr-text-primary);
+  font-weight: 500;
+}
+
+/* SOC Data Display */
+.soc-data-display {
+  background: var(--vr-surface);
+  border: var(--vr-glass-border);
+  backdrop-filter: var(--vr-glass-blur);
+}
+
+.soc-data-title {
+  color: var(--vr-text-primary);
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: var(--vr-glass-border);
+}
+
+/* Code Blocks - Ensure Visibility */
+.message-code-block,
+.soc-json-content .message-code-block {
+  background: #0a0a0a !important;
+  color: var(--vr-cyan) !important;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.message-code-block code {
+  color: var(--vr-cyan) !important;
+}
+
+/* Footer */
+.chat-footer {
+  background: transparent;
+  color: var(--vr-text-muted);
+  border-top: var(--vr-glass-border);
+}
+
+/* App Footer - Ultra Compact */
+.app-footer {
+  background: #000000 !important;
+  color: var(--vr-text-secondary) !important;
+  padding: 0.5rem 1rem;
+  margin-top: 3rem;
+  border-top: 1px solid rgba(0, 212, 255, 0.1);
+  font-size: 0.65rem;
+  line-height: 1.2;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+  padding: 0 1rem;
+}
+
+.footer-content span {
+  white-space: nowrap;
+}
+
+.footer-content span:not(:last-child)::after {
+  content: '•';
+  margin-left: 1rem;
+  opacity: 0.3;
+}
+
+/* Mobile footer adjustments */
+@media (max-width: 768px) {
+  .app-footer {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-content span:not(:last-child)::after {
+    display: none;
+  }
+
+  .footer-content span {
+    font-size: 0.8rem;
+  }
+
+  .onet-attribution {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+    padding: 0 1rem;
+  }
+
+  .onet-attribution span {
+    font-size: 0.7rem;
+    line-height: 1.4;
+  }
+}
+
+.app-footer a {
+  color: var(--vr-cyan) !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.app-footer a:hover {
+  color: white !important;
+  text-decoration: underline;
+}
+
+.onet-attribution {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.onet-attribution img {
+  height: 22px; /* Increased from 16px */
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.onet-attribution span {
+  font-size: 0.75rem; /* Increased from 0.6rem */
+  opacity: 0.8; /* Slightly more prominent */
+}
+
+.onet-attribution:hover img {
+  opacity: 0.8;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Loading States */
+.typing-indicator {
+  background: transparent;
+}
+
+.typing-indicator span {
+  background: var(--vr-cyan);
+  opacity: 0.6;
+}
+
+/* Radio Buttons - Custom Dark Theme */
+input[type="radio"] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+input[type="radio"]:checked {
+  border-color: var(--vr-cyan);
+  background: var(--vr-cyan);
+}
+
+input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.form-check-label {
+  color: var(--vr-text-primary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.form-check:hover .form-check-label {
+  color: var(--vr-cyan);
+}
+
+/* Select Dropdowns */
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2300d4ff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+/* Error States */
+.error-message {
+  background: rgba(255, 0, 110, 0.1);
+  border: 1px solid rgba(255, 0, 110, 0.3);
+  color: var(--vr-red);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Transitions */
+* {
+  transition: background-color 0.2s ease, 
+              border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}

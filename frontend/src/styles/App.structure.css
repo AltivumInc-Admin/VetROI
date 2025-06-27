@@ -1,0 +1,502 @@
+/* App.structure.css - Layout and structure ONLY, no colors/theme */
+
+#root {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Structure */
+.app-header {
+  padding: 2.5rem 0 3rem;
+  position: relative;
+  margin-bottom: -2rem;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.app-header p {
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+/* Main Content Structure */
+.app-main {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  flex: 1;
+  width: 100%;
+}
+
+/* Footer Structure */
+.app-footer {
+  padding: 1rem;
+  text-align: center;
+}
+
+.onet-attribution {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+}
+
+/* Form Structure */
+.veteran-form {
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.veteran-form h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.checkbox-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkbox-label {
+  cursor: pointer;
+  user-select: none;
+  font-size: 1rem;
+  padding: 0.25rem;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Chat/Recommendation Structure */
+.recommendation-chat {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.chat-header h2 {
+  margin: 0;
+}
+
+.session-info {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+}
+
+.chat-interface {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  max-height: 800px;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+.message {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-message {
+  align-items: flex-end;
+}
+
+.assistant-message {
+  align-items: flex-start;
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  cursor: text;
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  padding: 0 0.5rem;
+}
+
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 2px;
+  animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+.typing-indicator .loading-text {
+  margin-left: 1rem;
+  font-style: italic;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: none;
+  transition: border-color 0.3s;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.send-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Career Display Structure */
+.career-card {
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: left;
+  border-left-width: 4px;
+  border-left-style: solid;
+}
+
+.career-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 1rem;
+}
+
+.career-header h3 {
+  margin: 0;
+}
+
+.soc-code {
+  font-size: 0.875rem;
+}
+
+.career-summary {
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+.career-details > div {
+  margin-bottom: 0.75rem;
+}
+
+.career-details strong {
+  font-weight: 600;
+}
+
+/* Error Handling */
+.error-message {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* Navigation */
+.navigation-buttons {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 100;
+}
+
+.restart-button,
+.welcome-button {
+  padding: 0.75rem 1.25rem;
+  border-radius: 24px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.restart-button:hover,
+.welcome-button:hover {
+  transform: translateY(-2px);
+}
+
+.restart-button svg,
+.welcome-button svg {
+  transition: transform 0.3s ease;
+}
+
+.restart-button:hover svg {
+  transform: rotate(-360deg);
+}
+
+.welcome-button:hover svg {
+  transform: scale(1.1);
+}
+
+/* Button specific */
+.new-request-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* SOC Data Display */
+.soc-input-section {
+  padding: 1rem;
+}
+
+.soc-input-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.soc-data-display {
+  border-radius: 8px;
+  margin: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.soc-data-title {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 1rem;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 1.5rem 1rem;
+    margin-bottom: -1rem;
+  }
+  
+  .app-header h1 {
+    font-size: 2rem;
+  }
+  
+  .app-main {
+    padding: 1rem;
+  }
+  
+  .container {
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .veteran-form {
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+  }
+  
+  .career-header {
+    flex-direction: column;
+  }
+  
+  .soc-code {
+    margin-top: 0.25rem;
+  }
+  
+  .chat-interface {
+    height: 80vh;
+  }
+  
+  .message-content {
+    max-width: 85%;
+  }
+  
+  .chat-input-container {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+  
+  .chat-input {
+    font-size: 14px;
+  }
+  
+  .send-button {
+    width: auto;
+    padding: 0.75rem 1rem;
+  }
+  
+  .navigation-buttons {
+    bottom: 1rem;
+    left: 1rem;
+    gap: 0.5rem;
+  }
+  
+  .restart-button,
+  .welcome-button {
+    padding: 0.625rem 1rem;
+    font-size: 0.75rem;
+  }
+  
+  .restart-button svg,
+  .welcome-button svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Mobile specific classes */
+  .mobile-full-width {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .career-match-container,
+  .detailed-analysis-container,
+  .sentra-chat-container,
+  .confirmation-container,
+  .dd214-upload-container,
+  .engagement-modal {
+    max-width: 100%;
+    padding: 1rem;
+  }
+}
