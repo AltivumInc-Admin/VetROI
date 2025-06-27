@@ -7,6 +7,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import App from './App.tsx'
 import WelcomePage from './components/welcome/WelcomePage.tsx'
 import { DD214InsightsView } from './components/DD214InsightsView.tsx'
+import { OperationsCenter } from './pages/OperationsCenter.tsx'
 import './styles/index.css'
 import './styles/DarkTheme.css'
 
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/app" element={<App />} />
           <Route path="/dd214-insights/:documentId" element={<DD214InsightsView />} />
           <Route path="/demo" element={<DD214InsightsView />} />
+          <Route path="/operations-center" element={<OperationsCenter />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

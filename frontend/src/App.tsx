@@ -416,6 +416,54 @@ function App() {
                 matches={apiResponse.onet_careers?.match?.[0]?.occupations?.occupation || []}
                 onSOCClick={handleSOCClick}
               />
+              
+              {/* Operations Center Button */}
+              {selectedSOCs.length > 0 && (
+                <div style={{
+                  marginTop: '2rem',
+                  textAlign: 'center',
+                  padding: '2rem',
+                  background: 'rgba(0, 212, 255, 0.05)',
+                  border: '1px solid rgba(0, 212, 255, 0.2)',
+                  borderRadius: '12px'
+                }}>
+                  <h3 style={{ color: '#00d4ff', marginBottom: '0.5rem' }}>
+                    Ready to Plan Your Career Path?
+                  </h3>
+                  <p style={{ color: 'rgba(255, 255, 255, 0.7)', marginBottom: '1.5rem' }}>
+                    Launch the Operations Center to visualize and plan your career journey
+                  </p>
+                  <button
+                    onClick={() => {
+                      // Save selected SOCs to session storage
+                      sessionStorage.setItem('selectedSOCs', JSON.stringify(selectedSOCs));
+                      navigate('/operations-center');
+                    }}
+                    style={{
+                      background: '#00d4ff',
+                      color: '#0a0e1a',
+                      border: 'none',
+                      padding: '0.75rem 2rem',
+                      borderRadius: '8px',
+                      fontSize: '1rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 4px 12px rgba(0, 212, 255, 0.3)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 212, 255, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 212, 255, 0.3)';
+                    }}
+                  >
+                    Launch Operations Center →
+                  </button>
+                </div>
+              )}
             </div>
           )}
           
