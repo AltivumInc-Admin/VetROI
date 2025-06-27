@@ -66,6 +66,10 @@ export const TooltipNode: React.FC<TooltipNodeProps> = ({ children, selected, on
     const handleClickOutside = () => {
       if (editMode !== 'none') {
         setEditMode('none');
+        // Hide tooltip when done editing tooltip content
+        if (editMode === 'content') {
+          setIsHovered(false);
+        }
       }
     };
 
@@ -79,7 +83,12 @@ export const TooltipNode: React.FC<TooltipNodeProps> = ({ children, selected, on
     <div 
       className={`tooltip-node ${selected ? 'selected' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseLeave={() => {
+        // Don't hide tooltip if we're editing it
+        if (editMode !== 'content') {
+          setIsHovered(false);
+        }
+      }}
       onClick={handleClick}
     >
       <Handle type="target" position={Position.Top} />
@@ -155,6 +164,14 @@ export const TooltipContent: React.FC<TooltipContentProps & {
     e.target.style.height = e.target.scrollHeight + 'px';
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      // Trigger click outside to finish editing
+      document.dispatchEvent(new MouseEvent('mousedown'));
+    }
+  };
+
   return (
     <div className={`tooltip-content ${positionClasses[position]} ${isEditing ? 'editing' : ''}`}>
       {isEditing ? (
@@ -162,6 +179,7 @@ export const TooltipContent: React.FC<TooltipContentProps & {
           ref={inputRef}
           value={localText}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           className="tooltip-edit-input"
