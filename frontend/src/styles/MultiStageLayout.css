@@ -94,7 +94,8 @@
   position: fixed;
   top: 70px;
   right: 20px;
-  z-index: 1002;
+  z-index: 2000; /* Higher than DataPanel's 1000 */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
 }
 
 .stage-tab {
@@ -133,8 +134,9 @@
   padding: 12px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  z-index: 1001;
+  z-index: 2001; /* Higher than DataPanel */
   overflow-y: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
 }
 
 .floating-insights h4 {

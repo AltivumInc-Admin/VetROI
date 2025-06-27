@@ -558,6 +558,9 @@ function App() {
           <div className="insight-item">
             <strong>Selected:</strong> {selectedSOCs.length} careers
           </div>
+          <div style={{ marginTop: '12px', fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)' }}>
+            Press ESC to exit full screen
+          </div>
         </div>
       )}
     </div>
