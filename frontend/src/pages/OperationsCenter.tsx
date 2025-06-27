@@ -6,6 +6,13 @@ import CareerPlanner from '../components/career-planner/CareerPlanner';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import '../styles/OperationsCenter.css';
 
+// Declare global window interface
+declare global {
+  interface Window {
+    careerToAdd?: any;
+  }
+}
+
 interface SessionData {
   veteranProfile?: any;
   careerMatches?: any;
@@ -226,8 +233,9 @@ export const OperationsCenter: React.FC = () => {
         <div className="header-center">
           {sessionData.veteranProfile && (
             <div className="profile-info">
-              <span className="profile-mos">{sessionData.veteranProfile.code}</span>
-              <span className="profile-branch">{sessionData.veteranProfile.branch}</span>
+              <span className="profile-mos">{sessionData.veteranProfile.code || 'Unknown MOS'}</span>
+              <span className="profile-description">{sessionData.veteranProfile.description || 'Military Occupational Specialty'}</span>
+              <span className="profile-branch">{sessionData.veteranProfile.branch || 'Military'}</span>
               {isAuthenticated && user && (
                 <span className="profile-auth">• {user.email || user.name || user.username}</span>
               )}
@@ -390,9 +398,18 @@ export const OperationsCenter: React.FC = () => {
                                   )}
                                   <button 
                                     className="explore-more-btn"
-                                    onClick={() => navigate('/app')}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // Add career to the planner
+                                      window.careerToAdd = {
+                                        code: soc,
+                                        title: careerData.title,
+                                        description: careerData.description
+                                      };
+                                      showNotification('success', `Added ${soc} to Career Map`);
+                                    }}
                                   >
-                                    Explore in Detail →
+                                    Add to Career Map
                                   </button>
                                 </div>
                               )}
@@ -423,13 +440,17 @@ export const OperationsCenter: React.FC = () => {
             {!collapsedPanels.stats && (
               <div className="panel-content">
               <div className="stat-item">
-                <span className="stat-label">Careers Explored</span>
+                <span className="stat-label">Total Career Matches</span>
+                <span className="stat-value">{sessionData.careerMatches?.careers?.length || 0}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Selected for Planning</span>
                 <span className="stat-value">{sessionData.selectedSOCs?.length || 0}</span>
               </div>
               <div className="stat-item">
                 <span className="stat-label">Profile Status</span>
                 <span className="stat-value">
-                  {sessionData.dd214Processed ? 'Complete' : 'Basic'}
+                  {sessionData.dd214Processed ? 'DD214 Verified' : 'Basic Profile'}
                 </span>
               </div>
               {sessionData.dd214Insights && (

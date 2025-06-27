@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -41,11 +41,47 @@ const nodeTypes = {
   tooltipNode: TooltipNodeDemo,
 };
  
-export default function CareerPlanner() {
+// Add window interface for career communication
+declare global {
+  interface Window {
+    careerToAdd?: any;
+  }
+}
+
+interface CareerPlannerProps {
+  selectedCareers?: any[];
+}
+
+export default function CareerPlanner({ selectedCareers = [] }: CareerPlannerProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [showNodeMenu, setShowNodeMenu] = useState(false);
   const [nodeCounter, setNodeCounter] = useState(3);
+  
+  // Listen for career additions from parent
+  useEffect(() => {
+    const checkForCareer = () => {
+      if (window.careerToAdd) {
+        const career = window.careerToAdd;
+        const newNode = {
+          id: `career-${career.code}`,
+          position: { x: Math.random() * 400 + 100, y: Math.random() * 300 + 50 },
+          data: { 
+            label: career.code,
+            trigger: career.title || career.code,
+            content: career.description || 'Career node'
+          },
+          type: 'tooltipNode'
+        };
+        setNodes((nds) => [...nds.filter(n => n.id !== `career-${career.code}`), newNode]);
+        window.careerToAdd = null;
+      }
+    };
+    
+    // Check periodically for new careers to add
+    const interval = setInterval(checkForCareer, 500);
+    return () => clearInterval(interval);
+  }, [setNodes]);
  
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
