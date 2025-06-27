@@ -4,34 +4,8 @@ import {
   BaseEdge, 
   EdgeLabelRenderer, 
   getBezierPath,
-  useStore,
-  ReactFlowState,
-  Node
+  Position
 } from 'reactflow';
-
-// Get node intersections for floating edges
-function getNodeIntersection(node: Node, targetNode: Node) {
-  const nodeWidth = node.width || 240;
-  const nodeHeight = node.height || 100;
-  
-  const w = nodeWidth / 2;
-  const h = nodeHeight / 2;
-  
-  const x2 = targetNode.position.x + (targetNode.width || 240) / 2;
-  const y2 = targetNode.position.y + (targetNode.height || 100) / 2;
-  const x1 = node.position.x + w;
-  const y1 = node.position.y + h;
-  
-  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h);
-  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h);
-  const a = 1 / (Math.abs(xx1) + Math.abs(yy1));
-  const xx3 = a * xx1;
-  const yy3 = a * yy1;
-  const x = w * (xx3 + yy3) + x1;
-  const y = h * (-xx3 + yy3) + y1;
-  
-  return { x, y };
-}
 
 interface FloatingEdgeData {
   timeline?: string;
@@ -46,33 +20,25 @@ interface FloatingEdgeProps extends EdgeProps {
 
 const FloatingEdge: React.FC<FloatingEdgeProps> = ({
   id,
-  source,
-  target,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition = Position.Bottom,
+  targetPosition = Position.Top,
   markerEnd,
   style = {},
   data,
 }) => {
-  const sourceNode = useStore(
-    (s: ReactFlowState) => s.nodeInternals.get(source)
-  );
-  const targetNode = useStore(
-    (s: ReactFlowState) => s.nodeInternals.get(target)
-  );
-
   const [isHovered, setIsHovered] = React.useState(false);
-
-  if (!sourceNode || !targetNode) {
-    return null;
-  }
-
-  const { x: sourceX, y: sourceY } = getNodeIntersection(sourceNode, targetNode);
-  const { x: targetX, y: targetY } = getNodeIntersection(targetNode, sourceNode);
 
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
+    sourcePosition,
     targetX,
     targetY,
+    targetPosition,
   });
 
   // Enhanced edge styling

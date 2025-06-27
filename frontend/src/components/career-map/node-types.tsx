@@ -50,15 +50,35 @@ export const CareerNode: React.FC<NodeProps<CareerNodeData>> = ({ data, selected
     >
       {/* Invisible handles for floating connections */}
       <Handle 
-        type="source" 
-        position={Position.Top} 
-        style={{ background: 'transparent', border: 'none', width: '100%', height: '100%', top: 0, transform: 'none' }}
+        type="target" 
+        position={Position.Top}
+        style={{ 
+          background: 'transparent', 
+          border: 'none', 
+          width: '100%', 
+          height: '100%', 
+          top: 0, 
+          left: 0,
+          transform: 'none',
+          opacity: 0,
+          pointerEvents: 'all'
+        }}
         isConnectable={true}
       />
       <Handle 
-        type="target" 
-        position={Position.Top}
-        style={{ background: 'transparent', border: 'none', width: '100%', height: '100%', top: 0, transform: 'none' }}
+        type="source" 
+        position={Position.Bottom} 
+        style={{ 
+          background: 'transparent', 
+          border: 'none', 
+          width: '100%', 
+          height: '100%', 
+          bottom: 0,
+          left: 0,
+          transform: 'none',
+          opacity: 0,
+          pointerEvents: 'all'
+        }}
         isConnectable={true}
       />
       
@@ -126,14 +146,32 @@ export const JunctionNode: React.FC<NodeProps> = ({ selected }) => {
     >
       {/* Invisible handles covering entire node */}
       <Handle 
-        type="source" 
-        position={Position.Top} 
-        style={{ background: 'transparent', border: 'none', width: '100%', height: '100%', top: 0, transform: 'none' }}
-      />
-      <Handle 
         type="target" 
         position={Position.Top}
-        style={{ background: 'transparent', border: 'none', width: '100%', height: '100%', top: 0, transform: 'none' }}
+        style={{ 
+          background: 'transparent', 
+          border: 'none', 
+          width: '100%', 
+          height: '100%', 
+          top: 0,
+          left: 0,
+          transform: 'none',
+          opacity: 0
+        }}
+      />
+      <Handle 
+        type="source" 
+        position={Position.Bottom} 
+        style={{ 
+          background: 'transparent', 
+          border: 'none', 
+          width: '100%', 
+          height: '100%', 
+          bottom: 0,
+          left: 0,
+          transform: 'none',
+          opacity: 0
+        }}
       />
       
       <div style={{ 

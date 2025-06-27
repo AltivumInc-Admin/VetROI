@@ -35,6 +35,21 @@ const edgeTypes = {
   floating: FloatingEdge,
 };
 
+// Default edge options for all new connections
+const defaultEdgeOptions = {
+  type: 'floating',
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    color: 'var(--color-cyan-50)',
+  },
+};
+
+// Connection line style
+const connectionLineStyle = {
+  stroke: 'var(--color-cyan-50)',
+  strokeWidth: 2,
+};
+
 // Helper function to create a new node
 const createNode = (
   id: string, 
@@ -258,8 +273,6 @@ const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, o
         addEdge(
           {
             ...params,
-            type: 'floating',
-            markerEnd: { type: MarkerType.Arrow, color: 'var(--color-cyan-50)' },
             data: { timeline: '1-3 months' },
           },
           eds
@@ -547,7 +560,9 @@ const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, o
         onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
+        defaultEdgeOptions={defaultEdgeOptions}
         connectionLineComponent={FloatingConnectionLine}
+        connectionLineStyle={connectionLineStyle}
         connectionMode={ConnectionMode.Loose}
         isValidConnection={isValidConnection}
         fitView
