@@ -259,7 +259,7 @@ const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, o
           {
             ...params,
             type: 'floating',
-            markerEnd: { type: MarkerType.Arrow, color: 'rgba(255, 255, 255, 0.5)' },
+            markerEnd: { type: MarkerType.Arrow, color: 'var(--color-cyan-50)' },
             data: { timeline: '1-3 months' },
           },
           eds

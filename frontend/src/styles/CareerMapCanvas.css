@@ -149,9 +149,10 @@
 
 /* Custom edge styles */
 .react-flow__edge-path {
-  stroke: var(--color-cyan-50);
+  stroke: var(--color-cyan-50) !important;
   stroke-width: var(--edge-stroke-width);
   stroke-linecap: round;
+  fill: none;
 }
 
 .react-flow__edge.animated path {
@@ -270,6 +271,25 @@
   background: var(--color-cyan-05);
   border: 1px dashed var(--color-cyan-50);
   border-radius: var(--radius-sm);
+}
+
+/* Arrow markers */
+.react-flow__arrowhead {
+  fill: var(--color-cyan-50);
+}
+
+/* Ensure edges are visible */
+.react-flow__edges {
+  z-index: 2;
+}
+
+.react-flow__edge {
+  cursor: pointer;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--color-cyan-100) !important;
+  stroke-width: 3;
 }
 
 /* Mobile optimizations */

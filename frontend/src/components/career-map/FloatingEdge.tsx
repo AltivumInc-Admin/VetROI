@@ -1,109 +1,91 @@
 import React from 'react';
-import { getBezierPath, EdgeProps, BaseEdge, EdgeLabelRenderer, Position } from 'reactflow';
+import { 
+  EdgeProps, 
+  BaseEdge, 
+  EdgeLabelRenderer, 
+  getBezierPath,
+  useStore,
+  ReactFlowState,
+  Node
+} from 'reactflow';
 
-// Helper function to get the edge center for floating connections
-const getEdgeCenter = (
-  sourceX: number,
-  sourceY: number,
-  targetX: number,
-  targetY: number,
-  sourcePosition: Position,
-  targetPosition: Position
-) => {
-  const sourceIntersectionPoint = getNodeIntersection(
-    { x: sourceX, y: sourceY },
-    { x: targetX, y: targetY },
-    sourcePosition
-  );
-
-  const targetIntersectionPoint = getNodeIntersection(
-    { x: targetX, y: targetY },
-    { x: sourceX, y: sourceY },
-    targetPosition
-  );
-
-  const path = getBezierPath({
-    sourceX: sourceIntersectionPoint.x,
-    sourceY: sourceIntersectionPoint.y,
-    sourcePosition,
-    targetX: targetIntersectionPoint.x,
-    targetY: targetIntersectionPoint.y,
-    targetPosition,
-  });
-
-  return { path, labelX: (sourceX + targetX) / 2, labelY: (sourceY + targetY) / 2 };
-};
-
-// Get the intersection point between the node and the edge
-function getNodeIntersection(center: { x: number; y: number }, target: { x: number; y: number }, position: Position) {
-  const dx = target.x - center.x;
-  const dy = target.y - center.y;
-  const angle = Math.atan2(dy, dx);
+// Get node intersections for floating edges
+function getNodeIntersection(node: Node, targetNode: Node) {
+  const nodeWidth = node.width || 240;
+  const nodeHeight = node.height || 100;
   
-  // Assuming rectangular nodes, calculate intersection based on position
-  const nodeWidth = 220; // Match node width from CSS
-  const nodeHeight = 100; // Approximate node height
+  const w = nodeWidth / 2;
+  const h = nodeHeight / 2;
   
-  let intersectionX = center.x;
-  let intersectionY = center.y;
+  const x2 = targetNode.position.x + (targetNode.width || 240) / 2;
+  const y2 = targetNode.position.y + (targetNode.height || 100) / 2;
+  const x1 = node.position.x + w;
+  const y1 = node.position.y + h;
   
-  if (position === Position.Right || position === Position.Left) {
-    intersectionX = center.x + (position === Position.Right ? nodeWidth / 2 : -nodeWidth / 2);
-    intersectionY = center.y + Math.tan(angle) * (nodeWidth / 2) * (position === Position.Right ? 1 : -1);
-    
-    // Clamp Y to node bounds
-    intersectionY = Math.max(center.y - nodeHeight / 2, Math.min(center.y + nodeHeight / 2, intersectionY));
-  } else {
-    intersectionY = center.y + (position === Position.Bottom ? nodeHeight / 2 : -nodeHeight / 2);
-    intersectionX = center.x + (nodeHeight / 2) / Math.tan(angle) * (position === Position.Bottom ? 1 : -1);
-    
-    // Clamp X to node bounds
-    intersectionX = Math.max(center.x - nodeWidth / 2, Math.min(center.x + nodeWidth / 2, intersectionX));
-  }
+  const xx1 = (x1 - x2) / (2 * w) - (y1 - y2) / (2 * h);
+  const yy1 = (x1 - x2) / (2 * w) + (y1 - y2) / (2 * h);
+  const a = 1 / (Math.abs(xx1) + Math.abs(yy1));
+  const xx3 = a * xx1;
+  const yy3 = a * yy1;
+  const x = w * (xx3 + yy3) + x1;
+  const y = h * (-xx3 + yy3) + y1;
   
-  return { x: intersectionX, y: intersectionY };
+  return { x, y };
+}
+
+interface FloatingEdgeData {
+  timeline?: string;
+  requirements?: string[];
+  difficulty?: 'easy' | 'medium' | 'hard';
+  isAlternative?: boolean;
 }
 
 interface FloatingEdgeProps extends EdgeProps {
-  data?: {
-    timeline?: string;
-    requirements?: string[];
-    difficulty?: 'easy' | 'medium' | 'hard';
-    isAlternative?: boolean;
-  };
+  data?: FloatingEdgeData;
 }
 
 const FloatingEdge: React.FC<FloatingEdgeProps> = ({
   id,
-  sourceX,
-  sourceY,
-  targetX,
-  targetY,
-  sourcePosition = Position.Right,
-  targetPosition = Position.Left,
-  style = {},
+  source,
+  target,
   markerEnd,
+  style = {},
   data,
 }) => {
-  const { path, labelX, labelY } = getEdgeCenter(
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    targetPosition
+  const sourceNode = useStore(
+    (s: ReactFlowState) => s.nodeInternals.get(source)
+  );
+  const targetNode = useStore(
+    (s: ReactFlowState) => s.nodeInternals.get(target)
   );
 
   const [isHovered, setIsHovered] = React.useState(false);
 
-  // Style based on edge type
+  if (!sourceNode || !targetNode) {
+    return null;
+  }
+
+  const { x: sourceX, y: sourceY } = getNodeIntersection(sourceNode, targetNode);
+  const { x: targetX, y: targetY } = getNodeIntersection(targetNode, sourceNode);
+
+  const [edgePath, labelX, labelY] = getBezierPath({
+    sourceX,
+    sourceY,
+    targetX,
+    targetY,
+  });
+
+  // Enhanced edge styling
   const edgeStyle = {
     ...style,
     strokeWidth: isHovered ? 3 : 2,
-    stroke: data?.isAlternative ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 0.5)',
+    stroke: data?.isAlternative 
+      ? 'var(--color-cyan-30)' 
+      : 'var(--color-cyan-50)',
     strokeDasharray: data?.isAlternative ? '5 5' : undefined,
     cursor: 'pointer',
-    transition: 'all 0.2s ease',
+    transition: 'var(--transition-fast)',
+    filter: isHovered ? 'drop-shadow(0 0 8px var(--color-cyan-50))' : undefined,
   };
 
   return (
@@ -113,7 +95,7 @@ const FloatingEdge: React.FC<FloatingEdgeProps> = ({
         onMouseLeave={() => setIsHovered(false)}
       >
         <BaseEdge 
-          path={path[0]} 
+          path={edgePath} 
           markerEnd={markerEnd} 
           style={edgeStyle}
         />
@@ -134,15 +116,17 @@ const FloatingEdge: React.FC<FloatingEdgeProps> = ({
           >
             <div 
               style={{
-                background: 'rgba(20, 24, 38, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                background: 'var(--color-bg-600)',
+                border: '1px solid var(--color-cyan-30)',
                 borderRadius: '6px',
                 padding: '4px 8px',
-                color: 'rgba(255, 255, 255, 0.8)',
+                color: 'var(--text-high)',
                 whiteSpace: 'nowrap',
+                backdropFilter: 'var(--glass-blur)',
+                boxShadow: isHovered ? 'var(--shadow-sm)' : undefined,
               }}
             >
-              {data?.timeline || 'Add timeline'}
+              {data?.timeline || 'Timeline'}
             </div>
           </div>
         </EdgeLabelRenderer>
@@ -157,38 +141,17 @@ const FloatingEdge: React.FC<FloatingEdgeProps> = ({
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY + 20}px)`,
               pointerEvents: 'all',
             }}
-            className="nodrag nopan"
+            className="nodrag nopan edge-button-wrapper"
           >
             <button
-              style={{
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                background: 'rgba(20, 24, 38, 0.95)',
-                border: '1px solid rgba(255, 255, 255, 0.4)',
-                color: 'rgba(255, 255, 255, 0.6)',
-                fontSize: '12px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.2s ease',
-              }}
+              className="edge-button"
               onClick={(e) => {
                 e.stopPropagation();
-                // This will be handled by parent component
+                // Dispatch event for parent to handle
                 const event = new CustomEvent('createJunction', { 
                   detail: { edgeId: id, x: labelX, y: labelY } 
                 });
                 window.dispatchEvent(event);
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.2)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.8)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)';
               }}
             >
               +
