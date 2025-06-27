@@ -119,23 +119,32 @@ const CareerMapCanvasInner = () => {
         return;
       }
 
+      // Check if the slash menu is already open
+      if (showSlashMenu) {
+        return;
+      }
+
       if (event.key === '/') {
         event.preventDefault();
-        // Get mouse position or center of viewport
-        const bounds = reactFlowWrapper.current?.getBoundingClientRect();
-        if (bounds) {
-          setSlashMenuPosition({
-            x: bounds.left + bounds.width / 2 - 160, // Center horizontally (menu width is 320px)
-            y: bounds.top + bounds.height / 2 - 200, // Center vertically
-          });
-          setShowSlashMenu(true);
-        }
+        event.stopPropagation();
+        
+        // Get the ReactFlow wrapper bounds
+        const wrapper = reactFlowWrapper.current;
+        if (!wrapper) return;
+        
+        // Position menu in center of visible area
+        setSlashMenuPosition({
+          x: window.scrollX + window.innerWidth / 2 - 160,
+          y: window.scrollY + window.innerHeight / 2 - 200,
+        });
+        setShowSlashMenu(true);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    // Use capture phase to get the event before other handlers
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [showSlashMenu]);
 
   // Listen for junction creation events
   useEffect(() => {
@@ -281,19 +290,16 @@ const CareerMapCanvasInner = () => {
   // Node changes handler with custom logic
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      // Track selection changes
-      const selectionChanges = changes.filter(change => change.type === 'select');
-      if (selectionChanges.length > 0) {
-        const selected = nodes.filter(node => {
-          const selectChange = selectionChanges.find(c => c.id === node.id);
-          if (selectChange && 'selected' in selectChange) {
-            return selectChange.selected;
-          }
-          return node.selected;
-        }).map(n => n.id);
-        setSelectedNodes(selected);
-      }
-
+      // Apply changes first
+      const updatedNodes = applyNodeChanges(changes, nodes);
+      
+      // Track selection changes after applying them
+      const selectedIds = updatedNodes
+        .filter(node => node.selected)
+        .map(node => node.id);
+      
+      setSelectedNodes(selectedIds);
+      
       // Filter out deletion of junction nodes if they have connections
       const filteredChanges = changes.filter(change => {
         if (change.type === 'remove') {
@@ -373,16 +379,21 @@ const CareerMapCanvasInner = () => {
       id: 'create-goal',
       label: 'Create Goal Node',
       description: 'Add a new career goal',
-      icon: '🎯',
+      icon: '+',
       action: () => {
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        const position = project({ x: centerX, y: centerY });
+        const bounds = reactFlowWrapper.current?.getBoundingClientRect();
+        if (!bounds) return;
+        
+        const position = project({
+          x: bounds.width / 2,
+          y: bounds.height / 2,
+        });
+        
         const newNode = createNode(
           `node-${nodeIdCounter}`,
           position,
           'goal',
-          'New Career Goal'
+          'Career Goal'
         );
         setNodes((nds) => nds.concat(newNode));
         setNodeIdCounter(nodeIdCounter + 1);
@@ -392,16 +403,21 @@ const CareerMapCanvasInner = () => {
       id: 'create-milestone',
       label: 'Create Milestone',
       description: 'Add a career milestone',
-      icon: '🏁',
+      icon: '+',
       action: () => {
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        const position = project({ x: centerX, y: centerY });
+        const bounds = reactFlowWrapper.current?.getBoundingClientRect();
+        if (!bounds) return;
+        
+        const position = project({
+          x: bounds.width / 2,
+          y: bounds.height / 2,
+        });
+        
         const newNode = createNode(
           `node-${nodeIdCounter}`,
           position,
           'milestone',
-          'New Milestone'
+          'Milestone'
         );
         setNodes((nds) => nds.concat(newNode));
         setNodeIdCounter(nodeIdCounter + 1);
@@ -411,16 +427,21 @@ const CareerMapCanvasInner = () => {
       id: 'create-education',
       label: 'Create Education Node',
       description: 'Add education or certification',
-      icon: '🎓',
+      icon: '+',
       action: () => {
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
-        const position = project({ x: centerX, y: centerY });
+        const bounds = reactFlowWrapper.current?.getBoundingClientRect();
+        if (!bounds) return;
+        
+        const position = project({
+          x: bounds.width / 2,
+          y: bounds.height / 2,
+        });
+        
         const newNode = createNode(
           `node-${nodeIdCounter}`,
           position,
           'education',
-          'New Education'
+          'Education'
         );
         setNodes((nds) => nds.concat(newNode));
         setNodeIdCounter(nodeIdCounter + 1);
@@ -430,7 +451,7 @@ const CareerMapCanvasInner = () => {
       id: 'delete',
       label: 'Delete Selected',
       description: 'Remove selected nodes',
-      icon: '🗑️',
+      icon: '-',
       shortcut: 'Del',
       action: () => {
         if (selectedNodes.length > 0) {
@@ -446,7 +467,7 @@ const CareerMapCanvasInner = () => {
       id: 'duplicate',
       label: 'Duplicate Selected',
       description: 'Copy selected nodes',
-      icon: '📋',
+      icon: '⧉',
       shortcut: 'Cmd+D',
       action: () => {
         if (selectedNodes.length > 0) {
@@ -475,14 +496,14 @@ const CareerMapCanvasInner = () => {
       id: 'clear',
       label: 'Clear Canvas',
       description: 'Remove all nodes and edges',
-      icon: '🧹',
+      icon: '×',
       action: handleClear
     },
     {
       id: 'export',
       label: 'Export Map',
       description: 'Download as JSON file',
-      icon: '💾',
+      icon: '↓',
       shortcut: 'Cmd+S',
       action: handleExport
     },
@@ -490,7 +511,7 @@ const CareerMapCanvasInner = () => {
       id: 'connect',
       label: 'Connect Nodes',
       description: 'Create edge between selected',
-      icon: '🔗',
+      icon: '→',
       action: () => {
         if (selectedNodes.length === 2) {
           const connection: Connection = {
@@ -563,7 +584,7 @@ const CareerMapCanvasInner = () => {
           <div className="toolbar-hint">
             {isMobile 
               ? 'Tap to create • Drag to connect • Hold to move'
-              : 'Shift+Click to create • Drag to connect • Delete key to remove'
+              : 'Shift+Click to create • Drag to connect • Press / for commands'
             }
           </div>
           

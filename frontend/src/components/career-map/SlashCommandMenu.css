@@ -97,9 +97,13 @@
 }
 
 .slash-command-icon {
-  font-size: 18px;
+  font-size: 14px;
   margin-right: 12px;
   color: rgba(0, 212, 255, 0.8);
+  font-family: 'SF Mono', Monaco, Inconsolata, monospace;
+  font-weight: bold;
+  width: 20px;
+  text-align: center;
 }
 
 .slash-command-content {
