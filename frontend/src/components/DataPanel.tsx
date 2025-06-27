@@ -1,16 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import CareerPlanner from './career-planner/CareerPlanner'
 import './DataPanel.css'
 
 interface DataPanelProps {
   data: any
   isOpen: boolean
   onToggle: () => void
-  mode?: 'onet' | 'careermap'
   selectedSOCs?: string[]
-  onModeChange?: (mode: 'onet' | 'careermap') => void
-  viewStage?: 1 | 2 | 3
-  onStageChange?: (stage: 1 | 2 | 3) => void
 }
 
 interface SOCData {
@@ -21,11 +16,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   data, 
   isOpen, 
   onToggle, 
-  mode = 'onet',
-  selectedSOCs = [],
-  onModeChange,
-  viewStage = 1,
-  onStageChange
+  selectedSOCs = []
 }) => {
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
   const [socData, setSocData] = useState<SOCData>({})
@@ -72,91 +63,30 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   }
 
   const getTabText = () => {
-    switch(mode) {
-      case 'careermap': return 'CAREER MAP'
-      default: return 'O*NET DATA'
-    }
+    return 'O*NET DATA'
   }
 
   const getHeaderText = () => {
-    switch(mode) {
-      case 'careermap': return 'Visual Career Planning'
-      default: return onetView === 'mos' ? 'MOS Data - O*NET API Response' : 'SOC Data - Career Details'
-    }
+    return onetView === 'mos' ? 'MOS Data - O*NET API Response' : 'SOC Data - Career Details'
   }
 
   return (
     <>
       <div ref={tabsRef} className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
-        {onModeChange ? (
-          <div className="data-panel-mode-tabs">
-            <div 
-              className={`data-panel-tab ${mode === 'onet' ? 'active' : ''}`}
-              onClick={() => {
-                onModeChange('onet')
-                if (!isOpen) onToggle()
-              }}
-            >
-              <span className="tab-text">O*NET DATA</span>
-              <span className="tab-icon">{isOpen && mode === 'onet' ? '›' : '‹'}</span>
-            </div>
-            <div 
-              className={`data-panel-tab ${mode === 'careermap' ? 'active' : ''}`}
-              onClick={() => {
-                onModeChange('careermap')
-                if (!isOpen) onToggle()
-              }}
-            >
-              <span className="tab-text">CAREER MAP</span>
-              <span className="tab-icon">{isOpen && mode === 'careermap' ? '›' : '‹'}</span>
-            </div>
-          </div>
-        ) : (
-          <div className="data-panel-tab" onClick={onToggle}>
-            <span className="tab-text">{getTabText()}</span>
-            <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
-          </div>
-        )}
+        <div className="data-panel-tab" onClick={onToggle}>
+          <span className="tab-text">{getTabText()}</span>
+          <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
+        </div>
       </div>
       
       <div ref={panelRef} className={`data-panel ${isOpen ? 'open' : ''}`}>
         <div className="data-panel-header">
           <h3>{getHeaderText()}</h3>
-          {viewStage === 1 && (
-            <button className="close-btn" onClick={onToggle}>×</button>
-          )}
+          <button className="close-btn" onClick={onToggle}>×</button>
         </div>
         
         <div className="data-panel-content">
-          {mode === 'careermap' ? (
-            <>
-              {onStageChange && (
-                <div className="stage-navigation">
-                  <button 
-                    className={`stage-tab ${viewStage === 1 ? 'active' : ''}`}
-                    onClick={() => onStageChange(1)}
-                  >
-                    Stage 1
-                  </button>
-                  <button 
-                    className={`stage-tab ${viewStage === 2 ? 'active' : ''}`}
-                    onClick={() => onStageChange(2)}
-                  >
-                    Stage 2
-                  </button>
-                  <button 
-                    className={`stage-tab ${viewStage === 3 ? 'active' : ''}`}
-                    onClick={() => onStageChange(3)}
-                  >
-                    Full Screen
-                  </button>
-                </div>
-              )}
-              <div className="career-planner-container">
-                <CareerPlanner />
-              </div>
-            </>
-          ) : mode === 'onet' ? (
+          {
             <>
               <div className="onet-view-toggle">
                 <button 
@@ -215,11 +145,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({
                 </div>
               )}
             </>
-          ) : (
-            <pre className="json-display">
-              {JSON.stringify(data, null, 2)}
-            </pre>
-          )}
+          }
         </div>
       </div>
     </>

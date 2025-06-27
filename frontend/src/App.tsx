@@ -37,60 +37,12 @@ function App() {
   const [apiResponse, setApiResponse] = useState<any>(null)
   const [isDataPanelOpen, setIsDataPanelOpen] = useState(false)
   const [selectedSOCs, setSelectedSOCs] = useState<string[]>([])
-  const [dataPanelMode, setDataPanelMode] = useState<'onet' | 'careermap'>('onet')
   const [showDD214Upload, setShowDD214Upload] = useState(false)
   const [dd214Processed, setDD214Processed] = useState(false)
   const [dd214DocumentId, setDD214DocumentId] = useState<string>()
   const [showSentraChat, setShowSentraChat] = useState(false)
   const [careerDataCache, setCareerDataCache] = useState<any>({})
   const [showSessionWarning, setShowSessionWarning] = useState(false)
-  const [viewStage, setViewStage] = useState<1 | 2 | 3>(1)
-  
-  // Handle stage changes
-  const handleStageChange = (stage: 1 | 2 | 3) => {
-    setViewStage(stage)
-    if (stage > 1) {
-      setIsDataPanelOpen(true)
-      setDataPanelMode('careermap')
-    } else if (stage === 1) {
-      // When going back to stage 1, keep panel open but allow closing
-      setDataPanelMode('careermap')
-    }
-  }
-  
-  // Keyboard shortcuts for stage navigation
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      // Only work when career map is open
-      if (!isDataPanelOpen || dataPanelMode !== 'careermap') return
-      
-      // Check if input is focused
-      const activeElement = document.activeElement
-      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
-        return
-      }
-      
-      switch(e.key) {
-        case '1':
-          handleStageChange(1)
-          break
-        case '2':
-          handleStageChange(2)
-          break
-        case '3':
-          handleStageChange(3)
-          break
-        case 'Escape':
-          if (viewStage > 1) {
-            handleStageChange((viewStage - 1) as 1 | 2 | 3)
-          }
-          break
-      }
-    }
-    
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [isDataPanelOpen, dataPanelMode, viewStage])
   console.log('Selected SOCs:', selectedSOCs) // Will be used in Phase 4
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
@@ -181,7 +133,6 @@ function App() {
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
-    setDataPanelMode('onet')
   }
 
   const handleSOCClick = (code: string) => {
@@ -200,7 +151,6 @@ function App() {
       console.log('Detailed Analysis requested:', event.detail)
       setShowCareerMatches(false)
       setShowDetailedAnalysis(true)
-      setDataPanelMode('onet')
       // Don't auto-open the panel - let user toggle it manually
     }
 
@@ -248,7 +198,6 @@ function App() {
   const handleBackToCareerSelection = () => {
     setShowDetailedAnalysis(false)
     setShowCareerMatches(true)
-    setDataPanelMode('onet')
   }
   
   const handleMeetSentra = () => {
@@ -309,7 +258,6 @@ function App() {
     setApiResponse(null)
     setIsDataPanelOpen(false)
     setSelectedSOCs([])
-    setDataPanelMode('onet')
     setCareerDataCache({})
   }
   
@@ -342,13 +290,13 @@ function App() {
   }
 
   return (
-    <div className={`App stage-${viewStage}`}>
+    <div className="App">
       <header className="app-header">
         <h1>VetROI™</h1>
         <p className="tagline">Career Intelligence Platform</p>
       </header>
       
-      <main className={`app-main ${isDataPanelOpen && dataPanelMode === 'careermap' ? 'career-map-active' : ''}`}>
+      <main className="app-main">
         <div className="container">
           {!chatSession && !needsConfirmation && !showCareerMatches && !showDetailedAnalysis && !showDD214Upload && !showSentraChat && (
             <VeteranForm 
@@ -528,11 +476,7 @@ function App() {
           data={apiResponse}
           isOpen={isDataPanelOpen}
           onToggle={() => setIsDataPanelOpen(!isDataPanelOpen)}
-          mode={dataPanelMode}
           selectedSOCs={selectedSOCs}
-          onModeChange={setDataPanelMode}
-          viewStage={viewStage}
-          onStageChange={handleStageChange}
         />
       )}
       
@@ -571,48 +515,6 @@ function App() {
         onClose={() => setShowSessionWarning(false)}
       />
       
-      {/* Stage Navigation for stages 2 and 3 */}
-      {viewStage > 1 && isDataPanelOpen && dataPanelMode === 'careermap' && (
-        <div className="stage-navigation floating">
-          <button 
-            className={`stage-tab ${viewStage === 1 ? 'active' : ''}`}
-            onClick={() => handleStageChange(1)}
-          >
-            Side Panel
-          </button>
-          <button 
-            className={`stage-tab ${viewStage === 2 ? 'active' : ''}`}
-            onClick={() => handleStageChange(2)}
-          >
-            Split View
-          </button>
-          <button 
-            className={`stage-tab ${viewStage === 3 ? 'active' : ''}`}
-            onClick={() => handleStageChange(3)}
-          >
-            Full Screen
-          </button>
-        </div>
-      )}
-      
-      {/* Floating insights for Stage 3 */}
-      {viewStage === 3 && profileData && apiResponse && (
-        <div className="floating-insights">
-          <h4>Career Insights</h4>
-          <div className="insight-item">
-            <strong>MOS:</strong> {profileData.code}
-          </div>
-          <div className="insight-item">
-            <strong>Matches:</strong> {apiResponse.recommendations?.length || 0} careers
-          </div>
-          <div className="insight-item">
-            <strong>Selected:</strong> {selectedSOCs.length} careers
-          </div>
-          <div style={{ marginTop: '12px', fontSize: '11px', color: 'rgba(255, 255, 255, 0.5)' }}>
-            Press ESC to exit full screen
-          </div>
-        </div>
-      )}
     </div>
   )
 }

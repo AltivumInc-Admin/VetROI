@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthModal } from '../components/AuthModal';
+import CareerPlanner from '../components/career-planner/CareerPlanner';
 import '../styles/OperationsCenter.css';
 
 interface SessionData {
@@ -19,6 +20,11 @@ export const OperationsCenter: React.FC = () => {
   const [sessionData, setSessionData] = useState<SessionData>({});
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [collapsedPanels, setCollapsedPanels] = useState<{ [key: string]: boolean }>({
+    dd214: false,
+    careers: false,
+    stats: false
+  });
 
   // Load session data on mount
   useEffect(() => {
@@ -59,6 +65,13 @@ export const OperationsCenter: React.FC = () => {
 
   const handleBackToApp = () => {
     navigate('/app');
+  };
+
+  const togglePanel = (panelId: string) => {
+    setCollapsedPanels(prev => ({
+      ...prev,
+      [panelId]: !prev[panelId]
+    }));
   };
 
   if (isLoading) {
@@ -105,28 +118,41 @@ export const OperationsCenter: React.FC = () => {
             </div>
           </div>
           <div className="career-planner-container">
-            {/* Career planner will be inserted here in Phase 2 */}
-            <div className="placeholder">
-              Career Planner Component
-              <br />
-              (To be migrated in Phase 2)
-            </div>
+            <CareerPlanner />
           </div>
         </div>
 
         {/* Side Panels */}
         <div className="side-panels">
           {/* DD214 Analysis Panel */}
-          <div className="panel dd214-panel">
-            <div className="panel-header">
+          <div className={`panel dd214-panel ${collapsedPanels.dd214 ? 'collapsed' : ''}`}>
+            <div className="panel-header" onClick={() => togglePanel('dd214')}>
               <h3>DD214 Analysis</h3>
-              <button className="panel-toggle">−</button>
+              <button className="panel-toggle">
+                {collapsedPanels.dd214 ? '+' : '−'}
+              </button>
             </div>
-            <div className="panel-content">
+            {!collapsedPanels.dd214 && (
+              <div className="panel-content">
               {sessionData.dd214Processed && isAuthenticated ? (
                 <div className="dd214-data">
-                  <p>DD214 Document ID: {sessionData.dd214DocumentId}</p>
-                  {/* DD214 analysis will go here */}
+                  <div className="dd214-status">
+                    <div className="status-indicator success"></div>
+                    <span>DD214 Verified</span>
+                  </div>
+                  <div className="dd214-info">
+                    <div className="info-item">
+                      <span className="info-label">Document ID:</span>
+                      <span className="info-value">{sessionData.dd214DocumentId?.slice(0, 8)}...</span>
+                    </div>
+                    <div className="info-item">
+                      <span className="info-label">Analysis Status:</span>
+                      <span className="info-value">Complete</span>
+                    </div>
+                  </div>
+                  <button className="view-full-analysis-btn">
+                    View Full Analysis →
+                  </button>
                 </div>
               ) : (
                 <div className="auth-prompt">
@@ -138,21 +164,31 @@ export const OperationsCenter: React.FC = () => {
                 </div>
               )}
             </div>
+            )}
           </div>
 
           {/* Selected Careers Panel */}
-          <div className="panel careers-panel">
-            <div className="panel-header">
+          <div className={`panel careers-panel ${collapsedPanels.careers ? 'collapsed' : ''}`}>
+            <div className="panel-header" onClick={() => togglePanel('careers')}>
               <h3>Selected Careers ({sessionData.selectedSOCs?.length || 0})</h3>
-              <button className="panel-toggle">−</button>
+              <button className="panel-toggle">
+                {collapsedPanels.careers ? '+' : '−'}
+              </button>
             </div>
-            <div className="panel-content">
+            {!collapsedPanels.careers && (
+              <div className="panel-content">
               {sessionData.selectedSOCs && sessionData.selectedSOCs.length > 0 ? (
                 <div className="careers-list">
                   {sessionData.selectedSOCs.map((soc) => (
                     <div key={soc} className="career-item">
-                      <span className="career-code">{soc}</span>
-                      {/* Career details will be populated from cache */}
+                      <div className="career-item-header">
+                        <span className="career-code">{soc}</span>
+                        <button className="career-action-btn">View Details</button>
+                      </div>
+                      <div className="career-item-details">
+                        {/* Career details will be populated from cache */}
+                        <p className="career-placeholder">Loading career data...</p>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -160,14 +196,19 @@ export const OperationsCenter: React.FC = () => {
                 <p className="no-careers">No careers selected yet</p>
               )}
             </div>
+            )}
           </div>
 
           {/* Quick Stats Panel */}
-          <div className="panel stats-panel">
-            <div className="panel-header">
+          <div className={`panel stats-panel ${collapsedPanels.stats ? 'collapsed' : ''}`}>
+            <div className="panel-header" onClick={() => togglePanel('stats')}>
               <h3>Quick Stats</h3>
+              <button className="panel-toggle">
+                {collapsedPanels.stats ? '+' : '−'}
+              </button>
             </div>
-            <div className="panel-content">
+            {!collapsedPanels.stats && (
+              <div className="panel-content">
               <div className="stat-item">
                 <span className="stat-label">Careers Explored</span>
                 <span className="stat-value">{sessionData.selectedSOCs?.length || 0}</span>
@@ -179,6 +220,7 @@ export const OperationsCenter: React.FC = () => {
                 </span>
               </div>
             </div>
+            )}
           </div>
         </div>
       </div>
