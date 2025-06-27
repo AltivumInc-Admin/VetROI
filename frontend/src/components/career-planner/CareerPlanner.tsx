@@ -22,14 +22,14 @@ const initialNodes = [
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
 const nodeTypes = [
-  { id: 'tooltip', label: 'Tooltip', icon: '💬' },
-  { id: 'placeholder', label: 'Placeholder', icon: '⬚' },
-  { id: 'database', label: 'Database Schema', icon: '🗄️' },
-  { id: 'annotation', label: 'Annotation', icon: '📝' },
-  { id: 'group', label: 'Group with Label', icon: '📁' },
-  { id: 'header', label: 'Node Header', icon: '📌' },
-  { id: 'base', label: 'Base Node', icon: '⬢' },
-  { id: 'status', label: 'Node Status Indicator', icon: '🚦' }
+  { id: 'tooltip', label: 'Tooltip', icon: '◉' },
+  { id: 'placeholder', label: 'Placeholder', icon: '□' },
+  { id: 'database', label: 'Database Schema', icon: '▤' },
+  { id: 'annotation', label: 'Annotation', icon: '✎' },
+  { id: 'group', label: 'Group with Label', icon: '▣' },
+  { id: 'header', label: 'Node Header', icon: '▬' },
+  { id: 'base', label: 'Base Node', icon: '●' },
+  { id: 'status', label: 'Node Status Indicator', icon: '◈' }
 ];
  
 export default function CareerPlanner() {
