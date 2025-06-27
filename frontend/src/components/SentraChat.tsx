@@ -255,14 +255,37 @@ export const SentraChat: React.FC<SentraChatProps> = ({
           </button>
         )}
         {showNextMission && (
-          <a 
-            href="https://altivum.ai/nextmission" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="nextmission-button"
-          >
-            NextMission.ai
-          </a>
+          <>
+            <button 
+              onClick={() => {
+                // The selected SOCs should already be in sessionStorage from the main app
+                navigate('/operations-center');
+              }}
+              className="nextmission-button"
+              style={{
+                background: '#00d4ff',
+                color: '#0a0e1a',
+                border: 'none',
+                padding: '0.75rem 2rem',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                display: 'inline-block'
+              }}
+            >
+              Launch Operations Center →
+            </button>
+            <a 
+              href="https://altivum.ai/nextmission" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="nextmission-button"
+            >
+              NextMission.ai
+            </a>
+          </>
         )}
       </div>
     )}
