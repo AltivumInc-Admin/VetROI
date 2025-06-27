@@ -17,8 +17,10 @@ import './CareerPlanner.css';
 // Import custom node types
 import TooltipNodeDemo from './nodes/TooltipNode';
 import PlaceholderNodeDemo from './nodes/PlaceholderNode';
+import DatabaseSchemaDemo from './nodes/DatabaseSchemaNode';
 import './nodes/TooltipNode.css';
 import './nodes/PlaceholderNode.css';
+import './nodes/DatabaseSchemaNode.css';
  
 const initialNodes = [
   { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
@@ -42,6 +44,7 @@ const nodeTypeOptions = [
 const nodeTypes = {
   tooltipNode: TooltipNodeDemo,
   placeholderNode: PlaceholderNodeDemo,
+  databaseNode: DatabaseSchemaDemo,
 };
  
 // Add window interface for career communication
@@ -108,12 +111,29 @@ export default function CareerPlanner() {
   }, [selectedNodes, setNodes, setEdges]);
 
   const addNode = (typeId: string) => {
+    let nodeData: any = { label: `Node ${nodeCounter}` };
+    
+    // Add specific data for database nodes
+    if (typeId === 'database') {
+      nodeData = {
+        label: 'Career Skills',
+        schema: [
+          { name: 'skill_id', type: 'INTEGER', key: true },
+          { name: 'skill_name', type: 'VARCHAR(100)' },
+          { name: 'category', type: 'VARCHAR(50)' },
+          { name: 'proficiency', type: 'INTEGER' },
+          { name: 'years_exp', type: 'DECIMAL(3,1)' }
+        ]
+      };
+    }
+    
     const newNode = {
       id: `${nodeCounter}`,
       position: { x: Math.random() * 300, y: Math.random() * 300 },
-      data: { label: `Node ${nodeCounter}` },
+      data: nodeData,
       type: typeId === 'tooltip' ? 'tooltipNode' : 
             typeId === 'placeholder' ? 'placeholderNode' :
+            typeId === 'database' ? 'databaseNode' :
             undefined
     };
     setNodes((nds) => [...nds, newNode]);
