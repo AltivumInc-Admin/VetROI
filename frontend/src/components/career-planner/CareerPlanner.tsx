@@ -16,7 +16,9 @@ import './CareerPlanner.css';
 
 // Import custom node types
 import TooltipNodeDemo from './nodes/TooltipNode';
+import PlaceholderNodeDemo from './nodes/PlaceholderNode';
 import './nodes/TooltipNode.css';
+import './nodes/PlaceholderNode.css';
  
 const initialNodes = [
   { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
@@ -39,6 +41,7 @@ const nodeTypeOptions = [
 // Define React Flow node types
 const nodeTypes = {
   tooltipNode: TooltipNodeDemo,
+  placeholderNode: PlaceholderNodeDemo,
 };
  
 // Add window interface for career communication
@@ -89,7 +92,9 @@ export default function CareerPlanner() {
       id: `${nodeCounter}`,
       position: { x: Math.random() * 300, y: Math.random() * 300 },
       data: { label: `Node ${nodeCounter}` },
-      type: typeId === 'tooltip' ? 'tooltipNode' : undefined
+      type: typeId === 'tooltip' ? 'tooltipNode' : 
+            typeId === 'placeholder' ? 'placeholderNode' :
+            undefined
     };
     setNodes((nds) => [...nds, newNode]);
     setNodeCounter(nodeCounter + 1);
