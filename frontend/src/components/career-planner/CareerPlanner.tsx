@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { ReactFlow, useNodesState, useEdgesState, addEdge } from '@xyflow/react';
+import { ReactFlow, useNodesState, useEdgesState, addEdge, Connection } from '@xyflow/react';
  
 import '@xyflow/react/dist/style.css';
  
@@ -10,11 +10,11 @@ const initialNodes = [
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
  
 export default function CareerPlanner() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
  
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
   );
  
