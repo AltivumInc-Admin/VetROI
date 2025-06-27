@@ -53,6 +53,8 @@ function App() {
     const savedMatches = sessionStorage.getItem('careerMatches')
     const savedDD214Processed = sessionStorage.getItem('dd214Processed')
     const savedDD214DocumentId = sessionStorage.getItem('dd214DocumentId')
+    const savedSelectedSOCs = sessionStorage.getItem('selectedSOCs')
+    const savedCareerDataCache = sessionStorage.getItem('careerDataCache')
     
     if (savedProfile && savedMatches) {
       setProfileData(JSON.parse(savedProfile))
@@ -62,6 +64,14 @@ function App() {
       if (savedDD214Processed === 'true' && savedDD214DocumentId) {
         setDD214Processed(true)
         setDD214DocumentId(savedDD214DocumentId)
+      }
+      
+      if (savedSelectedSOCs) {
+        setSelectedSOCs(JSON.parse(savedSelectedSOCs))
+      }
+      
+      if (savedCareerDataCache) {
+        setCareerDataCache(JSON.parse(savedCareerDataCache))
       }
     }
   }, [])
@@ -145,6 +155,16 @@ function App() {
     })
   }
 
+  // Save selectedSOCs to sessionStorage whenever they change
+  useEffect(() => {
+    if (selectedSOCs.length > 0) {
+      sessionStorage.setItem('selectedSOCs', JSON.stringify(selectedSOCs));
+      console.log('Saved selectedSOCs to sessionStorage:', selectedSOCs);
+    } else {
+      sessionStorage.removeItem('selectedSOCs');
+    }
+  }, [selectedSOCs]);
+
   // Listen for detailed analysis event
   useEffect(() => {
     const handleDetailedAnalysis = (event: CustomEvent) => {
@@ -165,6 +185,8 @@ function App() {
     const handleS3DataFetched = (event: CustomEvent) => {
       console.log('Caching S3 data:', event.detail)
       setCareerDataCache(event.detail)
+      // Save to sessionStorage
+      sessionStorage.setItem('careerDataCache', JSON.stringify(event.detail))
     }
 
     window.addEventListener('s3DataFetched', handleS3DataFetched as EventListener)

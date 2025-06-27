@@ -38,13 +38,16 @@ export const OperationsCenter: React.FC = () => {
         // Get selected SOCs from wherever they're stored
         const selectedSOCs = JSON.parse(sessionStorage.getItem('selectedSOCs') || '[]');
         
+        // Get career data cache
+        const careerDataCache = JSON.parse(sessionStorage.getItem('careerDataCache') || '{}');
+        
         setSessionData({
           veteranProfile: profile ? JSON.parse(profile) : null,
           careerMatches: matches ? JSON.parse(matches) : null,
           selectedSOCs,
           dd214Processed: dd214Processed === 'true',
           dd214DocumentId: dd214DocumentId || undefined,
-          careerDataCache: {} // Will be populated later
+          careerDataCache
         });
       } catch (error) {
         console.error('Error loading session data:', error);
@@ -203,8 +206,16 @@ export const OperationsCenter: React.FC = () => {
                         <button className="career-action-btn">View Details</button>
                       </div>
                       <div className="career-item-details">
-                        {/* Career details will be populated from cache */}
-                        <p className="career-placeholder">Loading career data...</p>
+                        {sessionData.careerDataCache?.[soc] ? (
+                          <>
+                            <p className="career-title">{sessionData.careerDataCache[soc].title}</p>
+                            {sessionData.careerDataCache[soc].description && (
+                              <p className="career-description">{sessionData.careerDataCache[soc].description.substring(0, 100)}...</p>
+                            )}
+                          </>
+                        ) : (
+                          <p className="career-placeholder">Loading career data...</p>
+                        )}
                       </div>
                     </div>
                   ))}
