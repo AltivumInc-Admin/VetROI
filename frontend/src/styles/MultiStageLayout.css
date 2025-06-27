@@ -31,10 +31,10 @@
 
 .App.stage-2 .data-panel {
   position: fixed !important;
-  top: 60px !important; /* Below header */
+  top: 0 !important;
   right: 0 !important;
   width: 66vw !important;
-  height: calc(100vh - 60px) !important;
+  height: 100vh !important;
   max-width: none !important;
   transform: translateX(0) !important;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
@@ -42,7 +42,7 @@
 }
 
 .App.stage-2 .career-map-flow-wrapper {
-  height: calc(100vh - 60px) !important;
+  height: 100vh !important;
 }
 
 /* Stage 3: Full screen career planner overlaying main app */
@@ -53,12 +53,12 @@
 
 .App.stage-3 .data-panel {
   position: fixed !important;
-  top: 60px !important; /* Below header */
+  top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
   width: 100vw !important;
-  height: calc(100vh - 60px) !important;
+  height: 100vh !important;
   max-width: none !important;
   transform: translateX(0) !important;
   z-index: 1000;
