@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { CareerMapCanvas } from './CareerMapCanvas'
+import CareerPlanner from './career-planner/CareerPlanner'
 import './DataPanel.css'
 
 interface DataPanelProps {
@@ -152,7 +152,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({
                   </button>
                 </div>
               )}
-              <CareerMapCanvas viewStage={viewStage} onStageChange={onStageChange} />
+              <CareerPlanner viewStage={viewStage} onStageChange={onStageChange} />
             </>
           ) : mode === 'onet' ? (
             <>

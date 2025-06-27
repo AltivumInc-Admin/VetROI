@@ -1,0 +1,130 @@
+/* Career Planner Styles */
+.career-planner-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: var(--color-bg-900, #0a0e1a);
+}
+
+/* Node Details Panel */
+.node-details-panel {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(13, 17, 33, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  min-width: 250px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.node-details-panel h3 {
+  margin: 0 0 12px 0;
+  color: rgba(0, 212, 255, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.details-content p {
+  margin: 8px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.details-content strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* React Flow Overrides for Dark Theme */
+.react-flow__controls {
+  background: rgba(13, 17, 33, 0.95);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.react-flow__controls-button {
+  background: transparent;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.react-flow__controls-button:hover {
+  background: rgba(0, 212, 255, 0.1);
+  color: rgba(0, 212, 255, 0.9);
+}
+
+.react-flow__controls-button svg {
+  fill: currentColor;
+}
+
+/* Node styling */
+.react-flow__node {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.react-flow__node.selected {
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.6);
+}
+
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background: rgba(0, 212, 255, 0.6);
+  border: 2px solid rgba(10, 14, 26, 0.9);
+}
+
+.react-flow__handle-connecting {
+  background: rgba(0, 212, 255, 0.9);
+}
+
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+/* Background pattern color */
+.react-flow__background pattern circle {
+  fill: rgba(0, 212, 255, 0.03);
+}
+
+/* Minimap enhancements */
+.react-flow__minimap-mask {
+  fill: rgba(0, 212, 255, 0.1);
+}
+
+/* Viewport control for different stages */
+.career-planner-wrapper[data-stage="1"] {
+  /* Stage 1: Side panel view */
+}
+
+.career-planner-wrapper[data-stage="2"] {
+  /* Stage 2: Split view */
+}
+
+.career-planner-wrapper[data-stage="3"] {
+  /* Stage 3: Full screen */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
