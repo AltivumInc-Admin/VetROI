@@ -1,5 +1,14 @@
 import { useCallback } from 'react';
-import { ReactFlow, useNodesState, useEdgesState, addEdge, Connection } from '@xyflow/react';
+import {
+  ReactFlow,
+  MiniMap,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection
+} from '@xyflow/react';
  
 import '@xyflow/react/dist/style.css';
  
@@ -26,7 +35,11 @@ export default function CareerPlanner() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-      />
+      >
+        <Controls />
+        <MiniMap />
+        <Background variant="dots" gap={12} size={1} />
+      </ReactFlow>
     </div>
   );
 }
