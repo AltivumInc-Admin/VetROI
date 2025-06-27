@@ -152,7 +152,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({
                   </button>
                 </div>
               )}
-              <CareerMapCanvas />
+              <CareerMapCanvas viewStage={viewStage} onStageChange={onStageChange} />
             </>
           ) : mode === 'onet' ? (
             <>

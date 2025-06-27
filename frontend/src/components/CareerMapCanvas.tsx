@@ -52,7 +52,7 @@ const createNode = (
   },
 });
 
-const CareerMapCanvasInner = () => {
+const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, onStageChange }) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { project } = useReactFlow();
   const [nodes, setNodes] = useNodesState([]);
@@ -588,6 +588,77 @@ const CareerMapCanvasInner = () => {
             }
           </div>
           
+          {/* Stage Controls */}
+          {onStageChange && (
+            <div className="stage-controls" style={{
+              display: 'flex',
+              gap: '4px',
+              marginBottom: '8px',
+              padding: '4px',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '4px',
+            }}>
+              <button
+                className={`stage-button ${viewStage === 1 ? 'active' : ''}`}
+                onClick={() => onStageChange(1)}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '4px',
+                  background: viewStage === 1 ? 'rgba(0, 212, 255, 0.2)' : 'transparent',
+                  color: viewStage === 1 ? '#00d4ff' : 'rgba(255, 255, 255, 0.8)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Panel
+              </button>
+              <button
+                className={`stage-button ${viewStage === 2 ? 'active' : ''}`}
+                onClick={() => onStageChange(2)}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '4px',
+                  background: viewStage === 2 ? 'rgba(0, 212, 255, 0.2)' : 'transparent',
+                  color: viewStage === 2 ? '#00d4ff' : 'rgba(255, 255, 255, 0.8)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Split View
+              </button>
+              <button
+                className={`stage-button ${viewStage === 3 ? 'active' : ''}`}
+                onClick={() => onStageChange(3)}
+                style={{
+                  padding: '4px 8px',
+                  fontSize: '11px',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '4px',
+                  background: viewStage === 3 ? 'rgba(0, 212, 255, 0.2)' : 'transparent',
+                  color: viewStage === 3 ? '#00d4ff' : 'rgba(255, 255, 255, 0.8)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                Full Screen
+              </button>
+              {viewStage === 3 && (
+                <span style={{
+                  fontSize: '10px',
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  marginLeft: '8px',
+                  alignSelf: 'center'
+                }}>
+                  Press ESC to exit
+                </span>
+              )}
+            </div>
+          )}
+          
           {/* Node Type Selector */}
           <div style={{ 
             display: 'flex', 
@@ -672,10 +743,15 @@ const CareerMapCanvasInner = () => {
   );
 };
 
-export const CareerMapCanvas: React.FC = () => {
+interface CareerMapCanvasProps {
+  viewStage?: 1 | 2 | 3;
+  onStageChange?: (stage: 1 | 2 | 3) => void;
+}
+
+export const CareerMapCanvas: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, onStageChange }) => {
   return (
     <ReactFlowProvider>
-      <CareerMapCanvasInner />
+      <CareerMapCanvasInner viewStage={viewStage} onStageChange={onStageChange} />
     </ReactFlowProvider>
   );
 };

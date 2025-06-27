@@ -17,12 +17,12 @@ export interface CareerNodeData {
 
 // Icon mapping for node types
 const nodeIcons = {
-  current: '⭐',
-  goal: '🎯',
-  milestone: '🏁',
-  education: '🎓',
-  decision: '⚡',
-  risk: '⚠️',
+  current: '◆',
+  goal: '◎',
+  milestone: '▣',
+  education: '▤',
+  decision: '◈',
+  risk: '△',
 };
 
 // Color mapping for node types
