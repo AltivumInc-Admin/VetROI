@@ -56,6 +56,7 @@ export default function CareerPlanner() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [showNodeMenu, setShowNodeMenu] = useState(false);
   const [nodeCounter, setNodeCounter] = useState(3);
+  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
   
   // Listen for career additions from parent
   useEffect(() => {
@@ -87,6 +88,25 @@ export default function CareerPlanner() {
     [setEdges],
   );
 
+  // Handle node selection
+  const onSelectionChange = useCallback(({ nodes: selectedNodes }: { nodes: any[] }) => {
+    setSelectedNodes(selectedNodes.map(n => n.id));
+  }, []);
+
+  // Handle keyboard events for deletion
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedNodes.length > 0) {
+        setNodes((nds) => nds.filter((node) => !selectedNodes.includes(node.id)));
+        setEdges((eds) => eds.filter((edge) => !selectedNodes.includes(edge.source) && !selectedNodes.includes(edge.target)));
+        setSelectedNodes([]);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [selectedNodes, setNodes, setEdges]);
+
   const addNode = (typeId: string) => {
     const newNode = {
       id: `${nodeCounter}`,
@@ -110,6 +130,8 @@ export default function CareerPlanner() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        onSelectionChange={onSelectionChange}
+        deleteKeyCode={['Delete', 'Backspace']}
       >
         <Controls />
         <MiniMap />
