@@ -23,3 +23,5 @@ Contributing to VetROI™ has been an incredible journey of helping veterans tra
 ---
 
 *VetROI™ represents the power of human-AI collaboration in service of those who served.*
+
+<!-- Amazon Q AI Assistant - Committed Fri Jun 27 12:19:48 CDT 2025 -->
