@@ -28,6 +28,7 @@ import '../styles/CareerMapCanvas.css';
 import FloatingEdge from './career-map/FloatingEdge';
 import FloatingConnectionLine from './career-map/FloatingConnectionLine';
 import { nodeTypes, CareerNodeData } from './career-map/node-types';
+import { SlashCommandMenu } from './career-map/SlashCommandMenu';
 
 // Define edge types
 const edgeTypes = {
@@ -62,6 +63,9 @@ const CareerMapCanvasInner = () => {
   const [connectingNodes, setConnectingNodes] = useState<string[]>([]);
   const connectingNodeRef = useRef<string | null>(null);
   const edgeReconnectSuccessful = useRef(true);
+  const [showSlashMenu, setShowSlashMenu] = useState(false);
+  const [slashMenuPosition, setSlashMenuPosition] = useState({ x: 0, y: 0 });
+  const [selectedNodes, setSelectedNodes] = useState<string[]>([]);
 
   // Detect mobile device
   useEffect(() => {
@@ -105,6 +109,33 @@ const CareerMapCanvasInner = () => {
     const state = { nodes, edges };
     localStorage.setItem('careerMapState', JSON.stringify(state));
   }, [nodes, edges]);
+
+  // Handle keyboard events for slash command
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Check if input is focused
+      const activeElement = document.activeElement;
+      if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+        return;
+      }
+
+      if (event.key === '/') {
+        event.preventDefault();
+        // Get mouse position or center of viewport
+        const bounds = reactFlowWrapper.current?.getBoundingClientRect();
+        if (bounds) {
+          setSlashMenuPosition({
+            x: bounds.left + bounds.width / 2 - 160, // Center horizontally (menu width is 320px)
+            y: bounds.top + bounds.height / 2 - 200, // Center vertically
+          });
+          setShowSlashMenu(true);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Listen for junction creation events
   useEffect(() => {
@@ -250,6 +281,19 @@ const CareerMapCanvasInner = () => {
   // Node changes handler with custom logic
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
+      // Track selection changes
+      const selectionChanges = changes.filter(change => change.type === 'select');
+      if (selectionChanges.length > 0) {
+        const selected = nodes.filter(node => {
+          const selectChange = selectionChanges.find(c => c.id === node.id);
+          if (selectChange && 'selected' in selectChange) {
+            return selectChange.selected;
+          }
+          return node.selected;
+        }).map(n => n.id);
+        setSelectedNodes(selected);
+      }
+
       // Filter out deletion of junction nodes if they have connections
       const filteredChanges = changes.filter(change => {
         if (change.type === 'remove') {
@@ -322,6 +366,146 @@ const CareerMapCanvasInner = () => {
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
   };
+
+  // Slash command actions
+  const slashCommands = [
+    {
+      id: 'create-goal',
+      label: 'Create Goal Node',
+      description: 'Add a new career goal',
+      icon: '🎯',
+      action: () => {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const position = project({ x: centerX, y: centerY });
+        const newNode = createNode(
+          `node-${nodeIdCounter}`,
+          position,
+          'goal',
+          'New Career Goal'
+        );
+        setNodes((nds) => nds.concat(newNode));
+        setNodeIdCounter(nodeIdCounter + 1);
+      }
+    },
+    {
+      id: 'create-milestone',
+      label: 'Create Milestone',
+      description: 'Add a career milestone',
+      icon: '🏁',
+      action: () => {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const position = project({ x: centerX, y: centerY });
+        const newNode = createNode(
+          `node-${nodeIdCounter}`,
+          position,
+          'milestone',
+          'New Milestone'
+        );
+        setNodes((nds) => nds.concat(newNode));
+        setNodeIdCounter(nodeIdCounter + 1);
+      }
+    },
+    {
+      id: 'create-education',
+      label: 'Create Education Node',
+      description: 'Add education or certification',
+      icon: '🎓',
+      action: () => {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const position = project({ x: centerX, y: centerY });
+        const newNode = createNode(
+          `node-${nodeIdCounter}`,
+          position,
+          'education',
+          'New Education'
+        );
+        setNodes((nds) => nds.concat(newNode));
+        setNodeIdCounter(nodeIdCounter + 1);
+      }
+    },
+    {
+      id: 'delete',
+      label: 'Delete Selected',
+      description: 'Remove selected nodes',
+      icon: '🗑️',
+      shortcut: 'Del',
+      action: () => {
+        if (selectedNodes.length > 0) {
+          setNodes((nds) => nds.filter(node => !selectedNodes.includes(node.id)));
+          setEdges((eds) => eds.filter(edge => 
+            !selectedNodes.includes(edge.source) && !selectedNodes.includes(edge.target)
+          ));
+          setSelectedNodes([]);
+        }
+      }
+    },
+    {
+      id: 'duplicate',
+      label: 'Duplicate Selected',
+      description: 'Copy selected nodes',
+      icon: '📋',
+      shortcut: 'Cmd+D',
+      action: () => {
+        if (selectedNodes.length > 0) {
+          const newNodes = selectedNodes.map(nodeId => {
+            const originalNode = nodes.find(n => n.id === nodeId);
+            if (!originalNode) return null;
+            
+            const newNode = {
+              ...originalNode,
+              id: `node-${nodeIdCounter + selectedNodes.indexOf(nodeId)}`,
+              position: {
+                x: originalNode.position.x + 50,
+                y: originalNode.position.y + 50,
+              },
+              selected: false,
+            };
+            return newNode;
+          }).filter(Boolean) as Node[];
+          
+          setNodes((nds) => nds.concat(newNodes));
+          setNodeIdCounter(nodeIdCounter + selectedNodes.length);
+        }
+      }
+    },
+    {
+      id: 'clear',
+      label: 'Clear Canvas',
+      description: 'Remove all nodes and edges',
+      icon: '🧹',
+      action: handleClear
+    },
+    {
+      id: 'export',
+      label: 'Export Map',
+      description: 'Download as JSON file',
+      icon: '💾',
+      shortcut: 'Cmd+S',
+      action: handleExport
+    },
+    {
+      id: 'connect',
+      label: 'Connect Nodes',
+      description: 'Create edge between selected',
+      icon: '🔗',
+      action: () => {
+        if (selectedNodes.length === 2) {
+          const connection: Connection = {
+            source: selectedNodes[0],
+            target: selectedNodes[1],
+            sourceHandle: null,
+            targetHandle: null,
+          };
+          if (isValidConnection(connection)) {
+            onConnect(connection);
+          }
+        }
+      }
+    }
+  ];
 
   return (
     <div className="career-map-flow-wrapper" ref={reactFlowWrapper}>
@@ -440,6 +624,14 @@ const CareerMapCanvasInner = () => {
           </Panel>
         )}
       </ReactFlow>
+      
+      {showSlashMenu && (
+        <SlashCommandMenu
+          position={slashMenuPosition}
+          onClose={() => setShowSlashMenu(false)}
+          commands={slashCommands}
+        />
+      )}
       
       <style>{`
         .connectable-node {
