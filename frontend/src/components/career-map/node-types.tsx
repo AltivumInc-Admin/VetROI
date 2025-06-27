@@ -47,6 +47,7 @@ export const CareerNode: React.FC<NodeProps<CareerNodeData>> = ({ data, selected
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{ minWidth: '240px' }}
+      data-nodetype={nodeType}
     >
       {/* Invisible handles for floating connections */}
       <Handle 
@@ -87,8 +88,26 @@ export const CareerNode: React.FC<NodeProps<CareerNodeData>> = ({ data, selected
         style={{ 
           borderColor: colors.border,
           backgroundColor: hover ? colors.bg : 'transparent',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
+        {/* Animated gradient background */}
+        {hover && (
+          <div 
+            style={{
+              position: 'absolute',
+              top: '-50%',
+              left: '-50%',
+              width: '200%',
+              height: '200%',
+              background: `radial-gradient(circle at center, ${colors.border} 0%, transparent 70%)`,
+              opacity: 0.5,
+              animation: 'rotate 4s linear infinite',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
         <div className="node-inner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div className="node-icon" style={{ fontSize: '28px' }}>

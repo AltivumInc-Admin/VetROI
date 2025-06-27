@@ -41,13 +41,20 @@ const FloatingEdge: React.FC<FloatingEdgeProps> = ({
     targetPosition,
   });
 
+  // Determine gradient based on edge type
+  const getEdgeGradient = () => {
+    if (data?.difficulty === 'hard') return 'url(#edge-gradient-risk)';
+    if (data?.difficulty === 'easy') return 'url(#edge-gradient-success)';
+    return 'url(#edge-gradient-default)';
+  };
+
   // Enhanced edge styling
   const edgeStyle = {
     ...style,
     strokeWidth: isHovered ? 3 : 2,
-    stroke: data?.isAlternative 
+    stroke: isHovered ? getEdgeGradient() : (data?.isAlternative 
       ? 'var(--color-cyan-30)' 
-      : 'var(--color-cyan-50)',
+      : 'var(--color-cyan-50)'),
     strokeDasharray: data?.isAlternative ? '5 5' : undefined,
     cursor: 'pointer',
     transition: 'var(--transition-fast)',
@@ -67,7 +74,7 @@ const FloatingEdge: React.FC<FloatingEdgeProps> = ({
         />
       </g>
       
-      {/* Edge Label */}
+      {/* Enhanced Edge Tooltip */}
       {(data?.timeline || isHovered) && (
         <EdgeLabelRenderer>
           <div
@@ -77,22 +84,51 @@ const FloatingEdge: React.FC<FloatingEdgeProps> = ({
               pointerEvents: 'all',
               fontSize: 11,
               fontWeight: 500,
+              zIndex: 10,
             }}
             className="nodrag nopan"
           >
             <div 
               style={{
-                background: 'var(--color-bg-600)',
+                background: 'rgba(20, 24, 38, 0.95)',
                 border: '1px solid var(--color-cyan-30)',
-                borderRadius: '6px',
-                padding: '4px 8px',
+                borderRadius: '8px',
+                padding: isHovered && (data?.requirements || data?.difficulty) ? '12px' : '6px 10px',
                 color: 'var(--text-high)',
-                whiteSpace: 'nowrap',
-                backdropFilter: 'var(--glass-blur)',
-                boxShadow: isHovered ? 'var(--shadow-sm)' : undefined,
+                backdropFilter: 'var(--glass-blur-heavy)',
+                boxShadow: 'var(--shadow-lg)',
+                transition: 'all 0.3s ease',
+                maxWidth: isHovered ? '200px' : 'none',
               }}
             >
-              {data?.timeline || 'Timeline'}
+              <div style={{ 
+                fontWeight: 600, 
+                marginBottom: isHovered && (data?.requirements || data?.difficulty) ? '8px' : 0,
+                color: 'var(--color-cyan-100)'
+              }}>
+                {data?.timeline || '1-3 months'}
+              </div>
+              
+              {isHovered && data?.difficulty && (
+                <div style={{ 
+                  fontSize: '10px', 
+                  marginBottom: '6px',
+                  color: data.difficulty === 'hard' ? 'var(--color-danger)' : 
+                         data.difficulty === 'easy' ? 'var(--color-success)' : 
+                         'var(--color-warning)'
+                }}>
+                  Difficulty: {data.difficulty}
+                </div>
+              )}
+              
+              {isHovered && data?.requirements && (
+                <div style={{ fontSize: '10px', color: 'var(--text-mid)' }}>
+                  <div style={{ fontWeight: 500, marginBottom: '4px' }}>Requirements:</div>
+                  {data.requirements.map((req, i) => (
+                    <div key={i} style={{ marginLeft: '8px' }}>• {req}</div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </EdgeLabelRenderer>

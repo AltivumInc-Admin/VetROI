@@ -264,22 +264,59 @@ const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, o
     setConnectingNodes([]);
   }, []);
 
-  // Handle new connections
+  // Handle new connections with context-aware data
   const onConnect = useCallback(
     (params: Connection) => {
       if (!isValidConnection(params)) return;
+      
+      // Get source and target nodes to determine edge context
+      const sourceNode = nodes.find(n => n.id === params.source);
+      const targetNode = nodes.find(n => n.id === params.target);
+      
+      // Determine edge properties based on node types
+      let edgeData: any = { timeline: '1-3 months' };
+      
+      if (sourceNode && targetNode) {
+        // Risk connections
+        if (sourceNode.data.type === 'risk' || targetNode.data.type === 'risk') {
+          edgeData = {
+            ...edgeData,
+            difficulty: 'hard',
+            requirements: ['Risk mitigation plan', 'Contingency preparation'],
+            timeline: '2-4 weeks',
+          };
+        }
+        // Education connections
+        else if (sourceNode.data.type === 'education' || targetNode.data.type === 'education') {
+          edgeData = {
+            ...edgeData,
+            difficulty: 'medium',
+            requirements: ['Course completion', 'Certification exam'],
+            timeline: '3-6 months',
+          };
+        }
+        // Goal connections
+        else if (targetNode.data.type === 'goal') {
+          edgeData = {
+            ...edgeData,
+            difficulty: 'easy',
+            requirements: ['Final preparations', 'Portfolio ready'],
+            timeline: '1-2 months',
+          };
+        }
+      }
       
       setEdges((eds) =>
         addEdge(
           {
             ...params,
-            data: { timeline: '1-3 months' },
+            data: edgeData,
           },
           eds
         )
       );
     },
-    [setEdges, isValidConnection]
+    [setEdges, isValidConnection, nodes]
   );
 
   // Handle edge reconnection
@@ -576,6 +613,27 @@ const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, o
         snapToGrid={true}
         snapGrid={[15, 15]}
       >
+        {/* SVG Definitions for gradients */}
+        <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+          <defs>
+            <linearGradient id="edge-gradient-default" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="var(--color-cyan-30)" />
+              <stop offset="50%" stopColor="var(--color-cyan-50)" />
+              <stop offset="100%" stopColor="var(--color-cyan-30)" />
+            </linearGradient>
+            <linearGradient id="edge-gradient-success" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="var(--color-success-30)" />
+              <stop offset="50%" stopColor="var(--color-success)" />
+              <stop offset="100%" stopColor="var(--color-success-30)" />
+            </linearGradient>
+            <linearGradient id="edge-gradient-risk" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="var(--color-danger-30)" />
+              <stop offset="50%" stopColor="var(--color-danger)" />
+              <stop offset="100%" stopColor="var(--color-danger-30)" />
+            </linearGradient>
+          </defs>
+        </svg>
+        
         <Background 
           variant={BackgroundVariant.Dots} 
           gap={30} 

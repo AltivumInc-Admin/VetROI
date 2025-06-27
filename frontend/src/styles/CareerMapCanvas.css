@@ -34,15 +34,51 @@
   border: var(--glass-border-hover);
   background: transparent;
   box-shadow: var(--shadow-md);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: var(--shadow-md);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--color-cyan-30);
+  }
 }
 
 .node-inner {
-  background: var(--color-bg-600);
+  background: rgba(20, 24, 38, 0.55);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border-radius: 11px;
   padding: var(--spacing-md) 20px;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glassmorphism shine effect */
+.node-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.03),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.career-node:hover .node-inner::before {
+  left: 100%;
 }
 
 .node-icon {
@@ -290,6 +326,187 @@
 .react-flow__edge.selected .react-flow__edge-path {
   stroke: var(--color-cyan-100) !important;
   stroke-width: 3;
+}
+
+/* Entrance animations */
+.career-node {
+  animation: nodeEntrance 0.5s ease-out;
+}
+
+@keyframes nodeEntrance {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Floating animation for junction nodes */
+.react-flow__node-junction {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Depth effects with layered shadows */
+.career-node {
+  position: relative;
+}
+
+.career-node::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: -10px;
+  bottom: -10px;
+  background: radial-gradient(ellipse at center, rgba(0, 212, 255, 0.1), transparent 70%);
+  border-radius: var(--radius-lg);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.career-node:hover::before {
+  opacity: 1;
+}
+
+/* Parallax depth on node hover */
+.career-node:hover .node-gradient-border {
+  transform: translateZ(10px) scale(1.02);
+}
+
+/* Breathing effect for current position node */
+.react-flow__node-career[data-nodetype="current"] .node-gradient-border {
+  animation: breathing 3s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+  }
+}
+
+/* Shimmer effect on milestone nodes */
+.react-flow__node-career[data-nodetype="milestone"] .node-inner::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.02) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg) translateX(-100%);
+  transition: transform 0.8s ease;
+}
+
+.react-flow__node-career[data-nodetype="milestone"]:hover .node-inner::after {
+  transform: rotate(45deg) translateX(100%);
+}
+
+/* Edge entrance animation */
+.react-flow__edge {
+  animation: edgeEntrance 0.8s ease-out;
+}
+
+@keyframes edgeEntrance {
+  from {
+    opacity: 0;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  to {
+    opacity: 1;
+    stroke-dasharray: 0;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Pulse animation for active edges */
+.react-flow__edge.selected path {
+  animation: edgePulse 2s ease-in-out infinite;
+}
+
+@keyframes edgePulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px var(--color-cyan-50));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--color-cyan-100));
+  }
+}
+
+/* Gradient animation for edges */
+.react-flow__edge path {
+  stroke: url(#edge-gradient-default);
+}
+
+.react-flow__edge:hover path {
+  animation: gradientShift 3s linear infinite;
+}
+
+@keyframes gradientShift {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 100;
+  }
+}
+
+/* Enhance minimap with glass effect */
+.react-flow__minimap {
+  backdrop-filter: var(--glass-blur) !important;
+  animation: fadeIn 1s ease-out;
+}
+
+/* Enhance controls with glass effect */
+.react-flow__controls {
+  backdrop-filter: var(--glass-blur);
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Mobile optimizations */
