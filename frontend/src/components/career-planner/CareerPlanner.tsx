@@ -8,8 +8,7 @@ import {
   useNodesState,
   useEdgesState,
   addEdge,
-  Connection,
-  Node
+  Connection
 } from '@xyflow/react';
  
 import '@xyflow/react/dist/style.css';
@@ -44,7 +43,7 @@ export default function CareerPlanner() {
   );
 
   const addNode = (type: string) => {
-    const newNode: Node = {
+    const newNode = {
       id: `${nodeCounter}`,
       position: { x: Math.random() * 300, y: Math.random() * 300 },
       data: { label: `${type} ${nodeCounter}` }
