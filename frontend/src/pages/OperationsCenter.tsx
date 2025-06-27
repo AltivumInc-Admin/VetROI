@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { AuthModal } from '../components/AuthModal';
 import CareerPlanner from '../components/career-planner/CareerPlanner';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import '../styles/OperationsCenter.css';
 
 interface SessionData {
@@ -12,11 +13,12 @@ interface SessionData {
   dd214Processed?: boolean;
   dd214DocumentId?: string;
   careerDataCache?: any;
+  dd214Insights?: any;
 }
 
 export const OperationsCenter: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, signOutUser, user } = useAuth();
+  const { isAuthenticated, signOutUser, user, checkAuth } = useAuth();
   const [sessionData, setSessionData] = useState<SessionData>({});
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -79,12 +81,87 @@ export const OperationsCenter: React.FC = () => {
     }
   };
 
+  const saveProgress = () => {
+    // Progress is automatically saved to sessionStorage
+    // This provides user feedback
+    alert('Your career planning progress has been saved!');
+  };
+
+  const exportCareerPlan = () => {
+    const exportData = {
+      date: new Date().toLocaleDateString(),
+      veteranProfile: sessionData.veteranProfile,
+      selectedCareers: sessionData.selectedSOCs?.map(soc => ({
+        code: soc,
+        title: sessionData.careerDataCache?.[soc]?.title || soc,
+        description: sessionData.careerDataCache?.[soc]?.description || ''
+      })),
+      dd214Status: sessionData.dd214Processed ? 'Verified' : 'Not Processed',
+      militaryExperience: sessionData.dd214Insights?.totalMonths 
+        ? `${Math.floor(sessionData.dd214Insights.totalMonths / 12)} years` 
+        : 'N/A'
+    };
+
+    // Create a downloadable JSON file
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = `career-plan-${new Date().toISOString().split('T')[0]}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
   const togglePanel = (panelId: string) => {
     setCollapsedPanels(prev => ({
       ...prev,
       [panelId]: !prev[panelId]
     }));
   };
+
+  // Fetch DD214 insights if we have a document ID and are authenticated
+  useEffect(() => {
+    const fetchDD214Insights = async () => {
+      if (sessionData.dd214DocumentId && isAuthenticated) {
+        try {
+          // Check if we already have insights in sessionStorage
+          const cachedInsights = sessionStorage.getItem('dd214Insights');
+          if (cachedInsights) {
+            setSessionData(prev => ({
+              ...prev,
+              dd214Insights: JSON.parse(cachedInsights)
+            }));
+            return;
+          }
+
+          // Otherwise fetch from API
+          const response = await fetch(
+            `${import.meta.env.VITE_API_URL}/dd214/insights/${sessionData.dd214DocumentId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${(await fetchAuthSession()).tokens?.idToken}`
+              }
+            }
+          );
+
+          if (response.ok) {
+            const insights = await response.json();
+            sessionStorage.setItem('dd214Insights', JSON.stringify(insights));
+            setSessionData(prev => ({
+              ...prev,
+              dd214Insights: insights
+            }));
+          }
+        } catch (error) {
+          console.error('Error fetching DD214 insights:', error);
+        }
+      }
+    };
+
+    fetchDD214Insights();
+  }, [sessionData.dd214DocumentId, isAuthenticated]);
 
   if (isLoading) {
     return (
@@ -109,7 +186,7 @@ export const OperationsCenter: React.FC = () => {
               <span className="profile-mos">{sessionData.veteranProfile.code}</span>
               <span className="profile-branch">{sessionData.veteranProfile.branch}</span>
               {isAuthenticated && user && (
-                <span className="profile-auth">• {user.username || user.email}</span>
+                <span className="profile-auth">• {user.email || user.name || user.username}</span>
               )}
             </div>
           )}
@@ -133,8 +210,8 @@ export const OperationsCenter: React.FC = () => {
           <div className="section-header">
             <h2>Career Map</h2>
             <div className="section-controls">
-              <button className="control-btn">Save Progress</button>
-              <button className="control-btn">Export</button>
+              <button className="control-btn" onClick={() => saveProgress()}>Save Progress</button>
+              <button className="control-btn" onClick={() => exportCareerPlan()}>Export</button>
             </div>
           </div>
           <div className="career-planner-container">
@@ -169,8 +246,23 @@ export const OperationsCenter: React.FC = () => {
                       <span className="info-label">Analysis Status:</span>
                       <span className="info-value">Complete</span>
                     </div>
+                    {sessionData.dd214Insights && (
+                      <>
+                        <div className="info-item">
+                          <span className="info-label">Service Years:</span>
+                          <span className="info-value">{sessionData.dd214Insights.serviceYears || 'N/A'}</span>
+                        </div>
+                        <div className="info-item">
+                          <span className="info-label">Key Skills:</span>
+                          <span className="info-value">{sessionData.dd214Insights.keySkills?.slice(0, 3).join(', ') || 'Processing...'}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <button className="view-full-analysis-btn">
+                  <button 
+                    className="view-full-analysis-btn"
+                    onClick={() => navigate(`/dd214-insights/${sessionData.dd214DocumentId}`)}
+                  >
                     View Full Analysis →
                   </button>
                 </div>
@@ -247,6 +339,14 @@ export const OperationsCenter: React.FC = () => {
                   {sessionData.dd214Processed ? 'Complete' : 'Basic'}
                 </span>
               </div>
+              {sessionData.dd214Insights && (
+                <div className="stat-item">
+                  <span className="stat-label">Military Experience</span>
+                  <span className="stat-value">
+                    {sessionData.dd214Insights.totalMonths ? `${Math.floor(sessionData.dd214Insights.totalMonths / 12)} years` : 'N/A'}
+                  </span>
+                </div>
+              )}
             </div>
             )}
           </div>
@@ -258,10 +358,10 @@ export const OperationsCenter: React.FC = () => {
         <AuthModal 
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
-          onSuccess={() => {
+          onSuccess={async () => {
             setShowAuthModal(false);
-            // Reload the page to show DD214 data after auth
-            window.location.reload();
+            // Re-check auth status without reloading
+            await checkAuth();
           }}
         />
       )}
