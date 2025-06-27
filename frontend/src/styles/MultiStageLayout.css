@@ -2,10 +2,14 @@
 
 /* Base layout */
 .App {
-  transition: all 0.3s ease;
   position: relative;
   width: 100%;
   min-height: 100vh;
+}
+
+.app-main {
+  transition: width 0.3s ease;
+  position: relative;
 }
 
 /* Stage 1: Default side panel (current behavior) */
@@ -13,37 +17,38 @@
   /* No changes needed, uses existing layout */
 }
 
-/* Stage 2: Split view (66vh career planner) */
+/* Stage 2: Split view (66vw career planner) */
 .App.stage-2 .app-main {
-  display: grid;
-  grid-template-columns: 34vw 66vw;
-  gap: 0;
+  width: 34vw;
   transition: all 0.3s ease;
+  overflow-x: hidden;
 }
 
-.App.stage-2 .app-main > .container {
-  overflow-x: hidden;
-  overflow-y: auto;
+.App.stage-2 .app-main .container {
+  max-width: 100%;
   padding: 1rem;
 }
 
 .App.stage-2 .data-panel {
-  position: relative !important;
-  right: auto !important;
-  width: 100% !important;
-  height: calc(100vh - 60px) !important; /* Account for header */
+  position: fixed !important;
+  top: 60px !important; /* Below header */
+  right: 0 !important;
+  width: 66vw !important;
+  height: calc(100vh - 60px) !important;
   max-width: none !important;
-  transform: none !important;
+  transform: translateX(0) !important;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
 }
 
 .App.stage-2 .career-map-flow-wrapper {
   height: calc(100vh - 60px) !important;
 }
 
-/* Stage 3: Full screen career planner */
+/* Stage 3: Full screen career planner overlaying main app */
 .App.stage-3 .app-main {
-  display: none;
+  /* Keep main app rendered but underneath */
+  width: 100vw;
 }
 
 .App.stage-3 .data-panel {
@@ -55,8 +60,19 @@
   width: 100vw !important;
   height: calc(100vh - 60px) !important;
   max-width: none !important;
-  transform: none !important;
+  transform: translateX(0) !important;
   z-index: 1000;
+  background: rgba(10, 14, 26, 0.98); /* Slightly transparent to hint at content below */
+  animation: slideInFromRight 0.3s ease;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .App.stage-3 .career-map-flow-wrapper {

@@ -50,6 +50,9 @@ function App() {
     if (stage > 1) {
       setIsDataPanelOpen(true)
       setDataPanelMode('careermap')
+    } else if (stage === 1) {
+      // When going back to stage 1, keep panel open but allow closing
+      setDataPanelMode('careermap')
     }
   }
   

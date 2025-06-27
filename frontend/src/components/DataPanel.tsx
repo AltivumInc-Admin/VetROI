@@ -122,7 +122,9 @@ export const DataPanel: React.FC<DataPanelProps> = ({
       <div ref={panelRef} className={`data-panel ${isOpen ? 'open' : ''}`}>
         <div className="data-panel-header">
           <h3>{getHeaderText()}</h3>
-          <button className="close-btn" onClick={onToggle}>×</button>
+          {viewStage === 1 && (
+            <button className="close-btn" onClick={onToggle}>×</button>
+          )}
         </div>
         
         <div className="data-panel-content">
