@@ -13,6 +13,10 @@ import {
  
 import '@xyflow/react/dist/style.css';
 import './CareerPlanner.css';
+
+// Import custom node types
+import TooltipNodeDemo from './nodes/TooltipNode';
+import './nodes/TooltipNode.css';
  
 const initialNodes = [
   { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
@@ -20,7 +24,8 @@ const initialNodes = [
 ];
 const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 
-const nodeTypes = [
+// Define available node types for the menu
+const nodeTypeOptions = [
   { id: 'tooltip', label: 'Tooltip', icon: '◉' },
   { id: 'placeholder', label: 'Placeholder', icon: '□' },
   { id: 'database', label: 'Database Schema', icon: '▤' },
@@ -30,6 +35,11 @@ const nodeTypes = [
   { id: 'base', label: 'Base Node', icon: '●' },
   { id: 'status', label: 'Node Status Indicator', icon: '◈' }
 ];
+
+// Define React Flow node types
+const nodeTypes = {
+  tooltipNode: TooltipNodeDemo,
+};
  
 export default function CareerPlanner() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -42,11 +52,12 @@ export default function CareerPlanner() {
     [setEdges],
   );
 
-  const addNode = (type: string) => {
+  const addNode = (typeId: string) => {
     const newNode = {
       id: `${nodeCounter}`,
       position: { x: Math.random() * 300, y: Math.random() * 300 },
-      data: { label: `${type} ${nodeCounter}` }
+      data: { label: `Node ${nodeCounter}` },
+      type: typeId === 'tooltip' ? 'tooltipNode' : undefined
     };
     setNodes((nds) => [...nds, newNode]);
     setNodeCounter(nodeCounter + 1);
@@ -58,6 +69,7 @@ export default function CareerPlanner() {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        nodeTypes={nodeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -79,11 +91,11 @@ export default function CareerPlanner() {
         
         {showNodeMenu && (
           <div className="node-menu">
-            {nodeTypes.map((type) => (
+            {nodeTypeOptions.map((type) => (
               <button
                 key={type.id}
                 className="node-menu-item"
-                onClick={() => addNode(type.label)}
+                onClick={() => addNode(type.id)}
               >
                 <span className="node-menu-icon">{type.icon}</span>
                 <span className="node-menu-label">{type.label}</span>

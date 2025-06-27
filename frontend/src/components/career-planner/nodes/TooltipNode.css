@@ -1,0 +1,130 @@
+/* Tooltip Node Styles */
+.tooltip-node {
+  position: relative;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.tooltip-node.selected {
+  border-color: #00d4ff;
+  box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.2);
+}
+
+.tooltip-node:hover {
+  border-color: #00d4ff;
+  transform: translateY(-1px);
+}
+
+.tooltip-node-wrapper {
+  position: relative;
+}
+
+.tooltip-trigger {
+  color: #000;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Tooltip Content */
+.tooltip-content {
+  position: absolute;
+  background: rgba(10, 14, 26, 0.95);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Arrow for tooltip */
+.tooltip-content::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+/* Position variations */
+.tooltip-content-top {
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-content-top::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0 5px;
+  border-color: rgba(10, 14, 26, 0.95) transparent transparent transparent;
+}
+
+.tooltip-content-bottom {
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltip-content-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 5px 5px 5px;
+  border-color: transparent transparent rgba(10, 14, 26, 0.95) transparent;
+}
+
+.tooltip-content-left {
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip-content-left::after {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 5px 0 5px 5px;
+  border-color: transparent transparent transparent rgba(10, 14, 26, 0.95);
+}
+
+.tooltip-content-right {
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltip-content-right::after {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 5px 5px 5px 0;
+  border-color: transparent rgba(10, 14, 26, 0.95) transparent transparent;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Handle styles */
+.tooltip-node .react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background: #00d4ff;
+  border: 2px solid white;
+}
