@@ -7,6 +7,8 @@
   padding: 10px 20px;
   font-size: 14px;
   transition: all 0.2s ease;
+  cursor: move;
+  user-select: none;
 }
 
 .tooltip-node.selected {
@@ -21,12 +23,14 @@
 
 .tooltip-node-wrapper {
   position: relative;
+  pointer-events: none;
 }
 
 .tooltip-trigger {
   color: #000;
   font-weight: 500;
-  cursor: pointer;
+  cursor: move;
+  pointer-events: none;
 }
 
 /* Tooltip Content */
@@ -42,6 +46,16 @@
   pointer-events: none;
   animation: tooltipFadeIn 0.2s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 60px;
+  max-width: 300px;
+}
+
+/* Dynamic width for editing */
+.tooltip-content.editing {
+  white-space: normal;
+  word-wrap: break-word;
+  width: auto;
+  pointer-events: all;
 }
 
 /* Arrow for tooltip */
@@ -143,6 +157,8 @@
   margin: 0;
   text-align: center;
   caret-color: #000;
+  pointer-events: all;
+  cursor: text;
 }
 
 .tooltip-edit-input {
@@ -153,10 +169,28 @@
   font-size: 12px;
   font-family: inherit;
   width: 100%;
+  min-width: 100px;
   padding: 0;
   margin: 0;
   text-align: center;
   caret-color: white;
+  pointer-events: all;
+  cursor: text;
+}
+
+/* Make input expand to content */
+.tooltip-content.editing .tooltip-edit-input {
+  width: auto;
+  min-width: 100px;
+  display: inline-block;
+}
+
+/* Textarea specific styles */
+textarea.tooltip-edit-input {
+  resize: none;
+  overflow: hidden;
+  line-height: 1.4;
+  white-space: pre-wrap;
 }
 
 /* Ensure the tooltip stays visible when editing */

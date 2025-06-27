@@ -119,13 +119,16 @@ export const TooltipContent: React.FC<TooltipContentProps & {
   onEdit,
   text
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [localText, setLocalText] = useState(text || children?.toString() || '');
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.select();
+      // Auto-resize textarea
+      inputRef.current.style.height = 'auto';
+      inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
     }
   }, [isEditing]);
 
@@ -142,24 +145,27 @@ export const TooltipContent: React.FC<TooltipContentProps & {
     [Position.Right]: 'tooltip-content-right',
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLocalText(e.target.value);
     if (onEdit) {
       onEdit(e.target.value);
     }
+    // Auto-resize textarea
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
   };
 
   return (
     <div className={`tooltip-content ${positionClasses[position]} ${isEditing ? 'editing' : ''}`}>
       {isEditing ? (
-        <input
+        <textarea
           ref={inputRef}
-          type="text"
           value={localText}
           onChange={handleChange}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
           className="tooltip-edit-input"
+          rows={1}
         />
       ) : (
         localText
