@@ -53,7 +53,7 @@ const createNode = (
 
 const CareerMapCanvasInner = () => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
-  const { getIntersectingNodes, project } = useReactFlow();
+  const { project } = useReactFlow();
   const [nodes, setNodes] = useNodesState([]);
   const [edges, setEdges] = useEdgesState([]);
   const [nodeIdCounter, setNodeIdCounter] = useState(1);
@@ -197,7 +197,7 @@ const CareerMapCanvasInner = () => {
     
     // Highlight compatible nodes
     const compatibleNodes = nodes
-      .filter(n => n.id !== nodeId && isValidConnection({ source: nodeId, target: n.id }))
+      .filter(n => n.id !== nodeId && isValidConnection({ source: nodeId, target: n.id, sourceHandle: null, targetHandle: null }))
       .map(n => n.id);
     
     setConnectingNodes(compatibleNodes);
@@ -240,7 +240,7 @@ const CareerMapCanvasInner = () => {
     setEdges((els) => reconnectEdge(oldEdge, newConnection, els));
   }, [isValidConnection, setEdges]);
 
-  const onReconnectEnd = useCallback((_, edge: Edge) => {
+  const onReconnectEnd = useCallback((_: MouseEvent | TouchEvent, edge: Edge) => {
     if (!edgeReconnectSuccessful.current) {
       setEdges((eds) => eds.filter((e) => e.id !== edge.id));
     }
@@ -441,7 +441,7 @@ const CareerMapCanvasInner = () => {
         )}
       </ReactFlow>
       
-      <style jsx>{`
+      <style>{`
         .connectable-node {
           animation: pulse 1s ease-in-out infinite;
         }

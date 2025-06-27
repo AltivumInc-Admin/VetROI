@@ -22,16 +22,6 @@ const getEdgeCenter = (
     targetPosition
   );
 
-  const sourceRadius = Math.sqrt(
-    Math.pow(sourceX - sourceIntersectionPoint.x, 2) +
-    Math.pow(sourceY - sourceIntersectionPoint.y, 2)
-  );
-
-  const targetRadius = Math.sqrt(
-    Math.pow(targetX - targetIntersectionPoint.x, 2) +
-    Math.pow(targetY - targetIntersectionPoint.y, 2)
-  );
-
   const path = getBezierPath({
     sourceX: sourceIntersectionPoint.x,
     sourceY: sourceIntersectionPoint.y,
@@ -39,8 +29,6 @@ const getEdgeCenter = (
     targetX: targetIntersectionPoint.x,
     targetY: targetIntersectionPoint.y,
     targetPosition,
-    sourceRadius,
-    targetRadius,
   });
 
   return { path, labelX: (sourceX + targetX) / 2, labelY: (sourceY + targetY) / 2 };
@@ -120,13 +108,16 @@ const FloatingEdge: React.FC<FloatingEdgeProps> = ({
 
   return (
     <>
-      <BaseEdge 
-        path={path[0]} 
-        markerEnd={markerEnd} 
-        style={edgeStyle}
+      <g
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-      />
+      >
+        <BaseEdge 
+          path={path[0]} 
+          markerEnd={markerEnd} 
+          style={edgeStyle}
+        />
+      </g>
       
       {/* Edge Label */}
       {(data?.timeline || isHovered) && (
