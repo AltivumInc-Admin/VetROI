@@ -25,14 +25,14 @@ const nodeIcons = {
   risk: '△',
 };
 
-// Color mapping for node types
+// Color mapping for node types using CSS variables
 const nodeColors = {
-  current: { border: 'rgba(255, 215, 0, 0.3)', bg: 'rgba(255, 215, 0, 0.05)' },
-  goal: { border: 'rgba(76, 175, 80, 0.3)', bg: 'rgba(76, 175, 80, 0.05)' },
-  milestone: { border: 'rgba(33, 150, 243, 0.3)', bg: 'rgba(33, 150, 243, 0.05)' },
-  education: { border: 'rgba(156, 39, 176, 0.3)', bg: 'rgba(156, 39, 176, 0.05)' },
-  decision: { border: 'rgba(255, 152, 0, 0.3)', bg: 'rgba(255, 152, 0, 0.05)' },
-  risk: { border: 'rgba(244, 67, 54, 0.3)', bg: 'rgba(244, 67, 54, 0.05)' },
+  current: { border: 'var(--color-cyan-30)', bg: 'var(--color-cyan-10)' },
+  goal: { border: 'var(--color-success-30)', bg: 'var(--color-success-05)' },
+  milestone: { border: 'var(--color-cyan-30)', bg: 'var(--color-cyan-05)' },
+  education: { border: 'var(--color-special-30)', bg: 'var(--color-special-05)' },
+  decision: { border: 'var(--color-warning-30)', bg: 'var(--color-warning-05)' },
+  risk: { border: 'var(--color-danger-30)', bg: 'var(--color-danger-05)' },
 };
 
 // Base career node component

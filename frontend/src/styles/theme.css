@@ -1,0 +1,156 @@
+/* VetROI Design Token System - Single Source of Truth */
+
+:root {
+  /* =================================
+     PRIMARY BRAND COLORS
+     ================================= */
+  
+  /* Cyan - Primary Action Color */
+  --color-cyan-100: #00d4ff;
+  --color-cyan-80: rgba(0, 212, 255, 0.8);
+  --color-cyan-60: rgba(0, 212, 255, 0.6);
+  --color-cyan-50: rgba(0, 212, 255, 0.5);
+  --color-cyan-30: rgba(0, 212, 255, 0.3);
+  --color-cyan-20: rgba(0, 212, 255, 0.2);
+  --color-cyan-10: rgba(0, 212, 255, 0.1);
+  --color-cyan-05: rgba(0, 212, 255, 0.05);
+  
+  /* Background Colors */
+  --color-bg-900: #0a0e1a;      /* Deep space black - primary bg */
+  --color-bg-800: #0f1419;      /* Secondary black */
+  --color-bg-700: #141826;      /* Panel backgrounds */
+  --color-bg-600: rgba(20, 24, 38, 0.95);  /* Node backgrounds */
+  
+  /* Semantic Colors */
+  --color-success: #00ff88;
+  --color-success-50: rgba(0, 255, 136, 0.5);
+  --color-success-30: rgba(0, 255, 136, 0.3);
+  --color-success-10: rgba(0, 255, 136, 0.1);
+  --color-success-05: rgba(0, 255, 136, 0.05);
+  
+  --color-danger: #ff006e;
+  --color-danger-50: rgba(255, 0, 110, 0.5);
+  --color-danger-30: rgba(255, 0, 110, 0.3);
+  --color-danger-10: rgba(255, 0, 110, 0.1);
+  --color-danger-05: rgba(255, 0, 110, 0.05);
+  
+  --color-special: #f700ff;     /* Purple accent */
+  --color-special-50: rgba(247, 0, 255, 0.5);
+  --color-special-30: rgba(247, 0, 255, 0.3);
+  --color-special-10: rgba(247, 0, 255, 0.1);
+  --color-special-05: rgba(247, 0, 255, 0.05);
+  
+  --color-warning: #ff9500;     /* Orange for decisions */
+  --color-warning-30: rgba(255, 149, 0, 0.3);
+  --color-warning-05: rgba(255, 149, 0, 0.05);
+  
+  /* =================================
+     TEXT COLORS
+     ================================= */
+  --text-primary: #e0e0e0;      /* Main text */
+  --text-secondary: #a0a0a0;    /* Secondary text */
+  --text-muted: #606060;        /* Muted text */
+  
+  --text-high: rgba(255, 255, 255, 0.9);
+  --text-mid: rgba(255, 255, 255, 0.6);
+  --text-low: rgba(255, 255, 255, 0.3);
+  --text-minimal: rgba(255, 255, 255, 0.1);
+  
+  /* =================================
+     GLASSMORPHISM & EFFECTS
+     ================================= */
+  --glass-blur: blur(10px);
+  --glass-blur-heavy: blur(20px);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-hover: rgba(255, 255, 255, 0.08);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+  --glass-border-hover: 1px solid rgba(255, 255, 255, 0.2);
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.5);
+  
+  /* Glows */
+  --glow-cyan: 0 0 20px rgba(0, 212, 255, 0.5);
+  --glow-cyan-intense: 0 0 40px rgba(0, 212, 255, 0.7);
+  --glow-success: 0 0 20px rgba(0, 255, 136, 0.5);
+  --glow-danger: 0 0 20px rgba(255, 0, 110, 0.5);
+  --glow-special: 0 0 20px rgba(247, 0, 255, 0.5);
+  
+  /* =================================
+     SPACING & LAYOUT
+     ================================= */
+  --spacing-xs: 0.25rem;  /* 4px */
+  --spacing-sm: 0.5rem;   /* 8px */
+  --spacing-md: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;   /* 24px */
+  --spacing-xl: 2rem;     /* 32px */
+  --spacing-2xl: 3rem;    /* 48px */
+  
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  
+  /* =================================
+     TRANSITIONS
+     ================================= */
+  --transition-fast: all 0.2s ease;
+  --transition-base: all 0.3s ease;
+  --transition-slow: all 0.5s ease;
+  
+  /* =================================
+     Z-INDEX SCALE
+     ================================= */
+  --z-base: 1;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+  --z-notification: 800;
+  --z-maximum: 9999;
+  
+  /* =================================
+     CAREER MAP SPECIFIC
+     ================================= */
+  --node-min-width: 240px;
+  --node-border-width: 1px;
+  --edge-stroke-width: 2px;
+  --control-height: 32px;
+  --panel-width: 300px;
+}
+
+/* Dark mode is our default, but structure for future light mode */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Override colors here if we ever add light mode */
+  }
+}
+
+/* Utility classes for quick access */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--radius-lg);
+}
+
+.glass-panel:hover {
+  background: var(--glass-bg-hover);
+  border: var(--glass-border-hover);
+}
+
+.text-glow-cyan {
+  text-shadow: var(--glow-cyan);
+}
+
+.box-glow-cyan {
+  box-shadow: var(--glow-cyan);
+}

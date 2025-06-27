@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect, useMemo } from 'react';
 import ReactFlow, {
   Node,
   Edge,
@@ -373,8 +373,8 @@ const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, o
     linkElement.click();
   };
 
-  // Slash command actions
-  const slashCommands = [
+  // Slash command actions - memoized to prevent recreation on every render
+  const slashCommands = useMemo(() => [
     {
       id: 'create-goal',
       label: 'Create Goal Node',
@@ -526,7 +526,7 @@ const CareerMapCanvasInner: React.FC<CareerMapCanvasProps> = ({ viewStage = 1, o
         }
       }
     }
-  ];
+  ], [nodeIdCounter, selectedNodes, nodes, handleClear, handleExport, isValidConnection, onConnect, setNodes, setEdges, setNodeIdCounter, project]);
 
   return (
     <div className="career-map-flow-wrapper" ref={reactFlowWrapper}>
