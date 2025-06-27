@@ -48,11 +48,7 @@ declare global {
   }
 }
 
-interface CareerPlannerProps {
-  selectedCareers?: any[];
-}
-
-export default function CareerPlanner({ selectedCareers = [] }: CareerPlannerProps) {
+export default function CareerPlanner() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [showNodeMenu, setShowNodeMenu] = useState(false);
