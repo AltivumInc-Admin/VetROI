@@ -243,7 +243,7 @@ function App() {
     // Map selected SOCs to their full career info
     const careersViewed = selectedSOCs.map(soc => {
       // First try to find in the original matches
-      const matchedCareer = allMatches.find(m => m.code === soc)
+      const matchedCareer = allMatches.find((m: any) => m.code === soc)
       // Then fallback to cache if available
       const cachedCareer = careerDataCache[soc]
       
