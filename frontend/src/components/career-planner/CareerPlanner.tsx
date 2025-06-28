@@ -149,8 +149,6 @@ export default function CareerPlanner() {
       nodeType = 'group';
       // Groups need explicit width/height for React Flow
       nodeStyle = {
-        width: 400,
-        height: 300,
         backgroundColor: 'rgba(13, 17, 33, 0.3)',
         zIndex: -1  // Groups should be behind other nodes
       };
@@ -167,9 +165,15 @@ export default function CareerPlanner() {
       type: nodeType
     };
     
-    // Add style if needed (for group nodes)
+    // Add style if needed
     if (Object.keys(nodeStyle).length > 0) {
       newNode.style = nodeStyle;
+    }
+    
+    // Add width/height for group nodes
+    if (typeId === 'group') {
+      newNode.width = 400;
+      newNode.height = 300;
     }
     
     setNodes((nds) => [...nds, newNode]);
@@ -212,8 +216,8 @@ export default function CareerPlanner() {
                     const groupBounds = {
                       x: group.position.x,
                       y: group.position.y,
-                      width: (group as any).style?.width || 400,
-                      height: (group as any).style?.height || 300
+                      width: (group as any).width || 400,
+                      height: (group as any).height || 300
                     };
                     
                     // Use node's actual position
@@ -231,7 +235,7 @@ export default function CareerPlanner() {
                       // Add node to group
                       return {
                         ...n,
-                        parentNode: group.id,
+                        parentId: group.id,
                         extent: 'parent' as const,
                         position: {
                           x: nodeX - groupBounds.x,
@@ -243,10 +247,10 @@ export default function CareerPlanner() {
                   }
                   
                   // If not in any group but had a parent, remove parent
-                  if (!nodeUpdated && (n as any).parentNode) {
-                    const parent = currentNodes.find(p => p.id === (n as any).parentNode);
+                  if (!nodeUpdated && (n as any).parentId) {
+                    const parent = currentNodes.find(p => p.id === (n as any).parentId);
                     if (parent) {
-                      const { parentNode, extent, expandParent, ...rest } = n as any;
+                      const { parentId, extent, expandParent, ...rest } = n as any;
                       return {
                         ...rest,
                         position: {
