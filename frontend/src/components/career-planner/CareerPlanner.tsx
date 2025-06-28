@@ -151,8 +151,8 @@ export default function CareerPlanner() {
       nodeStyle = {
         width: 400,
         height: 300,
-        backgroundColor: 'transparent',
-        border: 'none'
+        backgroundColor: 'rgba(13, 17, 33, 0.3)',
+        zIndex: -1  // Groups should be behind other nodes
       };
     } else if (typeId === 'tooltip') {
       nodeType = 'tooltipNode';
@@ -189,6 +189,9 @@ export default function CareerPlanner() {
         onSelectionChange={onSelectionChange}
         deleteKeyCode={['Delete', 'Backspace']}
         onNodeDragStop={(_event, node) => {
+          // Don't process if this is a group node
+          if ((node as any).type === 'group') return;
+          
           // Check if node was dropped on a group
           const groupNodes = nodes.filter(n => (n as any).type === 'group');
           
@@ -203,8 +206,10 @@ export default function CareerPlanner() {
             };
             
             // Check if node center is within group bounds
-            const nodeCenterX = node.position.x + ((node as any).width || 100) / 2;
-            const nodeCenterY = node.position.y + ((node as any).height || 50) / 2;
+            const nodeWidth = (node as any).width || 150;
+            const nodeHeight = (node as any).height || 50;
+            const nodeCenterX = node.position.x + nodeWidth / 2;
+            const nodeCenterY = node.position.y + nodeHeight / 2;
             
             if (
               nodeCenterX >= groupBounds.x &&
@@ -223,13 +228,31 @@ export default function CareerPlanner() {
                       position: {
                         x: node.position.x - group.position.x,
                         y: node.position.y - group.position.y
-                      }
+                      },
+                      expandParent: true
                     };
                   }
                   return n;
                 })
               );
               break;
+            } else if ((node as any).parentNode === group.id) {
+              // Remove from group if dragged outside
+              setNodes((nds) => 
+                nds.map((n) => {
+                  if (n.id === node.id) {
+                    const { parentNode, extent, ...rest } = n as any;
+                    return {
+                      ...rest,
+                      position: {
+                        x: node.position.x + group.position.x,
+                        y: node.position.y + group.position.y
+                      }
+                    };
+                  }
+                  return n;
+                })
+              );
             }
           }
         }}

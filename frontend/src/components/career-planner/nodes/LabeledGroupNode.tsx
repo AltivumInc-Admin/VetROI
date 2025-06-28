@@ -1,5 +1,5 @@
 import React, { memo, forwardRef, useState, useRef, useEffect } from 'react';
-import { NodeProps, useReactFlow } from '@xyflow/react';
+import { NodeProps, useReactFlow, Handle, Position } from '@xyflow/react';
 import './LabeledGroupNode.css';
 
 // Types
@@ -19,7 +19,7 @@ const cn = (...classes: (string | undefined | boolean)[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
-// Base Labeled Group Node - Note: No handles for group nodes
+// Base Labeled Group Node with handles
 export const LabeledGroupNode = forwardRef<HTMLDivElement, LabeledGroupNodeProps>(
   ({ selected, label = 'Group', variant = 'default', collapsed = false, onLabelChange, childCount = 0 }, ref) => {
     const [isEditingLabel, setIsEditingLabel] = useState(false);
@@ -67,6 +67,8 @@ export const LabeledGroupNode = forwardRef<HTMLDivElement, LabeledGroupNodeProps
           isCollapsed && 'collapsed'
         )}
       >
+        <Handle type="target" position={Position.Top} />
+        
         {/* Group Header */}
         <div className="group-header">
           <div className="group-label-section">
@@ -113,6 +115,8 @@ export const LabeledGroupNode = forwardRef<HTMLDivElement, LabeledGroupNodeProps
             </div>
           </div>
         )}
+        
+        <Handle type="source" position={Position.Bottom} />
       </div>
     );
   }
