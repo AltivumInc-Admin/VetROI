@@ -1,7 +1,7 @@
 const https = require('https');
-const AWS = require('aws-sdk');
+const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager');
 
-const secretsManager = new AWS.SecretsManager({ region: 'us-east-2' });
+const client = new SecretsManagerClient({ region: 'us-east-2' });
 
 exports.handler = async (event) => {
     const headers = {
@@ -25,10 +25,11 @@ exports.handler = async (event) => {
         const { jobTitle, state } = body;
         
         // Get API key from Secrets Manager
-        const secretData = await secretsManager.getSecretValue({ 
-            SecretId: 'arn:aws:secretsmanager:us-east-2:205930636302:secret:usa-ExiNQ2' 
-        }).promise();
+        const command = new GetSecretValueCommand({
+            SecretId: 'arn:aws:secretsmanager:us-east-2:205930636302:secret:usa-ExiNQ2'
+        });
         
+        const secretData = await client.send(command);
         const { USAJOBS_API_KEY, USAJOBS_EMAIL } = JSON.parse(secretData.SecretString);
         
         // Build USAJOBS API URL

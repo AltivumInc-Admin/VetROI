@@ -65,6 +65,17 @@ In short, VetROI doesn't offer one-size-fits-all advice. It delivers **real-time
 and role-specific guidance**—making military experience legible, valuable, and strategically 
 positioned in the civilian workforce.
 
+## 📢 Update - June 28, 2025
+
+We are pleased to announce that VetROI has integrated with the USAJOBS API, expanding our capabilities to provide veterans with direct access to federal employment opportunities. This enhancement builds upon our existing career translation services by connecting veterans to live job postings that match their military experience and career interests.
+
+### New Capabilities:
+- **Direct Job Search Integration**: Veterans can now search for federal positions based on their selected career paths and geographic preferences
+- **Real-time Federal Job Listings**: Access to current openings across all federal agencies through the official USAJOBS database
+- **Seamless Application Process**: Direct links to job applications, allowing veterans to transition from career discovery to job application within the same platform
+- **Location-based Matching**: Job searches automatically filter by the veteran's home state or desired relocation area
+
+This integration represents a significant advancement in our mission to bridge the gap between military service and civilian employment. Veterans no longer need to navigate multiple platforms—they can discover their career potential, receive AI-powered insights, and apply for relevant positions all within VetROI.
 
 ### Watch Our Demo
 [Demo Video Link] - See VetROI process a real DD214 and generate career insights
