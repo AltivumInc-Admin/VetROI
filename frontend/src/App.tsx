@@ -237,17 +237,28 @@ function App() {
   const getSentraContext = () => {
     if (!profileData || !apiResponse) return null
     
-    const careersViewed = selectedSOCs.map(soc => ({
-      soc,
-      title: careerDataCache[soc]?.title || 'Unknown',
-      detailsViewed: true
-    }))
+    // Get all career matches from the API response
+    const allMatches = apiResponse.onet_careers?.match?.[0]?.occupations?.occupation || []
+    
+    // Map selected SOCs to their full career info
+    const careersViewed = selectedSOCs.map(soc => {
+      // First try to find in the original matches
+      const matchedCareer = allMatches.find(m => m.code === soc)
+      // Then fallback to cache if available
+      const cachedCareer = careerDataCache[soc]
+      
+      return {
+        soc,
+        title: matchedCareer?.title || cachedCareer?.title || 'Unknown',
+        detailsViewed: true
+      }
+    })
     
     return {
       veteranProfile: {
         branch: profileData.branch,
         mos: profileData.code,
-        mosTitle: apiResponse.raw_onet_data?.data?.match?.[0]?.title || profileData.code,
+        mosTitle: apiResponse.onet_careers?.match?.[0]?.title || profileData.code,
         education: profileData.education,
         homeState: profileData.homeState,
         relocate: profileData.relocate,
