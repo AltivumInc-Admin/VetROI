@@ -1,0 +1,228 @@
+/* Labeled Group Node Styles */
+.labeled-group-node {
+  background: rgba(13, 17, 33, 0.3);
+  border: 2px dashed rgba(0, 212, 255, 0.3);
+  border-radius: 12px;
+  min-width: 400px;
+  min-height: 300px;
+  width: 100%;
+  height: 100%;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Variant Styles */
+.group-default {
+  border-color: rgba(0, 212, 255, 0.3);
+  background: rgba(13, 17, 33, 0.3);
+}
+
+.group-skills {
+  border-color: rgba(147, 51, 234, 0.3);
+  background: rgba(23, 13, 33, 0.3);
+}
+
+.group-skills .group-header {
+  background: rgba(147, 51, 234, 0.1);
+}
+
+.group-education {
+  border-color: rgba(34, 197, 94, 0.3);
+  background: rgba(13, 26, 17, 0.3);
+}
+
+.group-education .group-header {
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.group-career-phase {
+  border-color: rgba(255, 193, 7, 0.3);
+  background: rgba(26, 18, 11, 0.3);
+}
+
+.group-career-phase .group-header {
+  background: rgba(255, 193, 7, 0.1);
+}
+
+.group-department {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(26, 11, 11, 0.3);
+}
+
+.group-department .group-header {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Hover and Selected States */
+.labeled-group-node:hover {
+  border-color: rgba(0, 212, 255, 0.5);
+  background: rgba(13, 17, 33, 0.4);
+}
+
+.labeled-group-node.selected {
+  border-color: rgba(0, 212, 255, 0.8);
+  box-shadow: 0 0 0 1px rgba(0, 212, 255, 0.3);
+}
+
+/* Group Header */
+.group-header {
+  background: rgba(0, 212, 255, 0.1);
+  border-bottom: 1px dashed rgba(0, 212, 255, 0.3);
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 10px 10px 0 0;
+}
+
+.group-label-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.group-label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.group-label:hover {
+  background: rgba(0, 212, 255, 0.1);
+}
+
+.group-label-input {
+  background: rgba(10, 14, 26, 0.8);
+  border: 1px solid #00d4ff;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+  min-width: 150px;
+}
+
+.child-count {
+  background: rgba(0, 212, 255, 0.2);
+  color: #00d4ff;
+  padding: 0.125rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.collapse-toggle {
+  background: none;
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: rgba(0, 212, 255, 0.8);
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.15s ease;
+}
+
+.collapse-toggle:hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: #00d4ff;
+  color: #00d4ff;
+}
+
+/* Group Body */
+.group-body {
+  flex: 1;
+  padding: 1rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drop-hint {
+  color: rgba(0, 212, 255, 0.4);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem;
+  border: 2px dashed rgba(0, 212, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 212, 255, 0.05);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+/* Hide hint when group has children */
+.labeled-group-node:has(.react-flow__node) .drop-hint {
+  display: none;
+}
+
+/* Collapsed State */
+.labeled-group-node.collapsed {
+  min-height: auto;
+}
+
+.labeled-group-node.collapsed .group-header {
+  border-bottom: none;
+  border-radius: 10px;
+}
+
+/* Special styling for nodes inside groups */
+.react-flow__node-group {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .labeled-group-node {
+    min-width: 300px;
+    min-height: 200px;
+  }
+  
+  .group-label {
+    font-size: 0.875rem;
+  }
+}
+
+/* Drop zone feedback */
+.labeled-group-node.drop-target {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: #00d4ff;
+}
+
+.labeled-group-node.drop-target .drop-hint {
+  color: #00d4ff;
+  border-color: #00d4ff;
+  background: rgba(0, 212, 255, 0.1);
+}
+
+/* Double-click hint */
+.labeled-group-node::after {
+  content: 'Double-click to change type';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.625rem;
+  color: rgba(0, 212, 255, 0.4);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.labeled-group-node:hover::after {
+  opacity: 1;
+}

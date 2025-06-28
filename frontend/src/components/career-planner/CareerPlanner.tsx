@@ -19,10 +19,12 @@ import TooltipNodeDemo from './nodes/TooltipNode';
 import PlaceholderNodeDemo from './nodes/PlaceholderNode';
 import DatabaseSchemaDemo from './nodes/DatabaseSchemaNode';
 import AnnotationNodeDemo from './nodes/AnnotationNode';
+import LabeledGroupNodeDemo from './nodes/LabeledGroupNode';
 import './nodes/TooltipNode.css';
 import './nodes/PlaceholderNode.css';
 import './nodes/DatabaseSchemaNode.css';
 import './nodes/AnnotationNode.css';
+import './nodes/LabeledGroupNode.css';
  
 const initialNodes = [
   { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
@@ -48,6 +50,7 @@ const nodeTypes = {
   placeholderNode: PlaceholderNodeDemo,
   databaseNode: DatabaseSchemaDemo,
   annotationNode: AnnotationNodeDemo,
+  group: LabeledGroupNodeDemo,
 };
  
 // Add window interface for career communication
@@ -115,6 +118,8 @@ export default function CareerPlanner() {
 
   const addNode = (typeId: string) => {
     let nodeData: any = { label: `Node ${nodeCounter}` };
+    let nodeStyle: any = {};
+    let nodeType = undefined;
     
     // Add specific data for different node types
     if (typeId === 'database') {
@@ -128,24 +133,45 @@ export default function CareerPlanner() {
           { name: 'years_exp', type: 'DECIMAL(3,1)' }
         ]
       };
+      nodeType = 'databaseNode';
     } else if (typeId === 'annotation') {
       nodeData = {
         number: `${nodeCounter}.`,
         content: 'Add your annotation here...\n- Use **bold** for emphasis\n- Use *italic* for notes\n- Start lines with - for lists',
         variant: 'note'
       };
+      nodeType = 'annotationNode';
+    } else if (typeId === 'group') {
+      nodeData = {
+        label: 'New Group',
+        variant: 'default'
+      };
+      nodeType = 'group';
+      // Groups need explicit width/height for React Flow
+      nodeStyle = {
+        width: 400,
+        height: 300,
+        backgroundColor: 'transparent',
+        border: 'none'
+      };
+    } else if (typeId === 'tooltip') {
+      nodeType = 'tooltipNode';
+    } else if (typeId === 'placeholder') {
+      nodeType = 'placeholderNode';
     }
     
-    const newNode = {
+    const newNode: any = {
       id: `${nodeCounter}`,
       position: { x: Math.random() * 300, y: Math.random() * 300 },
       data: nodeData,
-      type: typeId === 'tooltip' ? 'tooltipNode' : 
-            typeId === 'placeholder' ? 'placeholderNode' :
-            typeId === 'database' ? 'databaseNode' :
-            typeId === 'annotation' ? 'annotationNode' :
-            undefined
+      type: nodeType
     };
+    
+    // Add style if needed (for group nodes)
+    if (Object.keys(nodeStyle).length > 0) {
+      newNode.style = nodeStyle;
+    }
+    
     setNodes((nds) => [...nds, newNode]);
     setNodeCounter(nodeCounter + 1);
     setShowNodeMenu(false);
@@ -162,6 +188,51 @@ export default function CareerPlanner() {
         onConnect={onConnect}
         onSelectionChange={onSelectionChange}
         deleteKeyCode={['Delete', 'Backspace']}
+        onNodeDragStop={(_event, node) => {
+          // Check if node was dropped on a group
+          const groupNodes = nodes.filter(n => (n as any).type === 'group');
+          
+          for (const group of groupNodes) {
+            if (group.id === node.id) continue; // Skip if it's the same node
+            
+            const groupBounds = {
+              x: group.position.x,
+              y: group.position.y,
+              width: (group as any).style?.width || 400,
+              height: (group as any).style?.height || 300
+            };
+            
+            // Check if node center is within group bounds
+            const nodeCenterX = node.position.x + ((node as any).width || 100) / 2;
+            const nodeCenterY = node.position.y + ((node as any).height || 50) / 2;
+            
+            if (
+              nodeCenterX >= groupBounds.x &&
+              nodeCenterX <= groupBounds.x + groupBounds.width &&
+              nodeCenterY >= groupBounds.y &&
+              nodeCenterY <= groupBounds.y + groupBounds.height
+            ) {
+              // Add node to group
+              setNodes((nds) => 
+                nds.map((n) => {
+                  if (n.id === node.id) {
+                    return {
+                      ...n,
+                      parentNode: group.id,
+                      extent: 'parent' as const,
+                      position: {
+                        x: node.position.x - group.position.x,
+                        y: node.position.y - group.position.y
+                      }
+                    };
+                  }
+                  return n;
+                })
+              );
+              break;
+            }
+          }
+        }}
       >
         <Controls />
         <MiniMap />
