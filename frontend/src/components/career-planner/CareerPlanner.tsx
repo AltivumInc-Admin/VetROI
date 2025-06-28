@@ -174,6 +174,7 @@ export default function CareerPlanner() {
     if (typeId === 'group') {
       newNode.width = 400;
       newNode.height = 300;
+      newNode.draggable = false;
     }
     
     setNodes((nds) => [...nds, newNode]);
@@ -240,8 +241,7 @@ export default function CareerPlanner() {
                         position: {
                           x: nodeX - groupBounds.x,
                           y: nodeY - groupBounds.y
-                        },
-                        expandParent: true
+                        }
                       };
                     }
                   }
@@ -250,7 +250,7 @@ export default function CareerPlanner() {
                   if (!nodeUpdated && (n as any).parentId) {
                     const parent = currentNodes.find(p => p.id === (n as any).parentId);
                     if (parent) {
-                      const { parentId, extent, expandParent, ...rest } = n as any;
+                      const { parentId, extent, ...rest } = n as any;
                       return {
                         ...rest,
                         position: {

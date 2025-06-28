@@ -136,7 +136,7 @@ const LabeledGroupNodeDemo = memo(({ id, data, selected }: NodeProps) => {
   // Count child nodes
   useEffect(() => {
     const nodes = getNodes();
-    const children = nodes.filter(node => (node as any).parentNode === id);
+    const children = nodes.filter(node => (node as any).parentId === id);
     setChildNodes(children.map(n => n.id));
   }, [id, getNodes]);
 
