@@ -162,6 +162,8 @@
   background: rgba(0, 212, 255, 0.05);
   transition: all 0.2s ease;
   user-select: none;
+  pointer-events: all;
+  cursor: move;
 }
 
 /* Hide hint when group has children */
@@ -181,16 +183,23 @@
 
 /* Special styling for group nodes */
 .react-flow__node-group {
-  pointer-events: none !important;
+  /* Group nodes are draggable */
 }
 
-.react-flow__node-group > div {
-  pointer-events: all;
+/* Group body blocks pointer events to prevent drag from child area */
+.labeled-group-node .group-body {
+  pointer-events: none;
 }
 
-/* Ensure child nodes inside groups can be dragged */
+/* But child nodes inside should still be interactive */
 .react-flow__node-group .react-flow__node {
   pointer-events: all !important;
+}
+
+/* Group header should allow dragging */
+.labeled-group-node .group-header {
+  pointer-events: all;
+  cursor: move;
 }
 
 /* Handles */

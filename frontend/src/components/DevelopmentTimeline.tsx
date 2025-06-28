@@ -1,0 +1,258 @@
+import React from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
+// Commit data by date
+const commitData = [
+  { date: '06/11', commits: 4, milestone: 'Project Inception 🚀' },
+  { date: '06/12', commits: 26, milestone: 'Infrastructure Sprint' },
+  { date: '06/13', commits: 21 },
+  { date: '06/14', commits: 20 },
+  { date: '06/15', commits: 5 },
+  { date: '06/16', commits: 31, milestone: 'Feature Explosion ⚡' },
+  { date: '06/17', commits: 14 },
+  { date: '06/18', commits: 19 },
+  { date: '06/19', commits: 20 },
+  { date: '06/20', commits: 19 },
+  { date: '06/21', commits: 9 },
+  { date: '06/22', commits: 26, milestone: 'UI Polish Sprint' },
+  { date: '06/23', commits: 1 },
+  { date: '06/24', commits: 5 },
+  { date: '06/25', commits: 12 },
+  { date: '06/26', commits: 34, milestone: 'Operations Center' },
+  { date: '06/27', commits: 38, milestone: 'Career Planner Marathon 🎯' }
+];
+
+// Major features timeline
+const features = [
+  { date: 'June 11', feature: 'Initial VetROI™ commit', type: 'inception' },
+  { date: 'June 12', feature: 'Lambda functions & API Gateway setup', type: 'backend' },
+  { date: 'June 13', feature: 'DD-214 parsing with Amazon Textract', type: 'ai' },
+  { date: 'June 14', feature: 'Amazon Macie PII protection', type: 'security' },
+  { date: 'June 16', feature: 'Bedrock AI integration', type: 'ai' },
+  { date: 'June 18', feature: 'Step Functions orchestration', type: 'backend' },
+  { date: 'June 20', feature: 'Amplify authentication', type: 'security' },
+  { date: 'June 22', feature: 'Glassmorphic UI design', type: 'frontend' },
+  { date: 'June 26', feature: 'Operations Center page', type: 'frontend' },
+  { date: 'June 27', feature: 'React Flow career planner with 5 node types', type: 'frontend' }
+];
+
+const DevelopmentTimeline: React.FC = () => {
+  // Calculate statistics
+  const totalCommits = commitData.reduce((sum, day) => sum + day.commits, 0);
+  const avgCommitsPerDay = (totalCommits / commitData.length).toFixed(1);
+  const maxCommits = Math.max(...commitData.map(d => d.commits));
+  const totalDays = commitData.length;
+
+  // Color based on commit intensity
+  const getBarColor = (commits: number) => {
+    if (commits >= 30) return '#00d4ff'; // Bright cyan for high activity
+    if (commits >= 20) return '#0099cc'; // Medium cyan
+    if (commits >= 10) return '#006699'; // Darker cyan
+    return '#004466'; // Darkest for low activity
+  };
+
+  return (
+    <div style={{ 
+      backgroundColor: '#0a0e1a', 
+      color: '#ffffff', 
+      padding: '2rem',
+      borderRadius: '12px',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
+      <h1 style={{ textAlign: 'center', marginBottom: '2rem', fontSize: '2.5rem' }}>
+        VetROI™ Development Timeline
+      </h1>
+      
+      {/* Statistics */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '1rem',
+        marginBottom: '3rem'
+      }}>
+        <div style={{ 
+          background: 'rgba(0, 212, 255, 0.1)',
+          border: '1px solid rgba(0, 212, 255, 0.3)',
+          borderRadius: '8px',
+          padding: '1.5rem',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00d4ff' }}>
+            {totalCommits}
+          </div>
+          <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>Total Commits</div>
+        </div>
+        
+        <div style={{ 
+          background: 'rgba(0, 212, 255, 0.1)',
+          border: '1px solid rgba(0, 212, 255, 0.3)',
+          borderRadius: '8px',
+          padding: '1.5rem',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00d4ff' }}>
+            {totalDays}
+          </div>
+          <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>Days of Development</div>
+        </div>
+        
+        <div style={{ 
+          background: 'rgba(0, 212, 255, 0.1)',
+          border: '1px solid rgba(0, 212, 255, 0.3)',
+          borderRadius: '8px',
+          padding: '1.5rem',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00d4ff' }}>
+            {avgCommitsPerDay}
+          </div>
+          <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>Avg Commits/Day</div>
+        </div>
+        
+        <div style={{ 
+          background: 'rgba(0, 212, 255, 0.1)',
+          border: '1px solid rgba(0, 212, 255, 0.3)',
+          borderRadius: '8px',
+          padding: '1.5rem',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#00d4ff' }}>
+            {maxCommits}
+          </div>
+          <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>Peak Day Commits</div>
+        </div>
+      </div>
+
+      {/* Commit Activity Chart */}
+      <div style={{ marginBottom: '3rem' }}>
+        <h2 style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>Daily Commit Activity</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={commitData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <XAxis 
+              dataKey="date" 
+              stroke="#ffffff" 
+              style={{ fontSize: '0.75rem' }}
+            />
+            <YAxis 
+              stroke="#ffffff" 
+              style={{ fontSize: '0.75rem' }}
+            />
+            <Tooltip 
+              contentStyle={{ 
+                backgroundColor: 'rgba(10, 14, 26, 0.95)',
+                border: '1px solid rgba(0, 212, 255, 0.5)',
+                borderRadius: '4px'
+              }}
+              formatter={(value: any, name: any) => {
+                const day = commitData.find(d => d.commits === value);
+                return [
+                  `${value} commits`,
+                  day?.milestone || 'Development'
+                ];
+              }}
+            />
+            <Bar dataKey="commits" radius={[4, 4, 0, 0]}>
+              {commitData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getBarColor(entry.commits)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Major Features Timeline */}
+      <div>
+        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem' }}>Major Features Implemented</h2>
+        <div style={{ position: 'relative', paddingLeft: '2rem' }}>
+          {/* Timeline line */}
+          <div style={{
+            position: 'absolute',
+            left: '1rem',
+            top: 0,
+            bottom: 0,
+            width: '2px',
+            background: 'linear-gradient(to bottom, #00d4ff, rgba(0, 212, 255, 0.2))'
+          }} />
+          
+          {features.map((feature, index) => {
+            const colors: Record<string, string> = {
+              inception: '#00d4ff',
+              backend: '#9333ea',
+              ai: '#22c55e',
+              security: '#f59e0b',
+              frontend: '#3b82f6'
+            };
+            
+            return (
+              <div key={index} style={{ 
+                marginBottom: '1.5rem',
+                position: 'relative',
+                paddingLeft: '1.5rem'
+              }}>
+                {/* Timeline dot */}
+                <div style={{
+                  position: 'absolute',
+                  left: '-0.5rem',
+                  top: '0.5rem',
+                  width: '1rem',
+                  height: '1rem',
+                  borderRadius: '50%',
+                  background: colors[feature.type] || '#00d4ff',
+                  border: '2px solid #0a0e1a',
+                  boxShadow: `0 0 10px ${colors[feature.type] || '#00d4ff'}`
+                }} />
+                
+                <div style={{
+                  background: 'rgba(0, 212, 255, 0.05)',
+                  border: '1px solid rgba(0, 212, 255, 0.2)',
+                  borderRadius: '8px',
+                  padding: '1rem',
+                  transition: 'all 0.2s',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 212, 255, 0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(0, 212, 255, 0.05)';
+                  e.currentTarget.style.borderColor = 'rgba(0, 212, 255, 0.2)';
+                }}>
+                  <div style={{ 
+                    fontSize: '0.875rem', 
+                    color: colors[feature.type] || '#00d4ff',
+                    marginBottom: '0.25rem',
+                    fontWeight: 'bold'
+                  }}>
+                    {feature.date}
+                  </div>
+                  <div>{feature.feature}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={{ 
+        marginTop: '3rem', 
+        textAlign: 'center',
+        padding: '1.5rem',
+        background: 'rgba(0, 212, 255, 0.1)',
+        borderRadius: '8px',
+        border: '1px solid rgba(0, 212, 255, 0.3)'
+      }}>
+        <p style={{ fontSize: '1.125rem', marginBottom: '0.5rem' }}>
+          <strong>Built from scratch during AWS Hackathon 2025</strong>
+        </p>
+        <p style={{ opacity: 0.8 }}>
+          June 11 - June 27, 2025 | Solo Developer | 303 Commits in 17 Days
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default DevelopmentTimeline;

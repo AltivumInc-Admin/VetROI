@@ -174,7 +174,7 @@ export default function CareerPlanner() {
     if (typeId === 'group') {
       newNode.width = 400;
       newNode.height = 300;
-      newNode.draggable = false;
+      // Remove draggable = false, groups should be draggable
     }
     
     setNodes((nds) => [...nds, newNode]);
