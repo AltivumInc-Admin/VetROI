@@ -99,7 +99,7 @@ describe('CareerPlanner Basic Functionality', () => {
   })
 
   it('cleans up intervals on unmount', () => {
-    const clearIntervalSpy = vi.spyOn(global, 'clearInterval')
+    const clearIntervalSpy = vi.spyOn(window, 'clearInterval')
     
     const { unmount } = render(<CareerPlanner />)
     unmount()

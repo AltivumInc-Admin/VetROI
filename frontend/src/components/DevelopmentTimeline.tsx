@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 // Commit data by date
@@ -36,7 +35,7 @@ const features = [
   { date: 'June 27', feature: 'React Flow career planner with 5 node types', type: 'frontend' }
 ];
 
-const DevelopmentTimeline: React.FC = () => {
+const DevelopmentTimeline = () => {
   // Calculate statistics
   const totalCommits = commitData.reduce((sum, day) => sum + day.commits, 0);
   const avgCommitsPerDay = (totalCommits / commitData.length).toFixed(1);
@@ -144,7 +143,7 @@ const DevelopmentTimeline: React.FC = () => {
                 border: '1px solid rgba(0, 212, 255, 0.5)',
                 borderRadius: '4px'
               }}
-              formatter={(value: any, name: any) => {
+              formatter={(value: any) => {
                 const day = commitData.find(d => d.commits === value);
                 return [
                   `${value} commits`,

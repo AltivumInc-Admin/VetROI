@@ -9,7 +9,7 @@ import LabeledGroupNodeDemo from '../LabeledGroupNode'
 import AnnotationNodeDemo from '../AnnotationNode'
 import PlaceholderNodeDemo from '../PlaceholderNode'
 
-const defaultNodeProps = {
+const defaultNodeProps: any = {
   id: 'test-1',
   data: {},
   selected: false,
@@ -17,7 +17,12 @@ const defaultNodeProps = {
   xPos: 0,
   yPos: 0,
   dragging: false,
+  draggable: true,
+  selectable: true,
+  deletable: true,
   isConnectable: true,
+  positionAbsoluteX: 0,
+  positionAbsoluteY: 0,
   zIndex: 0
 }
 
