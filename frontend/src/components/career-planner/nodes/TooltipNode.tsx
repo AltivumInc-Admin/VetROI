@@ -169,6 +169,9 @@ export const TooltipContent: React.FC<TooltipContentProps & {
       e.preventDefault();
       // Trigger click outside to finish editing
       document.dispatchEvent(new MouseEvent('mousedown'));
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      // Prevent deletion of the node when editing
+      e.stopPropagation();
     }
   };
 
@@ -232,6 +235,11 @@ export const TooltipTrigger: React.FC<TooltipTriggerProps & {
           onChange={handleChange}
           onClick={(e) => e.stopPropagation()}
           onMouseDown={(e) => e.stopPropagation()}
+          onKeyDown={(e) => {
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+              e.stopPropagation();
+            }
+          }}
           className="trigger-edit-input"
         />
       ) : (

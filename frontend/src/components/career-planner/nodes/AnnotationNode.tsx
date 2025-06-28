@@ -87,6 +87,9 @@ export const AnnotationNodeNumber: React.FC<AnnotationNodeNumberProps> = ({
     } else if (e.key === 'Escape') {
       setValue(children?.toString() || '1.');
       setIsEditing(false);
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      // Prevent deletion of the node when editing
+      e.stopPropagation();
     }
   };
 
@@ -152,6 +155,9 @@ export const AnnotationNodeContent: React.FC<AnnotationNodeContentProps> = ({
     } else if (e.key === 'Escape') {
       setValue(children?.toString() || '');
       setIsEditing(false);
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      // Prevent deletion of the node when editing
+      e.stopPropagation();
     }
   };
 

@@ -111,6 +111,9 @@ const EditableTableCell: React.FC<EditableTableCellProps> = ({
     } else if (e.key === 'Escape') {
       setEditValue(value);
       setIsEditing(false);
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      // Prevent deletion of the node when editing
+      e.stopPropagation();
     }
   };
 
@@ -170,6 +173,9 @@ const EditableHeader: React.FC<{ value: string; onSave: (value: string) => void 
     } else if (e.key === 'Escape') {
       setEditValue(value);
       setIsEditing(false);
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      // Prevent deletion of the node when editing
+      e.stopPropagation();
     }
   };
 
