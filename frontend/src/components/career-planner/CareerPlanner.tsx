@@ -210,6 +210,18 @@ export default function CareerPlanner() {
               
               const updatedNodes = currentNodes.map((n) => {
                 if (n.id === node.id) {
+                  // Calculate absolute position for nodes that already have a parent
+                  let absoluteX = node.position.x;
+                  let absoluteY = node.position.y;
+                  
+                  if ((n as any).parentId) {
+                    const parentGroup = groupNodes.find(g => g.id === (n as any).parentId);
+                    if (parentGroup) {
+                      absoluteX = parentGroup.position.x + node.position.x;
+                      absoluteY = parentGroup.position.y + node.position.y;
+                    }
+                  }
+                  
                   // Check each group
                   for (const group of groupNodes) {
                     if (group.id === node.id) continue;
@@ -221,26 +233,22 @@ export default function CareerPlanner() {
                       height: (group as any).height || 300
                     };
                     
-                    // Use node's actual position
-                    const nodeX = node.position.x;
-                    const nodeY = node.position.y;
-                    
                     // Check if node is within group bounds
                     if (
-                      nodeX >= groupBounds.x &&
-                      nodeX <= groupBounds.x + groupBounds.width - 50 &&
-                      nodeY >= groupBounds.y &&
-                      nodeY <= groupBounds.y + groupBounds.height - 50
+                      absoluteX >= groupBounds.x &&
+                      absoluteX <= groupBounds.x + groupBounds.width - 50 &&
+                      absoluteY >= groupBounds.y &&
+                      absoluteY <= groupBounds.y + groupBounds.height - 50
                     ) {
                       nodeUpdated = true;
-                      // Add node to group
+                      // Add node to group (or keep it in the same group)
                       return {
                         ...n,
                         parentId: group.id,
                         extent: 'parent' as const,
                         position: {
-                          x: nodeX - groupBounds.x,
-                          y: nodeY - groupBounds.y
+                          x: absoluteX - groupBounds.x,
+                          y: absoluteY - groupBounds.y
                         }
                       };
                     }
@@ -248,17 +256,14 @@ export default function CareerPlanner() {
                   
                   // If not in any group but had a parent, remove parent
                   if (!nodeUpdated && (n as any).parentId) {
-                    const parent = currentNodes.find(p => p.id === (n as any).parentId);
-                    if (parent) {
-                      const { parentId, extent, ...rest } = n as any;
-                      return {
-                        ...rest,
-                        position: {
-                          x: node.position.x,
-                          y: node.position.y
-                        }
-                      };
-                    }
+                    const { parentId, extent, ...rest } = n as any;
+                    return {
+                      ...rest,
+                      position: {
+                        x: absoluteX,
+                        y: absoluteY
+                      }
+                    };
                   }
                 }
                 return n;
