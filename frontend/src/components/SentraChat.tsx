@@ -64,26 +64,20 @@ export const SentraChat: React.FC<SentraChatProps> = ({
   useEffect(() => {
     scrollToBottom()
     
-    // Show buttons 3 seconds after receiving mission response
+    // Show all buttons 3 seconds after receiving mission response
     if (messages.length === 2 && messages[1].role === 'assistant') {
       if (!showNextMission) {
         const timer = setTimeout(() => {
           setShowNextMission(true)
+          if (dd214DocumentId) {
+            setShowDD214InsightsButton(true)
+          }
         }, 3000)
         
         return () => clearTimeout(timer)
       }
-      
-      // Show DD214 insights button 1 second after NextMission button if they have DD214
-      if (showNextMission && !showDD214InsightsButton && dd214DocumentId) {
-        const timer = setTimeout(() => {
-          setShowDD214InsightsButton(true)
-        }, 1000)
-        
-        return () => clearTimeout(timer)
-      }
     }
-  }, [messages, showNextMission, showDD214InsightsButton, dd214DocumentId])
+  }, [messages, showNextMission, dd214DocumentId])
 
   const scrollToBottom = () => {
     // Scroll to the last assistant message, not the very bottom
@@ -219,6 +213,57 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         <div ref={messagesEndRef} />
       </div>
       
+      {/* Action Panel - Shows after mission response */}
+      {(showDD214InsightsButton || showNextMission) && (
+        <div className="sentra-action-panel">
+          <div className="action-grid">
+            {dd214DocumentId && (
+              <button 
+                onClick={handleDD214InsightsClick}
+                className="action-button dd214-action"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-4h-6v2h6v-2zm0-4h-6v2h6V7zm0 8h-6v2h6v-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>DD214 Analysis</span>
+              </button>
+            )}
+            
+            <button 
+              onClick={() => navigate('/operations-center')}
+              className="action-button operations-action"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>Operations Center</span>
+            </button>
+            
+            <a 
+              href="https://altivum.ai/nextmission" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="action-button nextmission-action"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M13 7l5 5m0 0l-5 5m5-5H6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>NextMission.ai</span>
+            </a>
+            
+            <button 
+              className="action-button placeholder-action"
+              disabled
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 4v16m8-8H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>Coming Soon</span>
+            </button>
+          </div>
+        </div>
+      )}
+      
       <div className="chat-input-area">
         {!missionClicked ? (
           <div className="mission-prompt-container">
@@ -240,55 +285,6 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         )}
       </div>
     </div>
-    
-    {(showDD214InsightsButton || showNextMission) && (
-      <div className="action-buttons-container">
-        {showDD214InsightsButton && (
-          <button 
-            onClick={handleDD214InsightsClick}
-            className="dd214-insights-button"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-4h-6v2h6v-2zm0-4h-6v2h6V7zm0 8h-6v2h6v-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Get your DD214 Insight
-          </button>
-        )}
-        {showNextMission && (
-          <>
-            <button 
-              onClick={() => {
-                // The selected SOCs should already be in sessionStorage from the main app
-                navigate('/operations-center');
-              }}
-              className="nextmission-button"
-              style={{
-                background: '#00d4ff',
-                color: '#0a0e1a',
-                border: 'none',
-                padding: '0.75rem 2rem',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                textDecoration: 'none',
-                display: 'inline-block'
-              }}
-            >
-              Launch Operations Center →
-            </button>
-            <a 
-              href="https://altivum.ai/nextmission" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="nextmission-button"
-            >
-              NextMission.ai
-            </a>
-          </>
-        )}
-      </div>
-    )}
   </>
   )
 }

@@ -818,3 +818,138 @@
     justify-content: center;
   }
 }
+
+/* New Action Panel Styles */
+.sentra-action-panel {
+  background: rgba(13, 17, 33, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 1rem 0;
+  animation: slideUp 0.4s ease-out;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* Unified Action Button Style */
+.action-button {
+  background: rgba(13, 17, 33, 0.9);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #ffffff;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  transition: transform 0.3s ease;
+}
+
+.action-button span {
+  white-space: nowrap;
+}
+
+/* Hover effect */
+.action-button:not(:disabled):hover {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+}
+
+.action-button:not(:disabled):hover svg {
+  transform: scale(1.1);
+}
+
+/* Active state */
+.action-button:not(:disabled):active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2);
+}
+
+/* Specific button accents */
+.dd214-action {
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.dd214-action:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+}
+
+.operations-action {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.nextmission-action {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+/* Disabled state */
+.placeholder-action {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.placeholder-action:hover {
+  background: rgba(13, 17, 33, 0.9);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Slide up animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sentra-action-panel {
+    padding: 1rem;
+    margin: 0.75rem 0.75rem 0;
+  }
+  
+  .action-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .action-button {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Remove old button container styles from view */
+.action-buttons-container {
+  display: none !important;
+}
