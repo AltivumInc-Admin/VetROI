@@ -36,7 +36,10 @@ export const JobSearchModal: React.FC<JobSearchModalProps> = ({
     setError(null)
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/usajobs-search`, {
+      // Use the new API Gateway for USAJOBS search
+      const USAJOBS_API_URL = 'https://4bw6u7f3uc.execute-api.us-east-2.amazonaws.com/prod/usajobs-search'
+      
+      const response = await fetch(USAJOBS_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
