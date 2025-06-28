@@ -188,73 +188,81 @@ export default function CareerPlanner() {
         onConnect={onConnect}
         onSelectionChange={onSelectionChange}
         deleteKeyCode={['Delete', 'Backspace']}
+        fitView
+        nodesDraggable
+        nodesConnectable
+        nodesFocusable
         onNodeDragStop={(_event, node) => {
           // Don't process if this is a group node
           if ((node as any).type === 'group') return;
           
-          // Check if node was dropped on a group
-          const groupNodes = nodes.filter(n => (n as any).type === 'group');
-          
-          for (const group of groupNodes) {
-            if (group.id === node.id) continue; // Skip if it's the same node
-            
-            const groupBounds = {
-              x: group.position.x,
-              y: group.position.y,
-              width: (group as any).style?.width || 400,
-              height: (group as any).style?.height || 300
-            };
-            
-            // Check if node center is within group bounds
-            const nodeWidth = (node as any).width || 150;
-            const nodeHeight = (node as any).height || 50;
-            const nodeCenterX = node.position.x + nodeWidth / 2;
-            const nodeCenterY = node.position.y + nodeHeight / 2;
-            
-            if (
-              nodeCenterX >= groupBounds.x &&
-              nodeCenterX <= groupBounds.x + groupBounds.width &&
-              nodeCenterY >= groupBounds.y &&
-              nodeCenterY <= groupBounds.y + groupBounds.height
-            ) {
-              // Add node to group
-              setNodes((nds) => 
-                nds.map((n) => {
-                  if (n.id === node.id) {
-                    return {
-                      ...n,
-                      parentNode: group.id,
-                      extent: 'parent' as const,
-                      position: {
-                        x: node.position.x - group.position.x,
-                        y: node.position.y - group.position.y
-                      },
-                      expandParent: true
+          // Small delay to ensure positions are updated
+          setTimeout(() => {
+            // Get the latest nodes state
+            setNodes((currentNodes) => {
+              const groupNodes = currentNodes.filter(n => (n as any).type === 'group');
+              let nodeUpdated = false;
+              
+              const updatedNodes = currentNodes.map((n) => {
+                if (n.id === node.id) {
+                  // Check each group
+                  for (const group of groupNodes) {
+                    if (group.id === node.id) continue;
+                    
+                    const groupBounds = {
+                      x: group.position.x,
+                      y: group.position.y,
+                      width: (group as any).style?.width || 400,
+                      height: (group as any).style?.height || 300
                     };
+                    
+                    // Use node's actual position
+                    const nodeX = node.position.x;
+                    const nodeY = node.position.y;
+                    
+                    // Check if node is within group bounds
+                    if (
+                      nodeX >= groupBounds.x &&
+                      nodeX <= groupBounds.x + groupBounds.width - 50 &&
+                      nodeY >= groupBounds.y &&
+                      nodeY <= groupBounds.y + groupBounds.height - 50
+                    ) {
+                      nodeUpdated = true;
+                      // Add node to group
+                      return {
+                        ...n,
+                        parentNode: group.id,
+                        extent: 'parent' as const,
+                        position: {
+                          x: nodeX - groupBounds.x,
+                          y: nodeY - groupBounds.y
+                        },
+                        expandParent: true
+                      };
+                    }
                   }
-                  return n;
-                })
-              );
-              break;
-            } else if ((node as any).parentNode === group.id) {
-              // Remove from group if dragged outside
-              setNodes((nds) => 
-                nds.map((n) => {
-                  if (n.id === node.id) {
-                    const { parentNode, extent, ...rest } = n as any;
-                    return {
-                      ...rest,
-                      position: {
-                        x: node.position.x + group.position.x,
-                        y: node.position.y + group.position.y
-                      }
-                    };
+                  
+                  // If not in any group but had a parent, remove parent
+                  if (!nodeUpdated && (n as any).parentNode) {
+                    const parent = currentNodes.find(p => p.id === (n as any).parentNode);
+                    if (parent) {
+                      const { parentNode, extent, expandParent, ...rest } = n as any;
+                      return {
+                        ...rest,
+                        position: {
+                          x: node.position.x,
+                          y: node.position.y
+                        }
+                      };
+                    }
                   }
-                  return n;
-                })
-              );
-            }
-          }
+                }
+                return n;
+              });
+              
+              return updatedNodes;
+            });
+          }, 50);
         }}
       >
         <Controls />
