@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { MessageContent } from './MessageContent'
+import { JobSearchModal } from './JobSearchModal'
 import '../styles/SentraChat.css'
 
 interface Message {
@@ -45,6 +46,7 @@ interface SentraChatProps {
 }
 
 export const SentraChat: React.FC<SentraChatProps> = ({ 
+  veteranContext,
   sessionId,
   onBack,
   dd214DocumentId
@@ -55,6 +57,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
   const [missionClicked, setMissionClicked] = useState(false)
   const [showNextMission, setShowNextMission] = useState(false)
   const [showDD214InsightsButton, setShowDD214InsightsButton] = useState(false)
+  const [showJobSearchModal, setShowJobSearchModal] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -138,6 +141,16 @@ export const SentraChat: React.FC<SentraChatProps> = ({
   const handleDD214InsightsClick = () => {
     // Navigate to DD214 insights view with the document ID
     navigate(`/dd214-insights/${dd214DocumentId}`)
+  }
+
+  const handleJobSearchClick = () => {
+    setShowJobSearchModal(true)
+  }
+
+  // Extract job titles from veteran context
+  const getJobTitles = () => {
+    if (!veteranContext?.careerJourney?.careersViewed) return []
+    return veteranContext.careerJourney.careersViewed.map(career => career.title)
   }
 
 
@@ -252,13 +265,13 @@ export const SentraChat: React.FC<SentraChatProps> = ({
             </a>
             
             <button 
-              className="action-button placeholder-action"
-              disabled
+              onClick={handleJobSearchClick}
+              className="action-button job-search-action"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M12 4v16m8-8H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M21 13.5c0 1.38-1.12 2.5-2.5 2.5S16 14.88 16 13.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5M19 6.5C19 7.88 17.88 9 16.5 9S14 7.88 14 6.5 15.12 4 16.5 4 19 5.12 19 6.5M9 11c1.66 0 3-1.34 3-3S10.66 5 9 5 6 6.34 6 8s1.34 3 3 3M9 13c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>Coming Soon</span>
+              <span>Apply for Jobs</span>
             </button>
           </div>
         </div>
@@ -285,6 +298,17 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         )}
       </div>
     </div>
+    
+    {/* Job Search Modal */}
+    <JobSearchModal
+      isOpen={showJobSearchModal}
+      onClose={() => setShowJobSearchModal(false)}
+      mosCode={veteranContext?.veteranProfile?.mos || ''}
+      jobTitles={getJobTitles()}
+      state={veteranContext?.veteranProfile?.relocate && veteranContext?.veteranProfile?.relocateState 
+        ? veteranContext.veteranProfile.relocateState 
+        : veteranContext?.veteranProfile?.homeState || ''}
+    />
   </>
   )
 }
