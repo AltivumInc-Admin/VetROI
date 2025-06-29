@@ -264,7 +264,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
             </button>
           ) : (
             <button 
-              onClick={() => navigate('/dd214-upload')}
+              onClick={() => navigate('/')}
               className="action-button dd214-action"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
