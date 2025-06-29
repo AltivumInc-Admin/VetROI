@@ -610,7 +610,7 @@ CRITICAL SUCCESS FACTORS:
                 'content': [{'text': prompt}]
             }],
             inferenceConfig={
-                'maxTokens': 8000,
+                'maxTokens': 15000,
                 'temperature': 0.8,
                 'topP': 0.95
             }

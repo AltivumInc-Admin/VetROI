@@ -172,19 +172,21 @@ Provide your analysis in the following JSON structure:
   }},
   
   "extended_summary": {{
-    "veteran_portrait": "Write a 5 paragraph summary about this veteran, their strengths, and their positive impact on the labor market."
+    "veteran_portrait": "Write a 5 paragraph summary about this veteran, their strengths, and their positive impact on the labor market. IMPORTANT: Do NOT make up specific numbers, dates, or quantifiable achievements. Only reference information explicitly stated in the DD214. Focus on their verified rank, branch, MOS, and any decorations mentioned. Describe their potential and capabilities without inventing specific metrics."
   }}
 }}
 
 CRITICAL SUCCESS FACTORS:
 
-1. BE SPECIFIC, NOT GENERIC
+1. BE SPECIFIC ABOUT ROLES, NOT NUMBERS
 - Bad: "Consider project management roles"
-- Good: "Target Clinical Operations Manager at Booz Allen Hamilton's DHA contract paying $125K+"
+- Good: "Target Clinical Operations Manager positions in healthcare systems"
+- NEVER make up specific numbers like "187 combat patrols" or "saved 50 lives"
 
-2. QUANTIFY EVERYTHING
-- Bad: "Led soldiers in combat"
-- Good: "Led 42 soldiers through 187 combat patrols with zero friendly casualties"
+2. USE ONLY VERIFIABLE INFORMATION
+- Bad: "Led 42 soldiers through 187 combat patrols" (making up numbers)
+- Good: "Led soldiers in combat operations" (factual without fake specifics)
+- Only use numbers that are explicitly stated in the DD214
 
 3. TRANSLATE TO DOLLARS
 - Their clearance = $15-25K salary premium
@@ -209,4 +211,11 @@ CRITICAL SUCCESS FACTORS:
 - Whatever salary they think they deserve, add 30-40%
 - Most veterans undervalue themselves by $20-40K
 - Your insights should open their eyes to their true market value
+
+7. ACCURACY IS PARAMOUNT
+- NEVER invent specific numbers (no "187 patrols", "saved 50 lives", "$10M equipment")
+- NEVER create fake dates or timelines not in the DD214
+- NEVER add achievements or medals not explicitly listed
+- If the DD214 doesn't specify a number, don't make one up
+- Focus on qualitative strengths, not fabricated quantitative data
 """
