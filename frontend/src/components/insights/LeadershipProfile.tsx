@@ -1,6 +1,6 @@
 import React from 'react'
-import '../../styles/insights/dd214-unified-design.css'
 import '../../styles/insights/LeadershipProfile-refined.css'
+import '../../styles/insights/dd214-unified-design.css'
 
 interface LeadershipProfileProps {
   data: any

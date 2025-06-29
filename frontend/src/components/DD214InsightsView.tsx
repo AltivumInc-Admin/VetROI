@@ -12,8 +12,8 @@ import { GeoIntelligence } from './insights/GeoIntelligence'
 import { LegacyIntelligenceReport } from './insights/LegacyIntelligenceReport'
 import { AIPromptGenerator } from './insights/AIPromptGenerator'
 import { generatePDF } from '../utils/pdfGenerator-enhanced'
-import '../styles/insights/dd214-unified-design.css'
 import '../styles/DD214InsightsView-refined.css'
+import '../styles/insights/dd214-unified-design.css'
 
 interface DD214InsightsViewProps {}
 
