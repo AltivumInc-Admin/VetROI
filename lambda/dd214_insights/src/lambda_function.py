@@ -638,7 +638,8 @@ CRITICAL SUCCESS FACTORS:
         required_sections = [
             'executive_intelligence_summary', 'extracted_profile', 'market_intelligence',
             'career_recommendations', 'hidden_strengths_analysis', 'psychological_preparation',
-            'compensation_intelligence', 'action_oriented_deliverables', 'transition_timeline'
+            'compensation_intelligence', 'action_oriented_deliverables', 'transition_timeline',
+            'extended_summary'
         ]
         
         for section in required_sections:

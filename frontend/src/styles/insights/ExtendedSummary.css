@@ -1,0 +1,37 @@
+/* Extended Summary Styles */
+.extended-summary {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.extended-summary .section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.extended-summary .summary-content {
+  padding: 3rem;
+}
+
+.extended-summary .portrait-text {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.extended-summary .dd214-paragraph {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  text-align: justify;
+  color: var(--dd214-text-primary);
+}
+
+.extended-summary .dd214-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.extended-summary .empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}

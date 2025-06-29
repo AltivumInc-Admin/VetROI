@@ -919,3 +919,29 @@
   gap: var(--dd214-space-4);
   margin-top: var(--dd214-space-6);
 }
+
+/* Extended Summary Specific Enhancements */
+.extended-summary .dd214-paragraph {
+  text-indent: 2rem;
+  margin-bottom: var(--dd214-space-6);
+}
+
+.extended-summary .dd214-paragraph:first-of-type {
+  text-indent: 0;
+}
+
+.extended-summary .dd214-paragraph:first-of-type::first-letter {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: var(--dd214-primary);
+  float: left;
+  line-height: 1;
+  margin-right: 0.5rem;
+  margin-top: -0.2rem;
+}
+
+.extended-summary .portrait-text {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--dd214-text-secondary);
+}

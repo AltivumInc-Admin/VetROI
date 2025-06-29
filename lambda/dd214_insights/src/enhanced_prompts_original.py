@@ -169,6 +169,10 @@ Provide your analysis in the following JSON structure:
       "Negotiating multiple offers",
       "Selecting position that values your unique background"
     ]
+  }},
+  
+  "extended_summary": {{
+    "veteran_portrait": "Write a 5 paragraph summary about this veteran, their strengths, and their positive impact on the labor market."
   }}
 }}
 
