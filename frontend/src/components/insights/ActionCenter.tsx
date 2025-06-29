@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import '../../styles/insights/dd214-unified-design.css'
 import '../../styles/insights/ActionCenter-refined.css'
 
 interface ActionCenterProps {
@@ -16,14 +17,14 @@ export const ActionCenter: React.FC<ActionCenterProps> = ({ data }) => {
   }
   
   return (
-    <div className="action-center">
+    <div className="action-center dd214-insights">
       <div className="section-header">
         <h1>Action Center</h1>
         <p>Ready-to-use materials for your job search</p>
       </div>
       
       {/* Resume Bullets Section */}
-      <section className="resume-bullets-section">
+      <section className="resume-bullets-section dd214-card">
         <div className="section-title">
           <h2>Resume Nuclear Bullets</h2>
           <p>Copy these achievement-focused bullets directly to your resume</p>
@@ -31,7 +32,7 @@ export const ActionCenter: React.FC<ActionCenterProps> = ({ data }) => {
         
         <div className="bullets-container">
           {(deliverables.resume_nuclear_bullets || []).map((bullet: string, index: number) => (
-            <div key={index} className="bullet-item">
+            <div key={index} className="bullet-item dd214-highlight">
               <div className="bullet-content">
                 <p>{bullet}</p>
               </div>

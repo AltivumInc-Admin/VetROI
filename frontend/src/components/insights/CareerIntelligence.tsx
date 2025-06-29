@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import '../../styles/insights/dd214-unified-design.css'
 import '../../styles/insights/CareerIntelligence-refined.css'
 
 interface CareerIntelligenceProps {
@@ -249,7 +250,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({ data }) 
   }
   
   return (
-    <div className="career-intelligence">
+    <div className="career-intelligence dd214-insights">
       <div className="section-header">
         <h1>Career Intelligence</h1>
         <p>Comprehensive analysis of your civilian career opportunities</p>

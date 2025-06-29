@@ -12,6 +12,7 @@ import { GeoIntelligence } from './insights/GeoIntelligence'
 import { LegacyIntelligenceReport } from './insights/LegacyIntelligenceReport'
 import { AIPromptGenerator } from './insights/AIPromptGenerator'
 import { generatePDF } from '../utils/pdfGenerator-enhanced'
+import '../styles/insights/dd214-unified-design.css'
 import '../styles/DD214InsightsView-refined.css'
 
 interface DD214InsightsViewProps {}
@@ -171,7 +172,7 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
   const isDemo = location.pathname === '/demo'
 
   return (
-    <div className="insights-view">
+    <div className="insights-view dd214-insights">
       {/* Demo Mode Banner */}
       {isDemo && (
         <div style={{
@@ -261,15 +262,15 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
             <h3>Download Career Intelligence Report</h3>
             <p>Your comprehensive report includes:</p>
             <ul className="report-contents">
-              <li>✓ Executive Summary & Market Position</li>
-              <li>✓ Detailed Career Opportunities</li>
-              <li>✓ Compensation Intelligence</li>
-              <li>✓ Leadership Profile & Hidden Strengths</li>
-              <li>✓ Resume Bullets & LinkedIn Optimization</li>
-              <li>✓ Interview Preparation Guide</li>
-              <li>✓ 30-60-90 Day Action Plan</li>
-              <li>✓ Legacy Intelligence Report (1500 words)</li>
-              <li>✓ AI Prompt Library</li>
+              <li className="dd214-list-item">Executive Summary & Market Position</li>
+              <li className="dd214-list-item">Detailed Career Opportunities</li>
+              <li className="dd214-list-item">Compensation Intelligence</li>
+              <li className="dd214-list-item">Leadership Profile & Hidden Strengths</li>
+              <li className="dd214-list-item">Resume Bullets & LinkedIn Optimization</li>
+              <li className="dd214-list-item">Interview Preparation Guide</li>
+              <li className="dd214-list-item">30-60-90 Day Action Plan</li>
+              <li className="dd214-list-item">Legacy Intelligence Report (1500 words)</li>
+              <li className="dd214-list-item">AI Prompt Library</li>
             </ul>
             <div className="modal-actions">
               <button 

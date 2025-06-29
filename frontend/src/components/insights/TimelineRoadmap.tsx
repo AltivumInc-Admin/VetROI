@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import '../../styles/insights/dd214-unified-design.css'
 import '../../styles/insights/TimelineRoadmap-refined.css'
 
 interface TimelineRoadmapProps {

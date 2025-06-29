@@ -1,4 +1,5 @@
 import React from 'react'
+import '../../styles/insights/dd214-unified-design.css'
 import '../../styles/insights/ExecutiveSummary-refined.css'
 
 interface ExecutiveSummaryProps {
@@ -11,9 +12,9 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
   const compensation = data.insights?.compensation_intelligence || {}
   
   return (
-    <div className="executive-summary">
+    <div className="executive-summary dd214-insights">
       {/* Hero Section */}
-      <section className="hero-section">
+      <section className="hero-section dd214-card">
         <div className="hero-content">
           <div className="rank-badge">
             <span className="rank">{profile.rank || 'Veteran'}</span>
@@ -29,7 +30,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
       </section>
 
       {/* Market Position */}
-      <section className="market-position">
+      <section className="market-position dd214-card">
         <div className="position-badge">
           <h2>Your Market Position</h2>
           <div className="position-indicator">
@@ -39,11 +40,11 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
       </section>
 
       {/* Immediate Leverage Points */}
-      <section className="leverage-points">
+      <section className="leverage-points dd214-card">
         <h2>Immediate Leverage Points</h2>
-        <div className="leverage-grid">
+        <div className="leverage-grid dd214-grid-2">
           {(summary.immediate_leverage_points || []).map((point: string, index: number) => (
-            <div key={index} className="leverage-card">
+            <div key={index} className="leverage-card dd214-highlight">
               <div className="leverage-icon">
                 {index === 0 && '🎖️'}
                 {index === 1 && '🎯'}
@@ -57,7 +58,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
       </section>
 
       {/* Hidden Multipliers */}
-      <section className="hidden-multipliers">
+      <section className="hidden-multipliers dd214-card">
         <h2>Hidden Value Multipliers</h2>
         <div className="multipliers-container">
           {(summary.hidden_multipliers || []).map((multiplier: string, index: number) => (
@@ -73,12 +74,12 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
       </section>
 
       {/* Quick Stats */}
-      <section className="quick-stats">
+      <section className="quick-stats dd214-card">
         <h2>Your Career Intelligence Snapshot</h2>
-        <div className="stats-grid">
+        <div className="stats-grid dd214-stat-group">
           <div className="stat-card">
             <div className="stat-label">Years of Service</div>
-            <div className="stat-value">{profile.years_service || 'N/A'}</div>
+            <div className="stat-value dd214-stat-value">{profile.years_service || 'N/A'}</div>
           </div>
           <div className="stat-card">
             <div className="stat-label">Target Salary Range</div>
@@ -89,22 +90,22 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
           </div>
           <div className="stat-card">
             <div className="stat-label">Leadership Scope</div>
-            <div className="stat-value">{profile.leadership_scope || 'Team Leader'}</div>
+            <div className="stat-value dd214-stat-value">{profile.leadership_scope || 'Team Leader'}</div>
           </div>
           <div className="stat-card">
             <div className="stat-label">Security Clearance</div>
-            <div className="stat-value">{profile.security_clearance || 'Eligible'}</div>
+            <div className="stat-value dd214-stat-value">{profile.security_clearance || 'Eligible'}</div>
           </div>
         </div>
       </section>
 
       {/* Key Decorations */}
       {profile.decorations && profile.decorations.length > 0 && (
-        <section className="decorations">
+        <section className="decorations dd214-card">
           <h2>Distinguished Service</h2>
           <div className="decorations-list">
             {profile.decorations.map((decoration: string, index: number) => (
-              <div key={index} className="decoration-badge">
+              <div key={index} className="decoration-badge dd214-badge">
                 <span className="medal-icon">🎖️</span>
                 <span className="decoration-name">{decoration}</span>
               </div>
@@ -114,12 +115,12 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
       )}
 
       {/* Call to Action */}
-      <section className="cta-section">
+      <section className="cta-section dd214-card">
         <div className="cta-content">
           <h2>Ready to Explore Your Opportunities?</h2>
           <p>Navigate through each section to discover your full career potential</p>
           <div className="cta-buttons">
-            <button className="explore-button" onClick={() => {
+            <button className="explore-button dd214-button" onClick={() => {
               const element = document.querySelector('[data-section="career-intelligence"]') as HTMLElement
               if (element) element.click()
             }}>
