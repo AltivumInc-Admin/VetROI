@@ -226,57 +226,6 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         <div ref={messagesEndRef} />
       </div>
       
-      {/* Action Panel - Shows after mission response */}
-      {(showDD214InsightsButton || showNextMission) && (
-        <div className="sentra-action-panel">
-          <div className="action-grid">
-            {dd214DocumentId && (
-              <button 
-                onClick={handleDD214InsightsClick}
-                className="action-button dd214-action"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-4h-6v2h6v-2zm0-4h-6v2h6V7zm0 8h-6v2h6v-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span>DD214 Analysis</span>
-              </button>
-            )}
-            
-            <button 
-              onClick={() => navigate('/operations-center')}
-              className="action-button operations-action"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span>Operations Center</span>
-            </button>
-            
-            <a 
-              href="https://altivum.ai/nextmission" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="action-button nextmission-action"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M13 7l5 5m0 0l-5 5m5-5H6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span>NextMission.ai</span>
-            </a>
-            
-            <button 
-              onClick={handleJobSearchClick}
-              className="action-button job-search-action"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M21 13.5c0 1.38-1.12 2.5-2.5 2.5S16 14.88 16 13.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5M19 6.5C19 7.88 17.88 9 16.5 9S14 7.88 14 6.5 15.12 4 16.5 4 19 5.12 19 6.5M9 11c1.66 0 3-1.34 3-3S10.66 5 9 5 6 6.34 6 8s1.34 3 3 3M9 13c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span>Apply for Jobs</span>
-            </button>
-          </div>
-        </div>
-      )}
-      
       <div className="chat-input-area">
         {!missionClicked ? (
           <div className="mission-prompt-container">
@@ -298,6 +247,57 @@ export const SentraChat: React.FC<SentraChatProps> = ({
         )}
       </div>
     </div>
+    
+    {/* Action Panel - Shows after mission response */}
+    {(showDD214InsightsButton || showNextMission) && (
+      <div className="sentra-action-panel">
+        <div className="action-grid">
+          {dd214DocumentId && (
+            <button 
+              onClick={handleDD214InsightsClick}
+              className="action-button dd214-action"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-4h-6v2h6v-2zm0-4h-6v2h6V7zm0 8h-6v2h6v-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>DD214 Analysis</span>
+            </button>
+          )}
+          
+          <button 
+            onClick={() => navigate('/operations-center')}
+            className="action-button operations-action"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>Operations Center</span>
+          </button>
+          
+          <a 
+            href="https://altivum.ai/nextmission" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="action-button nextmission-action"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M13 7l5 5m0 0l-5 5m5-5H6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>NextMission.ai</span>
+          </a>
+          
+          <button 
+            onClick={handleJobSearchClick}
+            className="action-button job-search-action"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M21 13.5c0 1.38-1.12 2.5-2.5 2.5S16 14.88 16 13.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5M19 6.5C19 7.88 17.88 9 16.5 9S14 7.88 14 6.5 15.12 4 16.5 4 19 5.12 19 6.5M9 11c1.66 0 3-1.34 3-3S10.66 5 9 5 6 6.34 6 8s1.34 3 3 3M9 13c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>Apply for Jobs</span>
+          </button>
+        </div>
+      </div>
+    )}
     
     {/* Job Search Modal */}
     <JobSearchModal
