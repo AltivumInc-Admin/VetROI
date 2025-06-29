@@ -163,6 +163,13 @@ everywhere. Learn more about the story and solution [on Devpost](https://devpost
 
 ## 🏗️ Architecture & AWS Services
 
+### Updated VetROI Architecture includes USAJOBS API Integration.
+This addition transforms VetROI from a career acquisition enhancement tool to a career acquisition enablement tool.
+
+![Upgraded VetROI Architecture](https://github.com/user-attachments/assets/30b32e33-0864-4721-933f-ddbd523270e0)
+
+### VetROI Architecture prior to USAJOBS API Integration
+
 ![VetROI Architecture](docs/images/vetroi_architecture.png)
 
 ### Lambda-Powered Architecture
