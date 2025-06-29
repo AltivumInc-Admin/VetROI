@@ -357,3 +357,45 @@
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+/* Leadership Profile Enhancements */
+.leadership-profile .skills-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--dd214-bg-card);
+  border: 1px solid var(--dd214-border);
+  border-radius: var(--dd214-radius-lg);
+  overflow: hidden;
+}
+
+.leadership-profile .skills-table th {
+  background: rgba(0, 212, 255, 0.1);
+  color: var(--dd214-primary);
+  font-weight: var(--dd214-font-semibold);
+  text-align: left;
+  padding: var(--dd214-space-4);
+  border-bottom: 2px solid var(--dd214-border);
+  font-size: var(--dd214-font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.leadership-profile .skills-table td {
+  padding: var(--dd214-space-4);
+  border-bottom: 1px solid var(--dd214-border-subtle);
+  transition: var(--dd214-transition-base);
+}
+
+.leadership-profile .skills-table tr:last-child td {
+  border-bottom: none;
+}
+
+.leadership-profile .skills-table tr:hover td {
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.leadership-profile .metric-icon {
+  font-size: 2rem;
+  margin-bottom: var(--dd214-space-2);
+  opacity: 0.8;
+}

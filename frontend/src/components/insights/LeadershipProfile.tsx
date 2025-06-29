@@ -14,14 +14,14 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
   const profile = data.insights?.extracted_profile || {}
   
   return (
-    <div className="leadership-profile">
+    <div className="leadership-profile dd214-insights">
       <div className="section-header">
         <h1>Leadership Profile</h1>
         <p>Your hidden strengths and combat-tested capabilities</p>
       </div>
       
       {/* Combat Multiplier Skills */}
-      <section className="combat-multiplier-section">
+      <section className="combat-multiplier-section dd214-card">
         <h2>Combat Multiplier Skills Translation</h2>
         <p className="section-description">
           How your military expertise translates to high-value civilian roles
@@ -62,7 +62,7 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
       </section>
       
       {/* Leadership Style Analysis */}
-      <section className="leadership-style-section">
+      <section className="leadership-style-section dd214-card">
         <h2>Leadership Style Profile</h2>
         
         <div className="leadership-visualization">
@@ -80,7 +80,7 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
             <h3>Best Industry Fits</h3>
             <div className="industry-tags">
               {(leadershipPremium.industry_fit || []).map((industry: string, index: number) => (
-                <span key={index} className="industry-tag">
+                <span key={index} className="industry-tag dd214-badge">
                   {industry}
                 </span>
               ))}
@@ -90,19 +90,19 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
       </section>
       
       {/* Stress Inoculation Value */}
-      <section className="stress-value-section">
+      <section className="stress-value-section dd214-card">
         <h2>Stress Inoculation Value</h2>
         <p className="section-description">
           Your ability to perform under pressure is a premium asset
         </p>
         
-        <div className="stress-cards">
-          <div className="stress-card">
+        <div className="stress-cards dd214-grid-3">
+          <div className="stress-card dd214-highlight">
             <h3>Your Threshold</h3>
             <p>{stressValue.your_threshold || 'Combat-tested resilience'}</p>
           </div>
           
-          <div className="stress-card">
+          <div className="stress-card dd214-highlight">
             <h3>Corporate Application</h3>
             <p>{stressValue.corporate_application || 'Crisis management and high-stakes decision making'}</p>
           </div>
@@ -122,39 +122,39 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
       </section>
       
       {/* Leadership Metrics */}
-      <section className="leadership-metrics">
+      <section className="leadership-metrics dd214-card">
         <h2>Leadership by the Numbers</h2>
         
-        <div className="metrics-grid">
-          <div className="metric-card">
+        <div className="metrics-grid dd214-grid-2">
+          <div className="metric-card dd214-stat-card">
             <div className="metric-icon">👥</div>
             <div className="metric-content">
-              <h3>Team Leadership</h3>
-              <p className="metric-value">{profile.leadership_scope || 'Team Leader'}</p>
+              <h3 className="dd214-stat-label">Team Leadership</h3>
+              <p className="metric-value dd214-stat-value">{profile.leadership_scope || 'Team Leader'}</p>
             </div>
           </div>
           
-          <div className="metric-card">
+          <div className="metric-card dd214-stat-card">
             <div className="metric-icon">🎖️</div>
             <div className="metric-content">
-              <h3>Final Rank</h3>
-              <p className="metric-value">{profile.rank || 'Military Professional'}</p>
+              <h3 className="dd214-stat-label">Final Rank</h3>
+              <p className="metric-value dd214-stat-value">{profile.rank || 'Military Professional'}</p>
             </div>
           </div>
           
-          <div className="metric-card">
+          <div className="metric-card dd214-stat-card">
             <div className="metric-icon">🌍</div>
             <div className="metric-content">
-              <h3>Deployment Experience</h3>
-              <p className="metric-value">{profile.deployment_experience || 'Combat Veteran'}</p>
+              <h3 className="dd214-stat-label">Deployment Experience</h3>
+              <p className="metric-value dd214-stat-value">{profile.deployment_experience || 'Combat Veteran'}</p>
             </div>
           </div>
           
-          <div className="metric-card">
+          <div className="metric-card dd214-stat-card">
             <div className="metric-icon">📚</div>
             <div className="metric-content">
-              <h3>Specialized Training</h3>
-              <p className="metric-value">{profile.specialized_training?.length || 0} Certifications</p>
+              <h3 className="dd214-stat-label">Specialized Training</h3>
+              <p className="metric-value dd214-stat-value">{profile.specialized_training?.length || 0} Certifications</p>
             </div>
           </div>
         </div>
@@ -162,11 +162,11 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
       
       {/* Specialized Training Details */}
       {profile.specialized_training && profile.specialized_training.length > 0 && (
-        <section className="training-section">
+        <section className="training-section dd214-card">
           <h2>Elite Training & Certifications</h2>
-          <div className="training-list">
+          <div className="training-list dd214-list">
             {profile.specialized_training.map((training: string, index: number) => (
-              <div key={index} className="training-item">
+              <div key={index} className="training-item dd214-list-item">
                 <span className="training-icon">🎯</span>
                 <span className="training-name">{training}</span>
               </div>
