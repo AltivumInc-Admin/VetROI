@@ -252,7 +252,7 @@ export const SentraChat: React.FC<SentraChatProps> = ({
     {(showDD214InsightsButton || showNextMission) && (
       <div className="sentra-action-panel">
         <div className="action-grid">
-          {dd214DocumentId && (
+          {dd214DocumentId ? (
             <button 
               onClick={handleDD214InsightsClick}
               className="action-button dd214-action"
@@ -261,6 +261,16 @@ export const SentraChat: React.FC<SentraChatProps> = ({
                 <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-4h-6v2h6v-2zm0-4h-6v2h6V7zm0 8h-6v2h6v-2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span>DD214 Analysis</span>
+            </button>
+          ) : (
+            <button 
+              onClick={() => navigate('/dd214-upload')}
+              className="action-button dd214-action"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M12 2L2 7v10a10 10 0 0010 10 10 10 0 0010-10V7l-10-5zM12 12v6m0-10v.01" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span>Sign up to get DD214 analysis</span>
             </button>
           )}
           
