@@ -7,14 +7,13 @@ interface TimelineRoadmapProps {
 }
 
 export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
-  const [selectedPhase, setSelectedPhase] = useState<'immediate' | '30day' | '60day' | '90day'>('immediate')
-  const roadmap = data.insights?.actionable_30_60_90_day_roadmap || {}
+  const [selectedPhase, setSelectedPhase] = useState<'immediate' | '30day' | '60day'>('immediate')
+  const roadmap = data.insights?.transition_timeline || {}
   
   const phases = [
-    { id: 'immediate', label: '7-Day Sprint', key: 'immediate_7_day_priorities' },
-    { id: '30day', label: '30-Day Plan', key: 'day_30_targets' },
-    { id: '60day', label: '60-Day Goals', key: 'day_60_targets' },
-    { id: '90day', label: '90-Day Vision', key: 'day_90_targets' }
+    { id: 'immediate', label: '7-Day Sprint', key: 'next_7_days' },
+    { id: '30day', label: '30-Day Plan', key: 'next_30_days' },
+    { id: '60day', label: '60-Day Goals', key: '60_90_days' }
   ]
   
   const getPhaseData = (phaseKey: string) => {
@@ -26,7 +25,6 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
       case 'immediate': return '⚡'
       case '30day': return '🎯'
       case '60day': return '🚀'
-      case '90day': return '🏆'
       default: return '📅'
     }
   }
@@ -36,7 +34,6 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
       case 'immediate': return '#ff6b6b'
       case '30day': return '#4ecdc4'
       case '60day': return '#45b7d1'
-      case '90day': return '#96ceb4'
       default: return '#dfe6e9'
     }
   }
@@ -45,7 +42,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
     <div className="timeline-roadmap dd214-insights">
       <div className="section-header">
         <h1>Strategic Timeline & Roadmap</h1>
-        <p>Your personalized 90-day career transition plan</p>
+        <p>Your personalized 60-day career transition plan</p>
       </div>
       
       {/* Timeline Navigation */}
