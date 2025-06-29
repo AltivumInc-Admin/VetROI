@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "author": "Altivum Inc.",
+  "license": "BUSL-1.1",
   "copyright": "© 2025 Altivum Inc. VetROI™ is a trademark of Altivum Inc.",
   "scripts": {
     "dev": "vite",

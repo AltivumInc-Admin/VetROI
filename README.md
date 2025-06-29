@@ -9,7 +9,7 @@
 > Register at: https://services.onetcenter.org/developer/signup
 > See [DEPLOYMENT.md](DEPLOYMENT.md) for setup instructions.
 
-_This project is released under the MIT License. See [LICENSE](LICENSE) for details._
+_This project is released under the Business Source License 1.1 (BUSL-1.1). See [LICENSE](LICENSE) and [LICENSE_USAGE.md](LICENSE_USAGE.md) for details._
 
 ## The Problem
 
@@ -295,7 +295,7 @@ VetROI/
 
 ## 📄 License
 
-MIT License - enabling both open-source community and commercial deployment
+Business Source License 1.1 (BUSL-1.1) - enabling source-available transparency while protecting commercial integrity. Automatically converts to GPL v2.0 or later on June 28, 2029.
 
 ## 🤝 Acknowledgments
 

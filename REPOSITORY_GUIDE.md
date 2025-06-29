@@ -24,7 +24,7 @@ VetROI/
 ├── 📄 README.md                   # Project Overview
 ├── 🛠️ DEVELOPMENT.md              # Development Instructions
 ├── 📍 REPOSITORY_GUIDE.md         # This File
-└── ⚖️ LICENSE                     # MIT License
+└── ⚖️ LICENSE                     # Business Source License 1.1 (BUSL-1.1)
 
 Hidden but Important:
 ├── 🔐 .github/                    # GitHub Actions (CI/CD)

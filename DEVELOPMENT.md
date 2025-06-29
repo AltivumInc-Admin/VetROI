@@ -12,7 +12,7 @@
 
 **Trademark**: VetROI™ - Serial Number 99211176 (Filed: May 30, 2025)  
 **Owner**: Altivum Inc.  
-**License**: MIT License (enabling both open-source community and commercial monetization)
+**License**: Business Source License 1.1 (BUSL-1.1) - enabling source-available transparency while protecting commercial integrity
 
 ---
 
