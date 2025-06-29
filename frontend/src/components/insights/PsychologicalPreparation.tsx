@@ -14,27 +14,27 @@ export const PsychologicalPreparation: React.FC<PsychologicalPreparationProps> =
   const negotiation = psych.negotiation_ammunition || {}
   
   return (
-    <div className="psychological-preparation">
+    <div className="psychological-preparation dd214-insights">
       <div className="section-header">
         <h1>Psychological Preparation</h1>
         <p>Mental frameworks and strategies for confident career transition</p>
       </div>
       
       {/* Imposter Syndrome Crusher */}
-      <section className="imposter-syndrome-section">
+      <section className="imposter-syndrome-section dd214-card">
         <h2>Imposter Syndrome Crusher</h2>
         <p className="section-description">
           Reframe your military experience to recognize your true market value
         </p>
         
-        <div className="comparison-cards">
+        <div className="comparison-cards dd214-grid-3">
           {imposterCrushers.map((comparison: string, index: number) => {
             const parts = comparison.split(' = ')
             const military = parts[0] || comparison
             const civilian = parts[1] || ''
             
             return (
-              <div key={index} className="comparison-card">
+              <div key={index} className="comparison-card dd214-highlight">
                 <div className="comparison-content">
                   <div className="military-side">
                     <h3>Your Experience</h3>
@@ -57,7 +57,7 @@ export const PsychologicalPreparation: React.FC<PsychologicalPreparationProps> =
       </section>
       
       {/* Interview Power Stories */}
-      <section className="interview-stories-section">
+      <section className="interview-stories-section dd214-card">
         <h2>Interview Power Stories</h2>
         <p className="section-description">
           STAR format stories that demonstrate your exceptional capabilities
@@ -65,7 +65,7 @@ export const PsychologicalPreparation: React.FC<PsychologicalPreparationProps> =
         
         <div className="stories-container">
           {interviewStories.map((story: any, index: number) => (
-            <div key={index} className="story-card">
+            <div key={index} className="story-card dd214-card">
               <div className="story-header" onClick={() => setExpandedStory(expandedStory === index ? null : index)}>
                 <h3>{story.setup}</h3>
                 <span className="expand-icon">{expandedStory === index ? '−' : '+'}</span>
@@ -97,7 +97,7 @@ export const PsychologicalPreparation: React.FC<PsychologicalPreparationProps> =
       </section>
       
       {/* Negotiation Arsenal */}
-      <section className="negotiation-section">
+      <section className="negotiation-section dd214-card">
         <h2>Negotiation Arsenal</h2>
         <p className="section-description">
           Your ammunition for salary negotiations
@@ -155,10 +155,10 @@ export const PsychologicalPreparation: React.FC<PsychologicalPreparationProps> =
       </section>
       
       {/* Confidence Builders */}
-      <section className="confidence-builders">
+      <section className="confidence-builders dd214-card">
         <h2>Daily Confidence Builders</h2>
-        <div className="builder-cards">
-          <div className="builder-card">
+        <div className="builder-cards dd214-grid-3">
+          <div className="builder-card dd214-highlight">
             <h3>Morning Affirmation</h3>
             <p>
               "I am a proven leader who has operated successfully in life-or-death situations. 
@@ -166,7 +166,7 @@ export const PsychologicalPreparation: React.FC<PsychologicalPreparationProps> =
             </p>
           </div>
           
-          <div className="builder-card">
+          <div className="builder-card dd214-highlight">
             <h3>Pre-Interview Power Pose</h3>
             <p>
               Stand in a power pose for 2 minutes before any interview. 
@@ -174,7 +174,7 @@ export const PsychologicalPreparation: React.FC<PsychologicalPreparationProps> =
             </p>
           </div>
           
-          <div className="builder-card">
+          <div className="builder-card dd214-highlight">
             <h3>Rejection Reframe</h3>
             <p>
               "Every 'no' is intel gathering for the next mission. 

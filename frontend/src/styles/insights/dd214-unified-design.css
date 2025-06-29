@@ -399,3 +399,173 @@
   margin-bottom: var(--dd214-space-2);
   opacity: 0.8;
 }
+
+/* Psychological Preparation Enhancements */
+.psychological-preparation .comparison-content {
+  display: flex;
+  align-items: center;
+  gap: var(--dd214-space-4);
+  padding: var(--dd214-space-4);
+}
+
+.psychological-preparation .military-side,
+.psychological-preparation .civilian-side {
+  flex: 1;
+}
+
+.psychological-preparation .military-side h3 {
+  color: var(--dd214-primary);
+  font-size: var(--dd214-font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--dd214-space-2);
+}
+
+.psychological-preparation .equals-sign {
+  font-size: var(--dd214-font-size-2xl);
+  color: var(--dd214-primary);
+  font-weight: var(--dd214-font-bold);
+  padding: 0 var(--dd214-space-3);
+}
+
+.psychological-preparation .story-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: var(--dd214-space-4);
+  background: rgba(0, 212, 255, 0.05);
+  border-radius: var(--dd214-radius-md);
+  transition: var(--dd214-transition-base);
+}
+
+.psychological-preparation .story-header:hover {
+  background: rgba(0, 212, 255, 0.08);
+}
+
+.psychological-preparation .expand-icon {
+  font-size: var(--dd214-font-size-xl);
+  color: var(--dd214-primary);
+}
+
+.psychological-preparation .story-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.psychological-preparation .story-content.expanded {
+  max-height: 800px;
+  padding-top: var(--dd214-space-4);
+}
+
+.psychological-preparation .salary-levels {
+  display: flex;
+  gap: var(--dd214-space-4);
+  margin-top: var(--dd214-space-4);
+}
+
+.psychological-preparation .salary-level {
+  flex: 1;
+  text-align: center;
+  padding: var(--dd214-space-4);
+  border-radius: var(--dd214-radius-md);
+  border: 1px solid var(--dd214-border);
+  transition: var(--dd214-transition-base);
+}
+
+.psychological-preparation .salary-level:hover {
+  transform: translateY(-2px);
+  border-color: var(--dd214-primary);
+}
+
+.psychological-preparation .salary-level.floor {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.psychological-preparation .salary-level.market {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.3);
+}
+
+.psychological-preparation .salary-level.stretch {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.psychological-preparation .level-label {
+  display: block;
+  font-size: var(--dd214-font-size-sm);
+  color: var(--dd214-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--dd214-space-2);
+}
+
+.psychological-preparation .level-amount {
+  display: block;
+  font-size: var(--dd214-font-size-2xl);
+  font-weight: var(--dd214-font-bold);
+  color: var(--dd214-text-primary);
+  margin-bottom: var(--dd214-space-2);
+}
+
+.psychological-preparation .level-note {
+  display: block;
+  font-size: var(--dd214-font-size-sm);
+  color: var(--dd214-text-secondary);
+}
+
+.psychological-preparation .leverage-item {
+  display: flex;
+  align-items: center;
+  gap: var(--dd214-space-3);
+  padding: var(--dd214-space-3);
+  background: rgba(0, 212, 255, 0.05);
+  border-radius: var(--dd214-radius-md);
+  margin-bottom: var(--dd214-space-2);
+}
+
+.psychological-preparation .leverage-icon {
+  font-size: var(--dd214-font-size-xl);
+}
+
+.psychological-preparation .script-box {
+  background: var(--dd214-bg-card);
+  border: 1px solid var(--dd214-border);
+  border-radius: var(--dd214-radius-md);
+  padding: var(--dd214-space-4);
+  margin-top: var(--dd214-space-4);
+}
+
+.psychological-preparation .script-box blockquote {
+  margin: var(--dd214-space-4) 0 0 0;
+  padding: var(--dd214-space-4);
+  background: rgba(0, 212, 255, 0.05);
+  border-left: 3px solid var(--dd214-primary);
+  border-radius: var(--dd214-radius-md);
+  font-style: italic;
+  color: var(--dd214-text-secondary);
+}
+
+.psychological-preparation .practice-tips ul {
+  list-style: none;
+  padding: 0;
+  margin: var(--dd214-space-3) 0 0 0;
+}
+
+.psychological-preparation .practice-tips li {
+  position: relative;
+  padding-left: var(--dd214-space-6);
+  margin-bottom: var(--dd214-space-2);
+  color: var(--dd214-text-secondary);
+}
+
+.psychological-preparation .practice-tips li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--dd214-success);
+  font-weight: var(--dd214-font-bold);
+}
