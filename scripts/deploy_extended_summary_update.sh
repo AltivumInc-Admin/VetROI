@@ -10,12 +10,12 @@ LAMBDA_NAME="VetROI_DD214_Insights"
 SOURCE_DIR="../lambda/dd214_insights/src"
 ZIP_FILE="dd214_insights_extended_summary.zip"
 
-# Navigate to source directory
-cd "$(dirname "$0")/$SOURCE_DIR"
+# Navigate to lambda directory (parent of src)
+cd "$(dirname "$0")/../lambda/dd214_insights"
 
-# Create deployment package
+# Create deployment package preserving src directory structure
 echo "Creating deployment package..."
-zip -r $ZIP_FILE lambda_function.py enhanced_prompts_original.py enhanced_prompts_v2.py enhanced_prompts.py
+zip -r $ZIP_FILE src/lambda_function.py src/enhanced_prompts_original.py src/enhanced_prompts_v2.py src/enhanced_prompts.py
 
 # Update Lambda function
 echo "Updating Lambda function..."

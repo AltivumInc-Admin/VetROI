@@ -20,6 +20,10 @@
         "IntervalSeconds": 2,
         "MaxAttempts": 3,
         "BackoffRate": 2
+      }],
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "ValidationFailed"
       }]
     },
     
@@ -36,7 +40,11 @@
         "FeatureTypes": ["FORMS", "TABLES"]
       },
       "Next": "WaitForTextract",
-      "ResultPath": "$.textractJob"
+      "ResultPath": "$.textractJob",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "TextractStartFailed"
+      }]
     },
     
     "WaitForTextract": {
@@ -83,7 +91,11 @@
         }
       },
       "Next": "RunMacieScan",
-      "ResultPath": "$.extractedData"
+      "ResultPath": "$.extractedData",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "TextractProcessingFailed"
+      }]
     },
     
     "RunMacieScan": {
@@ -99,7 +111,11 @@
         }
       },
       "Next": "WaitForMacieScan",
-      "ResultPath": "$.macieJob"
+      "ResultPath": "$.macieJob",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "MacieScanFailed"
+      }]
     },
     
     "WaitForMacieScan": {
@@ -156,7 +172,11 @@
         }
       },
       "Next": "AnalyzeWithComprehend",
-      "ResultPath": "$.redactionResult"
+      "ResultPath": "$.redactionResult",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "RedactionFailed"
+      }]
     },
     
     "AnalyzeWithComprehend": {
@@ -222,7 +242,11 @@
         }
       },
       "Next": "StoreEnhancedProfile",
-      "ResultPath": "$.enhancedProfile"
+      "ResultPath": "$.enhancedProfile",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "AIEnhancementFailed"
+      }]
     },
     
     "StoreEnhancedProfile": {
@@ -279,6 +303,42 @@
       "Type": "Fail",
       "Error": "ProcessingFailed",
       "Cause": "DD214 processing pipeline failed"
+    },
+    
+    "ValidationFailed": {
+      "Type": "Fail",
+      "Error": "ValidationFailed",
+      "Cause": "Failed to validate DD214 document"
+    },
+    
+    "TextractStartFailed": {
+      "Type": "Fail",
+      "Error": "TextractStartFailed",
+      "Cause": "Failed to start Textract job"
+    },
+    
+    "TextractProcessingFailed": {
+      "Type": "Fail",
+      "Error": "TextractProcessingFailed",
+      "Cause": "Failed to process Textract results"
+    },
+    
+    "MacieScanFailed": {
+      "Type": "Fail",
+      "Error": "MacieScanFailed",
+      "Cause": "Failed to scan document with Macie"
+    },
+    
+    "RedactionFailed": {
+      "Type": "Fail",
+      "Error": "RedactionFailed",
+      "Cause": "Failed to redact PII from document"
+    },
+    
+    "AIEnhancementFailed": {
+      "Type": "Fail",
+      "Error": "AIEnhancementFailed",
+      "Cause": "Failed to enhance profile with AI"
     }
   }
 }
