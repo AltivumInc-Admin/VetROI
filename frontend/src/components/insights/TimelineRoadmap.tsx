@@ -42,7 +42,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
   }
   
   return (
-    <div className="timeline-roadmap">
+    <div className="timeline-roadmap dd214-insights">
       <div className="section-header">
         <h1>Strategic Timeline & Roadmap</h1>
         <p>Your personalized 90-day career transition plan</p>
@@ -75,7 +75,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
       </div>
       
       {/* Phase Details */}
-      <div className="phase-details">
+      <div className="phase-details dd214-card">
         <div className="phase-header">
           <h2>
             <span className="phase-icon">{getPhaseIcon(selectedPhase)}</span>
@@ -138,14 +138,14 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
       </div>
       
       {/* Quick Win Tracker */}
-      <section className="quick-wins">
+      <section className="quick-wins dd214-card">
         <h2>🎯 Quick Win Tracker</h2>
         <p className="section-description">
           Focus on these high-impact, low-effort actions for immediate momentum
         </p>
         
-        <div className="quick-win-cards">
-          <div className="quick-win-card">
+        <div className="quick-win-cards dd214-grid-3">
+          <div className="quick-win-card dd214-highlight">
             <div className="win-header">
               <span className="win-icon">📧</span>
               <h3>LinkedIn Profile Update</h3>
@@ -154,7 +154,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
             <div className="win-impact">Impact: High | Time: 30 min</div>
           </div>
           
-          <div className="quick-win-card">
+          <div className="quick-win-card dd214-highlight">
             <div className="win-header">
               <span className="win-icon">🤝</span>
               <h3>Veteran Network Activation</h3>
@@ -163,7 +163,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
             <div className="win-impact">Impact: High | Time: 1 hour</div>
           </div>
           
-          <div className="quick-win-card">
+          <div className="quick-win-card dd214-highlight">
             <div className="win-header">
               <span className="win-icon">🎓</span>
               <h3>Skills Translation Doc</h3>
@@ -175,11 +175,11 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
       </section>
       
       {/* Milestone Celebrations */}
-      <section className="milestones">
+      <section className="milestones dd214-card">
         <h2>🏆 Milestone Celebrations</h2>
         <div className="milestone-timeline">
           <div className="milestone-item">
-            <div className="milestone-marker week1">
+            <div className="milestone-marker week1 dd214-badge">
               <span>Week 1</span>
             </div>
             <div className="milestone-content">
@@ -189,7 +189,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
           </div>
           
           <div className="milestone-item">
-            <div className="milestone-marker day30">
+            <div className="milestone-marker day30 dd214-badge">
               <span>Day 30</span>
             </div>
             <div className="milestone-content">
@@ -199,7 +199,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
           </div>
           
           <div className="milestone-item">
-            <div className="milestone-marker day60">
+            <div className="milestone-marker day60 dd214-badge">
               <span>Day 60</span>
             </div>
             <div className="milestone-content">
@@ -209,7 +209,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
           </div>
           
           <div className="milestone-item">
-            <div className="milestone-marker day90">
+            <div className="milestone-marker day90 dd214-badge">
               <span>Day 90</span>
             </div>
             <div className="milestone-content">

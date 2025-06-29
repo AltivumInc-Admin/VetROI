@@ -569,3 +569,191 @@
   color: var(--dd214-success);
   font-weight: var(--dd214-font-bold);
 }
+
+/* Timeline & Roadmap Enhancements */
+.timeline-roadmap .timeline-navigation {
+  background: var(--dd214-bg-card);
+  border: 1px solid var(--dd214-border);
+  border-radius: var(--dd214-radius-lg);
+  padding: var(--dd214-space-8) var(--dd214-space-6);
+  margin-bottom: var(--dd214-space-6);
+}
+
+.timeline-roadmap .timeline-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.timeline-roadmap .timeline-node {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  text-align: center;
+  transition: var(--dd214-transition-base);
+}
+
+.timeline-roadmap .node-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--dd214-bg-card);
+  border: 3px solid var(--dd214-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--dd214-font-size-2xl);
+  margin: 0 auto var(--dd214-space-2);
+  transition: var(--dd214-transition-base);
+}
+
+.timeline-roadmap .timeline-node.active .node-icon {
+  border-color: var(--dd214-primary);
+  background: rgba(0, 212, 255, 0.1);
+  transform: scale(1.1);
+}
+
+.timeline-roadmap .timeline-node:hover .node-icon {
+  border-color: var(--dd214-primary);
+  transform: scale(1.05);
+}
+
+.timeline-roadmap .node-label {
+  font-size: var(--dd214-font-size-sm);
+  font-weight: var(--dd214-font-medium);
+  color: var(--dd214-text-secondary);
+}
+
+.timeline-roadmap .timeline-node.active .node-label {
+  color: var(--dd214-primary);
+  font-weight: var(--dd214-font-semibold);
+}
+
+.timeline-roadmap .timeline-connector {
+  position: absolute;
+  top: 30px;
+  height: 3px;
+  background: var(--dd214-border);
+  flex: 1;
+  margin: 0 -20px;
+  z-index: 1;
+  transition: var(--dd214-transition-base);
+}
+
+.timeline-roadmap .timeline-connector.completed {
+  background: var(--dd214-primary);
+}
+
+.timeline-roadmap .roadmap-item {
+  display: flex;
+  gap: var(--dd214-space-4);
+  padding: var(--dd214-space-4);
+  background: rgba(0, 212, 255, 0.03);
+  border: 1px solid var(--dd214-border);
+  border-radius: var(--dd214-radius-md);
+  margin-bottom: var(--dd214-space-3);
+  transition: var(--dd214-transition-base);
+}
+
+.timeline-roadmap .roadmap-item:hover {
+  background: rgba(0, 212, 255, 0.05);
+  border-color: var(--dd214-primary);
+  transform: translateX(4px);
+}
+
+.timeline-roadmap .item-checkbox input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--dd214-primary);
+  cursor: pointer;
+}
+
+.timeline-roadmap .win-header {
+  display: flex;
+  align-items: center;
+  gap: var(--dd214-space-3);
+  margin-bottom: var(--dd214-space-3);
+}
+
+.timeline-roadmap .win-icon {
+  font-size: var(--dd214-font-size-2xl);
+}
+
+.timeline-roadmap .win-impact {
+  margin-top: var(--dd214-space-3);
+  padding-top: var(--dd214-space-3);
+  border-top: 1px solid var(--dd214-border-subtle);
+  font-size: var(--dd214-font-size-sm);
+  color: var(--dd214-text-muted);
+  font-weight: var(--dd214-font-medium);
+}
+
+.timeline-roadmap .milestone-timeline {
+  position: relative;
+  padding-left: var(--dd214-space-8);
+}
+
+.timeline-roadmap .milestone-timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--dd214-border);
+}
+
+.timeline-roadmap .milestone-item {
+  display: flex;
+  gap: var(--dd214-space-6);
+  margin-bottom: var(--dd214-space-8);
+  position: relative;
+}
+
+.timeline-roadmap .milestone-marker {
+  position: absolute;
+  left: -28px;
+  top: 0;
+  background: var(--dd214-primary);
+  color: var(--dd214-bg-primary);
+  padding: var(--dd214-space-2) var(--dd214-space-3);
+  border-radius: var(--dd214-radius-full);
+  font-size: var(--dd214-font-size-sm);
+  font-weight: var(--dd214-font-bold);
+  white-space: nowrap;
+}
+
+.timeline-roadmap .milestone-marker.week1 {
+  background: #ff6b6b;
+}
+
+.timeline-roadmap .milestone-marker.day30 {
+  background: #4ecdc4;
+}
+
+.timeline-roadmap .milestone-marker.day60 {
+  background: #45b7d1;
+}
+
+.timeline-roadmap .milestone-marker.day90 {
+  background: #96ceb4;
+}
+
+.timeline-roadmap .milestone-content h4 {
+  color: var(--dd214-primary);
+  margin-bottom: var(--dd214-space-2);
+}
+
+.timeline-roadmap .phase-header {
+  display: flex;
+  align-items: center;
+  gap: var(--dd214-space-4);
+  margin-bottom: var(--dd214-space-6);
+  padding-bottom: var(--dd214-space-4);
+  border-bottom: 2px solid var(--dd214-border);
+}
+
+.timeline-roadmap .phase-icon {
+  font-size: var(--dd214-font-size-3xl);
+}
