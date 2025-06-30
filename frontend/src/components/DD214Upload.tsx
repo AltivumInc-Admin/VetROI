@@ -581,6 +581,14 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
 
       {/* Demo link for judges */}
       <div style={{ marginTop: '2rem', textAlign: 'center', position: 'relative' }}>
+        <p style={{ 
+          fontSize: '0.875rem', 
+          color: '#9CA3AF', 
+          marginBottom: '0.5rem',
+          fontStyle: 'italic'
+        }}>
+          Please click the glowing info icon first
+        </p>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
             onClick={() => setShowJudgeInfo(true)}
