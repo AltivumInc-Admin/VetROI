@@ -179,7 +179,7 @@ The heart of our DD214 processing pipeline - orchestrating document analysis, PI
 
 The VetROI architecture has evolved significantly since its initial release. Historical architecture diagrams showing the pre-USAJOBS integration design and detailed Lambda function flows can be found in the [Evolution of VetROI](docs/Evolution%20of%20VetROI/) folder.
 
-### Core Lambda Functions (9 Total)
+### Core Lambda Functions (10 Total)
 1. **Career Recommendation Engine** (`VetROI_Recommend`)
    - Handles POST /recommend and GET /career/{soc} endpoints
    - O*NET API integration for military code translation
@@ -219,6 +219,9 @@ The VetROI architecture has evolved significantly since its initial release. His
 9. **Redacted Document Access** (`VetROI_DD214_GetRedacted`)
    - Provides access to PII-removed documents
 
+10. **USAJOBS Personalized Jobs Provisioning** (`vetROI-usajobs-search`)
+   - Provides the user with real-time job listings that meet their interests.
+
 ### Serverless Orchestration
 ```yaml
 Step Functions State Machine:
@@ -231,7 +234,7 @@ Step Functions State Machine:
 ```
 
 ### AWS Services Used
-- **AWS Lambda** - 9 serverless functions handling all compute
+- **AWS Lambda** - 10 serverless functions handling all compute
 - **Step Functions** - DD214 processing workflow orchestration
 - **Amazon Bedrock** - AI insights generation (Nova Lite model)
 - **Amazon Lex** - Conversational AI for career guidance (us-east-1)
@@ -243,7 +246,7 @@ Step Functions State Machine:
 - **Cognito** - User authentication & authorization
 - **CloudFront** - Custom domain (vetroi.altivum.ai)
 - **Amplify** - Frontend hosting with CI/CD
-- **Secrets Manager** - O*NET API credentials (registration required)
+- **Secrets Manager** - O*NET API credentials & USAJOBS API credentials (registration required)
 - **CloudWatch** - Monitoring & alerts
 
 ## 🔧 Local Development & Testing
