@@ -580,12 +580,66 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       </div>
 
       {/* Demo link for judges */}
-      <div style={{ marginTop: '2rem', textAlign: 'center', position: 'relative' }}>
+      <div 
+        className="demo-section-glow"
+        style={{ 
+          marginTop: '2rem', 
+          textAlign: 'center', 
+          position: 'relative',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          background: 'rgba(0, 212, 255, 0.05)',
+          border: '2px solid rgba(0, 212, 255, 0.3)',
+          animation: 'pulseGlow 2s ease-in-out infinite'
+        }}
+      >
+        <style>{`
+          @keyframes pulseGlow {
+            0% {
+              box-shadow: 0 0 20px rgba(0, 212, 255, 0.4),
+                          0 0 40px rgba(0, 212, 255, 0.2),
+                          inset 0 0 20px rgba(0, 212, 255, 0.1);
+            }
+            50% {
+              box-shadow: 0 0 30px rgba(0, 212, 255, 0.6),
+                          0 0 60px rgba(0, 212, 255, 0.3),
+                          inset 0 0 30px rgba(0, 212, 255, 0.15);
+            }
+            100% {
+              box-shadow: 0 0 20px rgba(0, 212, 255, 0.4),
+                          0 0 40px rgba(0, 212, 255, 0.2),
+                          inset 0 0 20px rgba(0, 212, 255, 0.1);
+            }
+          }
+          
+          @keyframes intensePulse {
+            0% {
+              box-shadow: 0 0 25px rgba(0, 212, 255, 0.8),
+                          0 0 50px rgba(0, 212, 255, 0.4),
+                          inset 0 0 15px rgba(0, 212, 255, 0.3);
+              transform: scale(1);
+            }
+            50% {
+              box-shadow: 0 0 35px rgba(0, 212, 255, 1),
+                          0 0 70px rgba(0, 212, 255, 0.6),
+                          inset 0 0 20px rgba(0, 212, 255, 0.4);
+              transform: scale(1.1);
+            }
+            100% {
+              box-shadow: 0 0 25px rgba(0, 212, 255, 0.8),
+                          0 0 50px rgba(0, 212, 255, 0.4),
+                          inset 0 0 15px rgba(0, 212, 255, 0.3);
+              transform: scale(1);
+            }
+          }
+        `}</style>
         <p style={{ 
           fontSize: '0.875rem', 
-          color: '#9CA3AF', 
+          color: '#00d4ff', 
           marginBottom: '0.5rem',
-          fontStyle: 'italic'
+          fontStyle: 'italic',
+          fontWeight: '500',
+          textShadow: '0 0 10px rgba(0, 212, 255, 0.5)'
         }}>
           Please click the glowing info icon first
         </p>
@@ -593,31 +647,31 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
           <button
             onClick={() => setShowJudgeInfo(true)}
             style={{
-              background: 'rgba(0, 212, 255, 0.1)',
-              border: '1px solid rgba(0, 212, 255, 0.3)',
+              background: 'rgba(0, 212, 255, 0.2)',
+              border: '2px solid rgba(0, 212, 255, 0.6)',
               borderRadius: '50%',
-              width: '20px',
-              height: '20px',
+              width: '24px',
+              height: '24px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              fontSize: '0.75rem',
+              fontSize: '0.875rem',
               color: '#00d4ff',
               fontWeight: 'bold',
-              animation: 'pulseGlow 4s ease-in-out infinite',
+              animation: 'intensePulse 1.5s ease-in-out infinite',
               transition: 'all 0.2s',
-              boxShadow: '0 0 15px rgba(0, 212, 255, 0.5)'
+              boxShadow: '0 0 25px rgba(0, 212, 255, 0.8), 0 0 50px rgba(0, 212, 255, 0.4)'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.2)'
-              e.currentTarget.style.transform = 'scale(1.1)'
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(0, 212, 255, 0.7)'
+              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.4)'
+              e.currentTarget.style.transform = 'scale(1.2)'
+              e.currentTarget.style.boxShadow = '0 0 40px rgba(0, 212, 255, 1), 0 0 80px rgba(0, 212, 255, 0.6)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.1)'
+              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.2)'
               e.currentTarget.style.transform = 'scale(1)'
-              e.currentTarget.style.boxShadow = '0 0 15px rgba(0, 212, 255, 0.5)'
+              e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 212, 255, 0.8), 0 0 50px rgba(0, 212, 255, 0.4)'
             }}
             aria-label="Information about demo mode"
           >
@@ -628,16 +682,24 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             style={{ 
               background: 'none',
               border: 'none',
-              color: '#6A6D73', 
-              fontSize: '0.875rem', 
+              color: '#00d4ff', 
+              fontSize: '0.95rem', 
               textDecoration: 'none',
-              opacity: 0.7,
-              transition: 'opacity 0.2s',
+              transition: 'all 0.2s',
               cursor: 'pointer',
-              padding: 0
+              padding: '0.5rem 1rem',
+              fontWeight: '600',
+              textShadow: '0 0 15px rgba(0, 212, 255, 0.8)',
+              letterSpacing: '0.5px'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.textShadow = '0 0 25px rgba(0, 212, 255, 1), 0 0 40px rgba(0, 212, 255, 0.6)'
+              e.currentTarget.style.transform = 'scale(1.05)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.textShadow = '0 0 15px rgba(0, 212, 255, 0.8)'
+              e.currentTarget.style.transform = 'scale(1)'
+            }}
           >
             For Judges: View Demo Report →
           </button>
