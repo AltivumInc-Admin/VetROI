@@ -129,7 +129,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({
                             <pre className="json-display">
                               {socData[soc] 
                                 ? JSON.stringify(socData[soc], null, 2)
-                                : 'Loading S3 data...'
+                                : 'Waiting for API response...'
                               }
                             </pre>
                           </div>
