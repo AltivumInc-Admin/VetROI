@@ -337,7 +337,8 @@ input[type="checkbox"] {
 }
 
 .restart-button,
-.welcome-button {
+.welcome-button,
+.signout-button {
   padding: 0.75rem 1.25rem;
   border-radius: 24px;
   font-size: 0.875rem;
@@ -354,12 +355,14 @@ input[type="checkbox"] {
 }
 
 .restart-button:hover,
-.welcome-button:hover {
+.welcome-button:hover,
+.signout-button:hover {
   transform: translateY(-2px);
 }
 
 .restart-button svg,
-.welcome-button svg {
+.welcome-button svg,
+.signout-button svg {
   transition: transform 0.3s ease;
 }
 
@@ -369,6 +372,10 @@ input[type="checkbox"] {
 
 .welcome-button:hover svg {
   transform: scale(1.1);
+}
+
+.signout-button:hover svg {
+  transform: translateX(3px);
 }
 
 /* Button specific */
@@ -471,13 +478,15 @@ input[type="checkbox"] {
   }
   
   .restart-button,
-  .welcome-button {
+  .welcome-button,
+  .signout-button {
     padding: 0.625rem 1rem;
     font-size: 0.75rem;
   }
   
   .restart-button svg,
-  .welcome-button svg {
+  .welcome-button svg,
+  .signout-button svg {
     width: 16px;
     height: 16px;
   }

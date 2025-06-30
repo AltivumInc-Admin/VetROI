@@ -26,7 +26,7 @@ interface ChatSession {
 
 function App() {
   const navigate = useNavigate()
-  const { sessionWarning, sessionExpired } = useAuth()
+  const { sessionWarning, sessionExpired, isAuthenticated, signOutUser } = useAuth()
   const [chatSession, setChatSession] = useState<ChatSession | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -294,6 +294,20 @@ function App() {
     setCareerDataCache({})
   }
   
+  const handleSignOut = async () => {
+    try {
+      await signOutUser()
+      // Clear all session storage
+      sessionStorage.clear()
+      // Reset all state
+      handleRestart()
+      // Navigate to home page
+      navigate('/')
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
+  
   const handleDD214UploadComplete = (documentId: string) => {
     console.log('DD214 processed:', documentId)
     setDD214Processed(true)
@@ -491,6 +505,21 @@ function App() {
             </svg>
             Welcome Page
           </button>
+          
+          {isAuthenticated && (
+            <button 
+              className="signout-button"
+              onClick={handleSignOut}
+              title="Sign out of your account"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Sign Out
+            </button>
+          )}
         </div>
       )}
 

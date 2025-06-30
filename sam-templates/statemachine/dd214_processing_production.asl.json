@@ -1,0 +1,401 @@
+{
+  "Comment": "DD214 Processing Pipeline - Extract, Analyze, and Enhance Veteran Profiles",
+  "StartAt": "ValidateDocument",
+  "States": {
+    "ValidateDocument": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_Processor",
+        "Payload": {
+          "stepType": "validate",
+          "documentId.$": "$.documentId",
+          "bucket.$": "$.bucket",
+          "key.$": "$.key"
+        }
+      },
+      "Next": "StartTextractJob",
+      "ResultPath": "$.validationResult",
+      "Retry": [{
+        "ErrorEquals": ["States.TaskFailed"],
+        "IntervalSeconds": 2,
+        "MaxAttempts": 3,
+        "BackoffRate": 2
+      }],
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "ValidationFailed"
+      }]
+    },
+    
+    "StartTextractJob": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:textract:startDocumentAnalysis",
+      "Parameters": {
+        "DocumentLocation": {
+          "S3Object": {
+            "Bucket.$": "$.bucket",
+            "Name.$": "$.key"
+          }
+        },
+        "FeatureTypes": ["FORMS", "TABLES"]
+      },
+      "Next": "WaitForTextract",
+      "ResultPath": "$.textractJob",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "TextractStartFailed"
+      }]
+    },
+    
+    "WaitForTextract": {
+      "Type": "Wait",
+      "Seconds": 30,
+      "Next": "GetTextractStatus"
+    },
+    
+    "GetTextractStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:textract:getDocumentAnalysis",
+      "Parameters": {
+        "JobId.$": "$.textractJob.JobId",
+        "MaxResults": 1
+      },
+      "Next": "CheckTextractComplete",
+      "ResultPath": "$.textractStatus",
+      "OutputPath": "$"
+    },
+    
+    "CheckTextractComplete": {
+      "Type": "Choice",
+      "Choices": [{
+        "Variable": "$.textractStatus.JobStatus",
+        "StringEquals": "SUCCEEDED",
+        "Next": "ProcessTextractResults"
+      }, {
+        "Variable": "$.textractStatus.JobStatus",
+        "StringEquals": "FAILED",
+        "Next": "TextractFailed"
+      }],
+      "Default": "WaitForTextract"
+    },
+    
+    "ProcessTextractResults": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_Processor",
+        "Payload": {
+          "stepType": "textract_complete",
+          "documentId.$": "$.documentId",
+          "textractJobId.$": "$.textractJob.JobId"
+        }
+      },
+      "Next": "CheckExtractionSuccess",
+      "ResultPath": "$.extractedData",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "TextractProcessingFailed"
+      }]
+    },
+    
+    "CheckExtractionSuccess": {
+      "Type": "Choice",
+      "Choices": [{
+        "Variable": "$.extractedData.Payload.statusCode",
+        "NumericEquals": 200,
+        "Next": "RunMacieScan"
+      }],
+      "Default": "TextractProcessingFailed"
+    },
+    
+    "RunMacieScan": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_Macie",
+        "Payload": {
+          "operation": "scan",
+          "documentId.$": "$.documentId",
+          "bucket.$": "$.bucket",
+          "key.$": "$.key"
+        }
+      },
+      "Next": "WaitForMacieScan",
+      "ResultPath": "$.macieJob",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "MacieScanFailed"
+      }]
+    },
+    
+    "WaitForMacieScan": {
+      "Type": "Wait",
+      "Seconds": 10,
+      "Next": "CheckMacieStatus"
+    },
+    
+    "CheckMacieStatus": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_Macie",
+        "Payload": {
+          "operation": "process_findings",
+          "macieJobId.$": "$.macieJob.Payload.macieJobId",
+          "documentId.$": "$.documentId"
+        }
+      },
+      "Next": "IsMacieScanComplete",
+      "ResultPath": "$.macieFindings"
+    },
+    
+    "IsMacieScanComplete": {
+      "Type": "Choice",
+      "Choices": [{
+        "Variable": "$.macieFindings.Payload.status",
+        "StringEquals": "processing",
+        "Next": "WaitForMacieScan"
+      }],
+      "Default": "RedactPIIIfNeeded"
+    },
+    
+    "RedactPIIIfNeeded": {
+      "Type": "Choice",
+      "Choices": [{
+        "Variable": "$.macieFindings.Payload.requiresRedaction",
+        "BooleanEquals": true,
+        "Next": "RedactPII"
+      }],
+      "Default": "AnalyzeWithComprehend"
+    },
+    
+    "RedactPII": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_Macie",
+        "Payload": {
+          "operation": "redact",
+          "documentId.$": "$.documentId",
+          "findings.$": "$.macieFindings.Payload.findings",
+          "extractedText.$": "$.extractedData.Payload.extractedData.textForAnalysis"
+        }
+      },
+      "Next": "AnalyzeWithComprehend",
+      "ResultPath": "$.redactionResult",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "RedactionFailed"
+      }]
+    },
+    
+    "AnalyzeWithComprehend": {
+      "Type": "Parallel",
+      "Next": "EnhanceWithAI",
+      "ResultPath": "$.nlpResults",
+      "Branches": [
+        {
+          "StartAt": "DetectEntities",
+          "States": {
+            "DetectEntities": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:comprehend:detectEntities",
+              "Parameters": {
+                "Text.$": "$.extractedData.Payload.extractedData.textForAnalysis",
+                "LanguageCode": "en"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DetectKeyPhrases",
+          "States": {
+            "DetectKeyPhrases": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:comprehend:detectKeyPhrases",
+              "Parameters": {
+                "Text.$": "$.extractedData.Payload.extractedData.textForAnalysis",
+                "LanguageCode": "en"
+              },
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DetectSentiment",
+          "States": {
+            "DetectSentiment": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::aws-sdk:comprehend:detectSentiment",
+              "Parameters": {
+                "Text.$": "$.extractedData.Payload.extractedData.textForAnalysis",
+                "LanguageCode": "en"
+              },
+              "End": true
+            }
+          }
+        }
+      ]
+    },
+    
+    "EnhanceWithAI": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_Processor",
+        "Payload": {
+          "stepType": "enhance_profile",
+          "documentId.$": "$.documentId",
+          "extractedData.$": "$.extractedData.Payload.extractedData",
+          "comprehendResults.$": "$.nlpResults"
+        }
+      },
+      "Next": "StoreEnhancedProfile",
+      "ResultPath": "$.enhancedProfile",
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "AIEnhancementFailed"
+      }]
+    },
+    
+    "StoreEnhancedProfile": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::dynamodb:updateItem",
+      "Parameters": {
+        "TableName": "VetROI_DD214_Processing",
+        "Key": {
+          "document_id": {"S.$": "$.documentId"}
+        },
+        "UpdateExpression": "SET veteranId = :veteranId, profile = :profile, enhanced_at = :enhanced_at, #status = :status",
+        "ExpressionAttributeNames": {
+          "#status": "status"
+        },
+        "ExpressionAttributeValues": {
+          ":veteranId": {"S.$": "$.enhancedProfile.Payload.veteranId"},
+          ":profile": {"S.$": "States.JsonToString($.enhancedProfile.Payload.enhancedProfile)"},
+          ":enhanced_at": {"S.$": "$$.State.EnteredTime"},
+          ":status": {"S": "complete"}
+        }
+      },
+      "Next": "GenerateInsights",
+      "ResultPath": "$.storeResult"
+    },
+    
+    "GenerateInsights": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-2:205930636302:function:VetROI_DD214_Insights",
+        "Payload": {
+          "documentId.$": "$.documentId"
+        }
+      },
+      "Next": "NotifyCompletion",
+      "ResultPath": "$.insightsResult",
+      "Retry": [{
+        "ErrorEquals": ["States.TaskFailed"],
+        "IntervalSeconds": 2,
+        "MaxAttempts": 3,
+        "BackoffRate": 2
+      }],
+      "Catch": [{
+        "ErrorEquals": ["States.ALL"],
+        "Next": "InsightsGenerationFailed"
+      }]
+    },
+    
+    "NotifyCompletion": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-2:205930636302:VetROI-Alarms-test",
+        "Message": {
+          "documentId.$": "$.documentId",
+          "status": "SUCCESS",
+          "message": "DD214 processing complete",
+          "profileUrl.$": "$.enhancedProfile.Payload.profileUrl"
+        }
+      },
+      "Next": "Success"
+    },
+    
+    "TextractFailed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-2:205930636302:VetROI-Alarms-test",
+        "Message": {
+          "documentId.$": "$.documentId",
+          "status": "FAILED",
+          "error": "Textract processing failed",
+          "timestamp.$": "$$.State.EnteredTime"
+        }
+      },
+      "Next": "Failed"
+    },
+    
+    "Success": {
+      "Type": "Succeed"
+    },
+    
+    "Failed": {
+      "Type": "Fail",
+      "Error": "ProcessingFailed",
+      "Cause": "DD214 processing pipeline failed"
+    },
+    
+    "ValidationFailed": {
+      "Type": "Fail",
+      "Error": "ValidationFailed",
+      "Cause": "Failed to validate DD214 document"
+    },
+    
+    "TextractStartFailed": {
+      "Type": "Fail",
+      "Error": "TextractStartFailed",
+      "Cause": "Failed to start Textract job"
+    },
+    
+    "TextractProcessingFailed": {
+      "Type": "Fail",
+      "Error": "TextractProcessingFailed",
+      "Cause": "Failed to process Textract results"
+    },
+    
+    "MacieScanFailed": {
+      "Type": "Fail",
+      "Error": "MacieScanFailed",
+      "Cause": "Failed to scan document with Macie"
+    },
+    
+    "RedactionFailed": {
+      "Type": "Fail",
+      "Error": "RedactionFailed",
+      "Cause": "Failed to redact PII from document"
+    },
+    
+    "AIEnhancementFailed": {
+      "Type": "Fail",
+      "Error": "AIEnhancementFailed",
+      "Cause": "Failed to enhance profile with AI"
+    },
+    
+    "InsightsGenerationFailed": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "arn:aws:sns:us-east-2:205930636302:VetROI-Alarms-test",
+        "Message": {
+          "documentId.$": "$.documentId",
+          "status": "PARTIAL_SUCCESS",
+          "error": "Insights generation failed but document processing completed",
+          "message": "DD214 processing completed but insights generation failed. The document can still be viewed.",
+          "timestamp.$": "$$.State.EnteredTime"
+        }
+      },
+      "Next": "Success"
+    }
+  }
+}

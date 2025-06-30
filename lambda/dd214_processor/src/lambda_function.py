@@ -180,6 +180,8 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             return handle_macie_complete(event)
         elif step_type == 'generate_insights':
             return handle_generate_insights(event)
+        elif step_type == 'enhance_profile':
+            return handle_enhance_profile(event)
         else:
             # Handle direct invocation or S3 trigger
             return handle_document_upload(event)
@@ -206,7 +208,7 @@ def handle_textract_complete(event: Dict[str, Any]) -> Dict[str, Any]:
     
     # Get Textract results
     try:
-        response = textract.get_document_text_detection(JobId=textract_job_id)
+        response = textract.get_document_analysis(JobId=textract_job_id)
         blocks = response.get('Blocks', [])
         
         # Extract text and fields
@@ -238,7 +240,10 @@ def handle_textract_complete(event: Dict[str, Any]) -> Dict[str, Any]:
             'statusCode': 200,
             'documentId': document_id,
             'status': 'textract_complete',
-            'extractedFields': dd214_fields,
+            'extractedData': {
+                'textForAnalysis': full_text[:5000],  # Match expected structure
+                'extractedFields': dd214_fields
+            },
             'piiFound': len(pii_locations) > 0
         }
         
@@ -312,6 +317,39 @@ def handle_generate_insights(event: Dict[str, Any]) -> Dict[str, Any]:
         'documentId': document_id,
         'status': 'complete',
         'insights': insights
+    }
+
+def handle_enhance_profile(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Handle enhance profile step for AI insights"""
+    logger.info("Enhancing profile with AI insights")
+    
+    document_id = event.get('documentId')
+    extracted_data = event.get('extractedData', {})
+    comprehend_results = event.get('comprehendResults', [])
+    
+    # Generate a unique veteran ID
+    import uuid
+    veteran_id = str(uuid.uuid4())
+    
+    # Generate insights using the extracted data
+    insights = generate_bedrock_insights(extracted_data.get('extractedFields', {}))
+    
+    # Build enhanced profile
+    enhanced_profile = {
+        'documentId': document_id,
+        'veteranId': veteran_id,
+        'extractedData': extracted_data,
+        'comprehendResults': comprehend_results,
+        'insights': insights,
+        'profileUrl': f"https://vetroi.com/profile/{veteran_id}"
+    }
+    
+    return {
+        'statusCode': 200,
+        'documentId': document_id,
+        'veteranId': veteran_id,
+        'enhancedProfile': enhanced_profile,
+        'profileUrl': enhanced_profile['profileUrl']
     }
 
 def generate_bedrock_insights(dd214_fields: Dict[str, Any]) -> Dict[str, Any]:

@@ -610,7 +610,7 @@ CRITICAL SUCCESS FACTORS:
                 'content': [{'text': prompt}]
             }],
             inferenceConfig={
-                'maxTokens': 15000,
+                'maxTokens': 10000,
                 'temperature': 0.8,
                 'topP': 0.95
             }
@@ -996,7 +996,18 @@ def generate_meta_ai_recommendations(veteran_profile: Dict[str, Any], ai_insight
 def store_insights(document_id: str, profile: Dict[str, Any], insights: Dict[str, Any]):
     """Store insights in DynamoDB"""
     
-    # Create insights table if it doesn't exist
+    # Always update the main processing table so frontend can retrieve insights
+    table = dynamodb.Table(TABLE_NAME)
+    try:
+        table.update_item(
+            Key={'document_id': document_id},
+            UpdateExpression='SET ai_insights = :insights',
+            ExpressionAttributeValues={':insights': insights}
+        )
+    except Exception as e:
+        print(f"Error updating main table with insights: {str(e)}")
+    
+    # Also store in dedicated insights table for long-term storage
     insights_table = dynamodb.Table(INSIGHTS_TABLE)
     
     try:
@@ -1010,24 +1021,23 @@ def store_insights(document_id: str, profile: Dict[str, Any], insights: Dict[str
             }
         )
     except Exception as e:
-        print(f"Error storing insights: {str(e)}")
-        # If table doesn't exist, store in main table
-        table = dynamodb.Table(TABLE_NAME)
-        table.update_item(
-            Key={'document_id': document_id},
-            UpdateExpression='SET ai_insights = :insights',
-            ExpressionAttributeValues={':insights': insights}
-        )
+        print(f"Error storing in insights table: {str(e)}")
 
 def update_processing_status(document_id: str, step: str, status: str, error: str = None):
     """Update processing status in DynamoDB"""
     
     table = dynamodb.Table(TABLE_NAME)
     
+    # Don't prefix status when insights are complete - frontend expects "complete"
+    if step == 'insights' and status == 'complete':
+        status_value = 'complete'
+    else:
+        status_value = f"{step}_{status}"
+    
     # Use simpler update expression to avoid nested attribute issues
     update_expr = "SET #status = :status, last_updated = :timestamp"
     expr_values = {
-        ':status': f"{step}_{status}",
+        ':status': status_value,
         ':timestamp': datetime.utcnow().isoformat()
     }
     expr_names = {'#status': 'status'}

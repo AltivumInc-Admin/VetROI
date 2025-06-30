@@ -297,7 +297,8 @@ input[type="checkbox"] {
 
 /* Navigation Buttons Theme */
 .restart-button,
-.welcome-button {
+.welcome-button,
+.signout-button {
   background: rgba(13, 17, 33, 0.9);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -307,7 +308,8 @@ input[type="checkbox"] {
 }
 
 .restart-button:hover,
-.welcome-button:hover {
+.welcome-button:hover,
+.signout-button:hover {
   background: rgba(13, 17, 33, 1);
   border-color: rgba(0, 212, 255, 0.5);
   color: var(--vr-cyan);
@@ -321,6 +323,15 @@ input[type="checkbox"] {
 .welcome-button:hover {
   border-color: rgba(139, 92, 246, 0.5);
   color: #a78bfa;
+}
+
+.signout-button {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.signout-button:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #f87171;
 }
 
 /* Text Selection Theme */
