@@ -13,6 +13,19 @@ import { LegacyIntelligenceReport } from './insights/LegacyIntelligenceReport'
 import { ExtendedSummary } from './insights/ExtendedSummary'
 import { AIPromptGenerator } from './insights/AIPromptGenerator'
 import { generatePDF } from '../utils/pdfGenerator-enhanced'
+import {
+  BackNavigationIcon,
+  ExecutiveSummaryIcon,
+  CareerIntelligenceIcon,
+  LeadershipProfileIcon,
+  ActionCenterIcon,
+  PsychologicalPrepIcon,
+  TimelineRoadmapIcon,
+  GeoIntelligenceIcon,
+  LegacyIntelligenceIcon,
+  ExtendedSummaryIcon,
+  AIPromptGeneratorIcon
+} from './icons/IconLibrary'
 import '../styles/DD214InsightsView-refined.css'
 import '../styles/insights/dd214-unified-design.css'
 
@@ -39,17 +52,17 @@ interface InsightsData {
 }
 
 const navigationItems = [
-  { id: 'back-to-careers', label: 'Career Matches', icon: '🔙', isBackButton: true },
-  { id: 'executive-summary', label: 'Executive Summary', icon: '🎯' },
-  { id: 'career-intelligence', label: 'Career Intelligence', icon: '💼' },
-  { id: 'leadership-profile', label: 'Leadership Profile', icon: '⭐' },
-  { id: 'action-center', label: 'Action Center', icon: '🚀' },
-  { id: 'psychological-prep', label: 'Psychological Preparation', icon: '🧠' },
-  { id: 'timeline', label: 'Timeline & Roadmap', icon: '📅' },
-  { id: 'geo-intelligence', label: '3D Geo-Intelligence', icon: '🌐' },
-  { id: 'legacy-report', label: 'Legacy Intelligence', icon: '📜' },
-  { id: 'extended-summary', label: 'Extended Summary', icon: '📝' },
-  { id: 'ai-prompts', label: 'AI Prompt Generator', icon: '🤖' }
+  { id: 'back-to-careers', label: 'Career Matches', IconComponent: BackNavigationIcon, isBackButton: true },
+  { id: 'executive-summary', label: 'Executive Summary', IconComponent: ExecutiveSummaryIcon },
+  { id: 'career-intelligence', label: 'Career Intelligence', IconComponent: CareerIntelligenceIcon },
+  { id: 'leadership-profile', label: 'Leadership Profile', IconComponent: LeadershipProfileIcon },
+  { id: 'action-center', label: 'Action Center', IconComponent: ActionCenterIcon },
+  { id: 'psychological-prep', label: 'Psychological Preparation', IconComponent: PsychologicalPrepIcon },
+  { id: 'timeline', label: 'Timeline & Roadmap', IconComponent: TimelineRoadmapIcon },
+  { id: 'geo-intelligence', label: '3D Geo-Intelligence', IconComponent: GeoIntelligenceIcon },
+  { id: 'legacy-report', label: 'Legacy Intelligence', IconComponent: LegacyIntelligenceIcon },
+  { id: 'extended-summary', label: 'Extended Summary', IconComponent: ExtendedSummaryIcon },
+  { id: 'ai-prompts', label: 'AI Prompt Generator', IconComponent: AIPromptGeneratorIcon }
 ]
 
 export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
@@ -236,7 +249,7 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
           fontSize: '0.875rem',
           color: '#00d4ff'
         }}>
-          🎯 For Judges: Viewing Actual DD214 Analysis - Pre-Generated from Real Document
+          ▸ For Judges: Viewing Actual DD214 Analysis - Pre-Generated from Real Document
         </div>
       )}
       
@@ -275,23 +288,28 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
       <div className="insights-container">
         <aside className="insights-navigation">
           <nav>
-            {navigationItems.map(item => (
-              <button
-                key={item.id}
-                className={`nav-item ${selectedSection === item.id ? 'active' : ''}`}
-                onClick={() => {
-                  if (item.isBackButton) {
-                    navigate(-1) // Go back to previous page with state intact
-                  } else {
-                    setSelectedSection(item.id)
-                  }
-                }}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-label">{item.label}</span>
-                {selectedSection === item.id && <span className="nav-indicator" />}
-              </button>
-            ))}
+            {navigationItems.map(item => {
+              const IconComponent = item.IconComponent
+              return (
+                <button
+                  key={item.id}
+                  className={`nav-item ${selectedSection === item.id ? 'active' : ''}`}
+                  onClick={() => {
+                    if (item.isBackButton) {
+                      navigate(-1) // Go back to previous page with state intact
+                    } else {
+                      setSelectedSection(item.id)
+                    }
+                  }}
+                >
+                  <span className="nav-icon">
+                    <IconComponent size={20} />
+                  </span>
+                  <span className="nav-label">{item.label}</span>
+                  {selectedSection === item.id && <span className="nav-indicator" />}
+                </button>
+              )
+            })}
           </nav>
           
           <div className="nav-footer">

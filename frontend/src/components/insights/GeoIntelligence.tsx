@@ -66,7 +66,7 @@ export const GeoIntelligence: React.FC<GeoIntelligenceProps> = ({ className = ''
       <div className="geo-header">
         <div className="geo-title-section">
           <h2>
-            <span className="section-icon">🌐</span>
+            <span className="section-icon">●</span>
             Geographic Intelligence
             <span className="beta-badge">Beta Preview</span>
           </h2>
@@ -208,31 +208,31 @@ export const GeoIntelligence: React.FC<GeoIntelligenceProps> = ({ className = ''
 
       {/* Future Vision Section */}
       <div className="future-vision">
-        <h3>🚀 Coming Soon</h3>
+        <h3>▶ Coming Soon</h3>
         <div className="future-features">
           <div className="future-item">
-            <span className="future-icon">🎯</span>
+            <span className="future-icon">◆</span>
             <div>
               <strong>Personalized Matching</strong>
               <p>Location recommendations based on your MOS and career goals</p>
             </div>
           </div>
           <div className="future-item">
-            <span className="future-icon">💼</span>
+            <span className="future-icon">▬</span>
             <div>
               <strong>Real-Time Jobs</strong>
               <p>Live job openings at each location matching your skills</p>
             </div>
           </div>
           <div className="future-item">
-            <span className="future-icon">💰</span>
+            <span className="future-icon">$</span>
             <div>
               <strong>Cost Analysis</strong>
               <p>Cost of living comparison and salary adjustments</p>
             </div>
           </div>
           <div className="future-item">
-            <span className="future-icon">🤝</span>
+            <span className="future-icon">⬥</span>
             <div>
               <strong>Veteran Networks</strong>
               <p>Connect with veterans already working in each city</p>

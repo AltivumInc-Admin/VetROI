@@ -46,10 +46,10 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
           {(summary.immediate_leverage_points || []).map((point: string, index: number) => (
             <div key={index} className="leverage-card dd214-highlight">
               <div className="leverage-icon">
-                {index === 0 && '🎖️'}
-                {index === 1 && '🎯'}
-                {index === 2 && '💪'}
-                {index === 3 && '🚀'}
+                {index === 0 && '★'}
+                {index === 1 && '◆'}
+                {index === 2 && '▲'}
+                {index === 3 && '►'}
               </div>
               <p>{point}</p>
             </div>
@@ -106,7 +106,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ data }) => {
           <div className="decorations-list">
             {profile.decorations.map((decoration: string, index: number) => (
               <div key={index} className="decoration-badge dd214-badge">
-                <span className="medal-icon">🎖️</span>
+                <span className="medal-icon">★</span>
                 <span className="decoration-name">{decoration}</span>
               </div>
             ))}

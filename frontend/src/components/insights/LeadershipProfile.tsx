@@ -135,7 +135,7 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
           </div>
           
           <div className="metric-card dd214-stat-card">
-            <div className="metric-icon">🎖️</div>
+            <div className="metric-icon">★</div>
             <div className="metric-content">
               <h3 className="dd214-stat-label">Final Rank</h3>
               <p className="metric-value dd214-stat-value">{profile.rank || 'Military Professional'}</p>
@@ -167,7 +167,7 @@ export const LeadershipProfile: React.FC<LeadershipProfileProps> = ({ data }) =>
           <div className="training-list dd214-list">
             {profile.specialized_training.map((training: string, index: number) => (
               <div key={index} className="training-item dd214-list-item">
-                <span className="training-icon">🎯</span>
+                <span className="training-icon">◆</span>
                 <span className="training-name">{training}</span>
               </div>
             ))}

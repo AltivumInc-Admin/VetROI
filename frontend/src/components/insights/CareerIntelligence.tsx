@@ -30,7 +30,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({ data }) 
               </div>
               
               <div className="salary-range">
-                <span className="salary-icon">💰</span>
+                <span className="salary-icon">$</span>
                 <span>{opp.salary_range}</span>
               </div>
               
@@ -47,7 +47,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({ data }) 
               
               {opp.application_hack && (
                 <div className="application-hack">
-                  <h4>🎯 Insider Tip</h4>
+                  <h4>◆ Insider Tip</h4>
                   <p>{opp.application_hack}</p>
                 </div>
               )}
@@ -87,7 +87,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({ data }) 
               
               {opp.fast_track && (
                 <div className="fast-track">
-                  <span className="fast-track-icon">⚡</span>
+                  <span className="fast-track-icon">►</span>
                   <p>{opp.fast_track}</p>
                 </div>
               )}
@@ -212,7 +212,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({ data }) 
             <div key={index} className="location-card">
               <div className="location-header">
                 <h3>{location.location}</h3>
-                <span className="location-icon">📍</span>
+                <span className="location-icon">▪</span>
               </div>
               
               <div className="location-reason">
@@ -230,7 +230,7 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({ data }) 
                 <div className="employer-list">
                   {(location.key_employers || []).map((employer: string, idx: number) => (
                     <div key={idx} className="employer-item">
-                      <span className="employer-icon">🏢</span>
+                      <span className="employer-icon">■</span>
                       <span>{employer}</span>
                     </div>
                   ))}
@@ -261,14 +261,14 @@ export const CareerIntelligence: React.FC<CareerIntelligenceProps> = ({ data }) 
           className={`tab-button ${activeTab === 'opportunities' ? 'active' : ''}`}
           onClick={() => setActiveTab('opportunities')}
         >
-          <span className="tab-icon">💼</span>
+          <span className="tab-icon">▬</span>
           Immediate Opportunities
         </button>
         <button 
           className={`tab-button ${activeTab === 'compensation' ? 'active' : ''}`}
           onClick={() => setActiveTab('compensation')}
         >
-          <span className="tab-icon">💰</span>
+          <span className="tab-icon">$</span>
           Compensation Strategy
         </button>
         <button 

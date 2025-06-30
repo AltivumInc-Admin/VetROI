@@ -22,10 +22,10 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
   
   const getPhaseIcon = (phaseId: string) => {
     switch(phaseId) {
-      case 'immediate': return '⚡'
-      case '30day': return '🎯'
-      case '60day': return '🚀'
-      default: return '📅'
+      case 'immediate': return '►'
+      case '30day': return '◆'
+      case '60day': return '▲'
+      default: return '■'
     }
   }
   
@@ -136,7 +136,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
       
       {/* Quick Win Tracker */}
       <section className="quick-wins dd214-card">
-        <h2>🎯 Quick Win Tracker</h2>
+        <h2>▸ Quick Win Tracker</h2>
         <p className="section-description">
           Focus on these high-impact, low-effort actions for immediate momentum
         </p>
@@ -144,7 +144,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
         <div className="quick-win-cards dd214-grid-3">
           <div className="quick-win-card dd214-highlight">
             <div className="win-header">
-              <span className="win-icon">📧</span>
+              <span className="win-icon">✉</span>
               <h3>LinkedIn Profile Update</h3>
             </div>
             <p>Update your headline and summary with military-to-civilian translations</p>
@@ -153,7 +153,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
           
           <div className="quick-win-card dd214-highlight">
             <div className="win-header">
-              <span className="win-icon">🤝</span>
+              <span className="win-icon">⬥</span>
               <h3>Veteran Network Activation</h3>
             </div>
             <p>Reach out to 5 veterans in your target industry this week</p>
@@ -173,7 +173,7 @@ export const TimelineRoadmap: React.FC<TimelineRoadmapProps> = ({ data }) => {
       
       {/* Milestone Celebrations */}
       <section className="milestones dd214-card">
-        <h2>🏆 Milestone Celebrations</h2>
+        <h2>■ Milestone Celebrations</h2>
         <div className="milestone-timeline">
           <div className="milestone-item">
             <div className="milestone-marker week1 dd214-badge">

@@ -172,7 +172,7 @@ Provide your analysis in the following JSON structure:
   }},
   
   "extended_summary": {{
-    "veteran_portrait": "Translate their military job into clear civilian language by identifying the types of roles and responsibilities they likely held, expressed in terminology a non-military hiring manager would understand. Focus on their verified rank, branch, MOS, and any decorations mentioned in the DD214.\n\nUse the content of the DD214 to infer core competencies, leadership level, and transferable experience—but do not invent any specific numbers, dates, or unverified achievements. Emphasize potential, capability, and alignment with civilian career paths based solely on the verified information provided.\n\nDo not assume combat experience unless explicitly stated. Avoid speculative claims. Use professional, business-relevant language throughout."
+    "veteran_portrait": "Write a 5 paragraph summary about this veteran, their strengths, and their positive impact on the labor market. IMPORTANT: Do NOT make up specific numbers, dates, or quantifiable achievements. Only reference information explicitly stated in the DD214. Focus on their verified rank, branch, MOS, and any decorations mentioned. Describe their potential and capabilities without inventing specific metrics."
   }}
 }}
 

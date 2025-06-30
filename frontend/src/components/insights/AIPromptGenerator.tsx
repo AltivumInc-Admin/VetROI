@@ -14,13 +14,13 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
   const profile = data.insights?.extracted_profile || {}
   
   const promptCategories = [
-    { id: 'all', label: 'All Prompts', icon: '🎯' },
-    { id: 'career', label: 'Career Strategy', icon: '💼' },
-    { id: 'resume', label: 'Resume & LinkedIn', icon: '📄' },
-    { id: 'interview', label: 'Interview Prep', icon: '🎤' },
-    { id: 'negotiation', label: 'Negotiation', icon: '💰' },
-    { id: 'networking', label: 'Networking', icon: '🤝' },
-    { id: 'personal', label: 'Personal Brand', icon: '⭐' }
+    { id: 'all', label: 'All Prompts', icon: '◆' },
+    { id: 'career', label: 'Career Strategy', icon: '▬' },
+    { id: 'resume', label: 'Resume & LinkedIn', icon: '☐' },
+    { id: 'interview', label: 'Interview Prep', icon: '♪' },
+    { id: 'negotiation', label: 'Negotiation', icon: '$' },
+    { id: 'networking', label: 'Networking', icon: '⬥' },
+    { id: 'personal', label: 'Personal Brand', icon: '★' }
   ]
   
   // Organize prompts from the AI response
@@ -43,7 +43,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
           platform: 'ChatGPT',
           title: extractPromptTitle(prompt),
           prompt: prompt,
-          icon: '🤖'
+          icon: '▣'
         })
       })
     }
@@ -71,7 +71,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
           platform: 'LinkedIn',
           title: extractPromptTitle(prompt),
           prompt: prompt,
-          icon: '💼'
+          icon: '▬'
         })
       })
     }
@@ -85,7 +85,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
           platform: 'Any AI',
           title: extractPromptTitle(prompt),
           prompt: prompt,
-          icon: '📝'
+          icon: '✍'
         })
       })
     }
@@ -99,7 +99,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
           platform: 'Any AI',
           title: extractPromptTitle(prompt),
           prompt: prompt,
-          icon: '🎯'
+          icon: '◆'
         })
       })
     }
@@ -159,7 +159,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
         <h1>AI Prompt Generator</h1>
         <p>Custom AI prompts tailored to your military background for career success</p>
         <div className="usage-instructions">
-          <span className="instruction-icon">💡</span>
+          <span className="instruction-icon">◆</span>
           <span>Click any prompt to copy it to your clipboard, then paste into your favorite AI tool</span>
         </div>
       </div>
@@ -177,7 +177,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
               copyPrompt(prompt, 'quick-elevator')
             }}
           >
-            <span className="button-icon">🎤</span>
+            <span className="button-icon">♪</span>
             <span className="button-text">Elevator Pitch</span>
             {copiedPrompt === 'quick-elevator' && <span className="copied-badge">Copied!</span>}
           </button>
@@ -189,7 +189,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
               copyPrompt(prompt, 'quick-salary')
             }}
           >
-            <span className="button-icon">💰</span>
+            <span className="button-icon">$</span>
             <span className="button-text">Salary Negotiation</span>
             {copiedPrompt === 'quick-salary' && <span className="copied-badge">Copied!</span>}
           </button>
@@ -201,7 +201,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
               copyPrompt(prompt, 'quick-interview')
             }}
           >
-            <span className="button-icon">📖</span>
+            <span className="button-icon">☐</span>
             <span className="button-text">Interview Story</span>
             {copiedPrompt === 'quick-interview' && <span className="copied-badge">Copied!</span>}
           </button>
@@ -278,7 +278,7 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
       
       {/* Pro Tips Section */}
       <section className="pro-tips">
-        <h2>💡 Pro Tips for Using AI</h2>
+        <h2>◆ Pro Tips for Using AI</h2>
         <div className="tips-grid">
           <div className="tip-card">
             <h3>Be Specific</h3>

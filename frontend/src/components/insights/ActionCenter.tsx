@@ -47,7 +47,7 @@ export const ActionCenter: React.FC<ActionCenterProps> = ({ data }) => {
         </div>
         
         <div className="bullets-tips">
-          <h3>💡 Pro Tips</h3>
+          <h3>◆ Pro Tips</h3>
           <ul>
             <li>Use these bullets as templates and customize with your specific metrics</li>
             <li>Place your most impressive achievements at the top of each role</li>
@@ -103,7 +103,7 @@ export const ActionCenter: React.FC<ActionCenterProps> = ({ data }) => {
             {(deliverables.email_subject_lines || []).map((subject: string, index: number) => (
               <div key={index} className="subject-line-item">
                 <div className="subject-content">
-                  <span className="email-icon">📧</span>
+                  <span className="email-icon">✉</span>
                   <p>{subject}</p>
                 </div>
                 <button 

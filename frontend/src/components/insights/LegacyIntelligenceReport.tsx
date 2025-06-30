@@ -41,13 +41,13 @@ export const LegacyIntelligenceReport: React.FC<LegacyIntelligenceReportProps> =
     { 
       id: 'story', 
       title: 'Your Transformation Story', 
-      icon: '🎖️',
+      icon: '★',
       content: reportContent.your_story || 'From the discipline of military service to the dynamism of civilian leadership, your journey represents a powerful narrative of adaptation, resilience, and strategic thinking. Your experiences in high-pressure environments have forged capabilities that civilian organizations desperately need.'
     },
     { 
       id: 'market', 
       title: 'Market Positioning Strategy', 
-      icon: '🎯',
+      icon: '◆',
       content: reportContent.market_position || 'Your military background positions you in the top tier of candidates for leadership roles. Organizations seeking proven leaders who can navigate uncertainty, drive results under pressure, and build high-performing teams will find your profile compelling.'
     },
     { 
@@ -59,7 +59,7 @@ export const LegacyIntelligenceReport: React.FC<LegacyIntelligenceReportProps> =
     { 
       id: 'strategy', 
       title: 'Strategic Career Approach', 
-      icon: '🚀',
+      icon: '▲',
       content: reportContent.strategic_approach || 'Your transition strategy should leverage your unique strengths while addressing potential gaps in civilian business acumen. Focus on roles that value leadership, operational excellence, and the ability to drive change in complex organizations.'
     },
     { 
@@ -71,7 +71,7 @@ export const LegacyIntelligenceReport: React.FC<LegacyIntelligenceReportProps> =
     { 
       id: 'action', 
       title: 'Call to Action', 
-      icon: '⚡',
+      icon: '►',
       content: reportContent.call_to_action || 'The civilian sector needs leaders like you—those who understand mission accomplishment, team cohesion, and strategic execution. Your time is now. Take bold action, leverage your advantages, and claim your position in the civilian leadership landscape.'
     }
   ]

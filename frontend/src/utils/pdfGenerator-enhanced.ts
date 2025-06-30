@@ -241,15 +241,15 @@ export const generatePDF = async (insights: any) => {
   drawSectionHeader('Table of Contents', 'Your Complete Career Intelligence Package')
   
   const tocItems = [
-    { title: 'Executive Intelligence Summary', page: 3, icon: '🎯' },
-    { title: 'Career Opportunities Analysis', page: 4, icon: '💼' },
-    { title: 'Compensation Intelligence', page: 6, icon: '💰' },
-    { title: 'Leadership Profile & Hidden Strengths', page: 8, icon: '⭐' },
-    { title: 'Action-Oriented Deliverables', page: 10, icon: '🚀' },
-    { title: 'Psychological Preparation Guide', page: 12, icon: '🧠' },
-    { title: '30-60-90 Day Strategic Roadmap', page: 14, icon: '📅' },
-    { title: 'Legacy Intelligence Report', page: 16, icon: '📜' },
-    { title: 'AI Prompt Library', page: 18, icon: '🤖' }
+    { title: 'Executive Intelligence Summary', page: 3, icon: '◆' },
+    { title: 'Career Opportunities Analysis', page: 4, icon: '▬' },
+    { title: 'Compensation Intelligence', page: 6, icon: '$' },
+    { title: 'Leadership Profile & Hidden Strengths', page: 8, icon: '★' },
+    { title: 'Action-Oriented Deliverables', page: 10, icon: '▲' },
+    { title: 'Psychological Preparation Guide', page: 12, icon: '●' },
+    { title: '30-60-90 Day Strategic Roadmap', page: 14, icon: '■' },
+    { title: 'Legacy Intelligence Report', page: 16, icon: '☐' },
+    { title: 'AI Prompt Library', page: 18, icon: '▣' }
   ]
   
   tocItems.forEach((item, index) => {
@@ -656,12 +656,12 @@ export const generatePDF = async (insights: any) => {
   drawSectionHeader('Your Next Mission', 'Immediate Action Items')
   
   const actionItems = [
-    { icon: '📝', action: 'Update your resume with the provided nuclear bullets', deadline: 'Today' },
-    { icon: '💼', action: 'Optimize your LinkedIn profile using the suggested headline', deadline: 'Tomorrow' },
-    { icon: '📧', action: 'Send 5 networking emails using the provided templates', deadline: 'This Week' },
-    { icon: '🎯', action: 'Apply to 3 target companies from your opportunity list', deadline: 'This Week' },
-    { icon: '💪', action: 'Practice your elevator pitch 10 times', deadline: '3 Days' },
-    { icon: '📚', action: 'Complete one industry certification or course', deadline: '30 Days' }
+    { icon: '✍', action: 'Update your resume with the provided nuclear bullets', deadline: 'Today' },
+    { icon: '▬', action: 'Optimize your LinkedIn profile using the suggested headline', deadline: 'Tomorrow' },
+    { icon: '✉', action: 'Send 5 networking emails using the provided templates', deadline: 'This Week' },
+    { icon: '◆', action: 'Apply to 3 target companies from your opportunity list', deadline: 'This Week' },
+    { icon: '▲', action: 'Practice your elevator pitch 10 times', deadline: '3 Days' },
+    { icon: '☐', action: 'Complete one industry certification or course', deadline: '30 Days' }
   ]
   
   actionItems.forEach(item => {
