@@ -6,6 +6,7 @@
 2. AWS CLI configured
 3. SAM CLI installed (v1.100.0+)
 4. O*NET API credentials from https://www.onetcenter.org/developers/
+5. USAJOBS API key from https://developer.usajobs.gov/
 
 ## Quick Start
 
@@ -59,6 +60,43 @@ The application requires O*NET API credentials to function. After deployment:
    # 4. Replace REPLACE_WITH_USERNAME and REPLACE_WITH_PASSWORD
    ```
 
+## USAJOBS API Setup (Required)
+
+The application now integrates with USAJOBS to provide federal job search capabilities:
+
+1. **Request USAJOBS API Access**:
+   - Visit https://developer.usajobs.gov/apirequest/
+   - Fill out the API access request form with:
+     - First Name
+     - Last Name
+     - Email Address
+     - Contact Phone Number
+     - Company or Agency
+     - Description of how you'll use the API (e.g., "VetROI platform helps veterans transition to civilian careers by matching their military experience with federal job opportunities")
+   - Accept the USAJOBS Terms of Service
+   - Submit the request
+
+2. **After Receiving API Credentials**:
+   - You'll receive an email with:
+     - Your API Key
+     - Instructions for using the API
+     - Your email will serve as the User-Agent string
+   
+3. **Configure USAJOBS API in Lambda**:
+   ```bash
+   # Update the Lambda function environment variables
+   aws lambda update-function-configuration \
+     --function-name VetROI_USAJobs_Search \
+     --environment "Variables={USAJOBS_API_KEY=YOUR_API_KEY,USAJOBS_USER_AGENT=YOUR_EMAIL}" \
+     --region us-east-2
+   ```
+
+4. **Important Notes**:
+   - Only public job information is available through the API
+   - All API requests must include your email as the User-Agent header
+   - The API key must be included in the Authorization header
+   - Free access with reasonable rate limits
+
 ## Testing
 
 The application is live at https://vetroi.us
@@ -71,7 +109,7 @@ To test with your own deployment:
 ## What Gets Deployed
 
 The stack creates:
-- 11 Lambda functions for various features
+- 11 Lambda functions for various features (including USAJOBS integration)
 - API Gateway REST API
 - 2 DynamoDB tables (Sessions and Conversations)
 - 2 S3 buckets (DD214 uploads and O*NET cache)
@@ -79,11 +117,13 @@ The stack creates:
 - CloudWatch Log Groups
 - IAM roles and policies
 - Secrets Manager secret for O*NET credentials
+- Lambda function for USAJOBS API integration
 
 ## Deployment Notes
 
 - **First deployment takes ~5-10 minutes**
-- **The application won't function until O*NET credentials are configured**
+- **The application requires both O*NET and USAJOBS API credentials to function fully**
+- **Core features work with just O*NET, but job search requires USAJOBS API**
 - **All resources use fixed names for consistency**
 - **Deployment will fail if resources already exist** (unlikely in clean accounts)
 

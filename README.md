@@ -5,8 +5,10 @@
 
 ![VetROI Architecture](https://img.shields.io/badge/AWS-Lambda-orange) ![Serverless](https://img.shields.io/badge/Serverless-100%25-brightgreen) ![Status](https://img.shields.io/badge/Status-Production--Ready-blue)
 
-> **⚠️ IMPORTANT**: This application requires O*NET API credentials (free) to function. 
-> Register at: https://services.onetcenter.org/developer/signup
+> **⚠️ IMPORTANT**: This application requires API credentials (both free) to function:
+> - **O*NET API**: Register at https://services.onetcenter.org/developer/signup
+> - **USAJOBS API**: Request access at https://developer.usajobs.gov/apirequest/
+> 
 > See [DEPLOYMENT.md](DEPLOYMENT.md) for setup instructions.
 
 _This project is released under the Business Source License 1.1 (BUSL-1.1). See [LICENSE](LICENSE) and [LICENSE_USAGE.md](LICENSE_USAGE.md) for details._
