@@ -13,6 +13,10 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
   const aiPrompts = data.insights?.meta_ai_prompts || {}
   const profile = data.insights?.extracted_profile || {}
   
+  // Debug: Log what we're receiving
+  console.log('AI Prompts Data:', aiPrompts)
+  console.log('Available keys:', Object.keys(aiPrompts))
+  
   const promptCategories = [
     { id: 'all', label: 'All Prompts', icon: '◆' },
     { id: 'career', label: 'Career Strategy', icon: '▬' },
@@ -34,7 +38,37 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
       icon: string
     }> = []
     
-    // ChatGPT Career Coach Prompts
+    // Handle new transformative_prompts structure
+    if (aiPrompts.transformative_prompts) {
+      aiPrompts.transformative_prompts.forEach((promptItem: any, index: number) => {
+        // Determine category based on prompt content
+        const promptText = promptItem.the_prompt || promptItem
+        let category = 'career' // default
+        
+        if (promptText.toLowerCase().includes('resume') || promptText.toLowerCase().includes('linkedin')) {
+          category = 'resume'
+        } else if (promptText.toLowerCase().includes('interview')) {
+          category = 'interview'
+        } else if (promptText.toLowerCase().includes('negotiat') || promptText.toLowerCase().includes('salary')) {
+          category = 'negotiation'
+        } else if (promptText.toLowerCase().includes('network')) {
+          category = 'networking'
+        } else if (promptText.toLowerCase().includes('brand') || promptText.toLowerCase().includes('personal')) {
+          category = 'personal'
+        }
+        
+        prompts.push({
+          id: `transformative-${index}`,
+          category: category,
+          platform: 'Any AI',
+          title: promptItem.prompt_title || extractPromptTitle(promptText),
+          prompt: promptText,
+          icon: '◆'
+        })
+      })
+    }
+    
+    // Legacy ChatGPT Career Coach Prompts
     if (aiPrompts.chatgpt_career_coach_prompts) {
       aiPrompts.chatgpt_career_coach_prompts.forEach((prompt: string, index: number) => {
         prompts.push({
@@ -275,6 +309,21 @@ export const AIPromptGenerator: React.FC<AIPromptGeneratorProps> = ({ data }) =>
           </div>
         )}
       </div>
+      
+      {/* AI Mastery Tips from Backend */}
+      {aiPrompts.ai_mastery_tips && aiPrompts.ai_mastery_tips.length > 0 && (
+        <section className="ai-mastery-tips">
+          <h2>★ Personalized AI Mastery Tips</h2>
+          <div className="mastery-tips-list">
+            {aiPrompts.ai_mastery_tips.map((tip: string, index: number) => (
+              <div key={index} className="mastery-tip">
+                <span className="tip-icon">▸</span>
+                <p>{tip}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       
       {/* Pro Tips Section */}
       <section className="pro-tips">
