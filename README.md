@@ -314,8 +314,9 @@ Business Source License 1.1 (BUSL-1.1) - enabling source-available transparency 
 
 - AWS for the Lambda platform enabling this serverless architecture
 - O*NET for providing comprehensive career data
+- USAJOBS for providing real-time federal job availability data
 - The veteran community for invaluable feedback
-- My wife and my son for their cintinuous support of my endeavors.
+- My wife and my son for their continuous support of my endeavors.
 
 ---
 
