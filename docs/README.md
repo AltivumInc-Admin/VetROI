@@ -53,8 +53,11 @@ Troubleshooting guides and fixes.
 
 ### `/images`
 Architecture diagrams and visual documentation.
-- `vetroi_architecture.png` - System architecture diagram
-- `vetroi_lambda_focus.png` - Lambda architecture diagram
+
+### `/Evolution of VetROI`
+Historical architecture diagrams showing the evolution of VetROI.
+- `vetroi_architecture.png` - Original system architecture diagram (pre-USAJOBS)
+- `vetroi_lambda_focus.png` - Original Lambda architecture diagram
 
 ## Quick Links
 

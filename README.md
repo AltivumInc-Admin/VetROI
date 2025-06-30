@@ -168,13 +168,18 @@ This addition transforms VetROI from a career acquisition enhancement tool to a 
 
 ![Upgraded VetROI Architecture](https://github.com/user-attachments/assets/30b32e33-0864-4721-933f-ddbd523270e0)
 
+### VetROI Step Function Workflow
+The heart of our DD214 processing pipeline - orchestrating document analysis, PII redaction, and AI insights generation.
+
+![VetROI Step Function](VetROI%20Step%20Function.png)
+
 ### VetROI Architecture prior to USAJOBS API Integration
 
-![VetROI Architecture](docs/images/vetroi_architecture.png)
+![VetROI Architecture](docs/Evolution%20of%20VetROI/vetroi_architecture.png)
 
 ### Lambda-Powered Architecture
 
-![Lambda Functions Overview](docs/images/vetroi_lambda_focus.png)
+![Lambda Functions Overview](docs/Evolution%20of%20VetROI/vetroi_lambda_focus.png)
 
 ### Core Lambda Functions (9 Total)
 1. **Career Recommendation Engine** (`VetROI_Recommend`)
