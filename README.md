@@ -78,7 +78,7 @@ We are pleased to announce that VetROI has integrated with the USAJOBS API, expa
 This integration represents a significant advancement in our mission to bridge the gap between military service and civilian employment. Veterans no longer need to navigate multiple platforms—they can discover their career potential, receive AI-powered insights, and apply for relevant positions all within VetROI.
 
 ### Watch Our Demo
-[Demo Video Link] - See VetROI process a real DD214 and generate career insights
+[Watch Demo Video](https://youtu.be/2nCDpAr1IFE?si=cRuW_nhiUQi9QliV) - See VetROI process a real DD214 and generate career insights
 
 ## ⚖️ For the Judges
 ### 🗺️ Navigating VetROI™
