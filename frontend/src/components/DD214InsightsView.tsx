@@ -153,6 +153,55 @@ export const DD214InsightsView: React.FC<DD214InsightsViewProps> = () => {
   }
 
   if (error) {
+    // Check if this is a timing issue that just needs a refresh
+    if (error === 'Invalid insights data received') {
+      return (
+        <div className="insights-view">
+          <div className="error-container">
+            <h2>Almost Ready!</h2>
+            <p>Your career intelligence report is being finalized. This usually takes just a few more seconds.</p>
+            <p style={{ marginTop: '1rem', fontSize: '0.9rem', opacity: 0.8 }}>
+              Please refresh the page to see your completed report.
+            </p>
+            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="primary-button"
+                style={{ 
+                  background: 'linear-gradient(135deg, #00d4ff 0%, #0099cc 100%)',
+                  border: 'none',
+                  padding: '0.75rem 2rem',
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  color: '#0a0e1a'
+                }}
+              >
+                Refresh Now
+              </button>
+              <button 
+                onClick={() => navigate('/dd214-upload')} 
+                className="secondary-button"
+                style={{ 
+                  background: 'transparent',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  padding: '0.75rem 2rem',
+                  fontSize: '1rem',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  color: 'rgba(255, 255, 255, 0.8)'
+                }}
+              >
+                Upload Different DD214
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    
+    // For all other errors, show the original error message
     return (
       <div className="insights-view">
         <div className="error-container">
