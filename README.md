@@ -173,13 +173,9 @@ The heart of our DD214 processing pipeline - orchestrating document analysis, PI
 
 ![VetROI Step Function](VetROI%20Step%20Function.png)
 
-### VetROI Architecture prior to USAJOBS API Integration
+### Evolution of VetROI Architecture
 
-![VetROI Architecture](docs/Evolution%20of%20VetROI/vetroi_architecture.png)
-
-### Lambda-Powered Architecture
-
-![Lambda Functions Overview](docs/Evolution%20of%20VetROI/vetroi_lambda_focus.png)
+The VetROI architecture has evolved significantly since its initial release. Historical architecture diagrams showing the pre-USAJOBS integration design and detailed Lambda function flows can be found in the [Evolution of VetROI](docs/Evolution%20of%20VetROI/) folder.
 
 ### Core Lambda Functions (9 Total)
 1. **Career Recommendation Engine** (`VetROI_Recommend`)
