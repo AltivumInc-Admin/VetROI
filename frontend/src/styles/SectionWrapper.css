@@ -1,0 +1,299 @@
+/* Modern Section Wrapper */
+.section-wrapper {
+  margin-bottom: 4rem;
+  background: transparent;
+  border: none;
+  overflow: visible;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+  transform: translateY(0);
+  position: relative;
+}
+
+/* Smooth fade transitions for collapsed/expanded states */
+.section-wrapper.collapsed {
+  opacity: 0.6;
+  transform: scale(0.98);
+  max-height: 200px;
+  overflow: hidden;
+}
+
+.section-wrapper:not(.collapsed) {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Hide summaries completely when not collapsed */
+.section-wrapper:not(.collapsed) .section-summary {
+  display: none !important;
+}
+
+/* Enhanced styling for profile and confirmation sections when expanded */
+.section-wrapper[data-section="profile"]:not(.collapsed) {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.section-wrapper[data-section="confirmation"]:not(.collapsed) {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 0;
+}
+
+.section-wrapper.animating {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Ensure first section is always visible */
+.section-wrapper:first-child {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-wrapper.completed {
+  opacity: 1;
+}
+
+.section-wrapper.collapsed {
+  min-height: auto;
+}
+
+/* Section Header - Clean Design */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  cursor: default;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid transparent;
+}
+
+/* Hide headers for completed expanded sections */
+.section-wrapper.completed:not(.collapsed) .section-header {
+  display: none;
+}
+
+.section-wrapper.completed.collapsed .section-header {
+  cursor: pointer;
+}
+
+.section-wrapper.completed.collapsed .section-header:hover {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.section-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Status Indicator */
+.section-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-status svg {
+  width: 28px;
+  height: 28px;
+  color: #22c55e;
+  stroke-width: 2.5;
+}
+
+.status-ring {
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  position: relative;
+}
+
+/* Animated ring for active section */
+.section-wrapper:not(.completed) .status-ring::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.section-title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.section-wrapper.completed .section-title {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Section Actions - Refined */
+.section-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.edit-button,
+.collapse-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-button:hover,
+.collapse-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.collapse-toggle {
+  padding: 0.625rem;
+  background: transparent;
+}
+
+/* Section Content - Smooth Transitions */
+.section-content {
+  max-height: 2000px;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+              padding 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.section-wrapper.collapsed .section-content {
+  max-height: 180px;
+}
+
+.section-body {
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Special styling for confirmation section body */
+.section-wrapper[data-section="confirmation"] .section-body {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.section-summary {
+  padding: 1.5rem 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+/* Summary content - Clean List */
+.section-summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-summary li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-summary li:last-child {
+  border-bottom: none;
+}
+
+.section-summary li::before {
+  content: "→";
+  color: #3b82f6;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+.section-summary strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.section-summary p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .section-wrapper {
+    margin-bottom: 2rem;
+    border-radius: 12px;
+  }
+  
+  .section-header {
+    padding: 1.25rem 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+  }
+  
+  .section-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .edit-button {
+    font-size: 0.8125rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .section-body {
+    padding: 0;
+  }
+  
+  .section-summary {
+    padding: 1.25rem 1.5rem;
+  }
+}

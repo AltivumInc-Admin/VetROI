@@ -1,0 +1,40 @@
+.vertical-flow-container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding-left: 280px; /* Space for progress indicator */
+  background: transparent;
+}
+
+.flow-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  position: relative;
+  min-height: calc(100vh - 8rem);
+}
+
+/* Adjust for minimized progress indicator */
+.vertical-flow-container.progress-minimized {
+  padding-left: 80px;
+}
+
+/* Smooth transitions between sections */
+.vertical-flow-container [data-section] {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .vertical-flow-container {
+    padding-left: 0;
+    padding-top: 80px; /* Space for top progress bar */
+  }
+  
+  .flow-content {
+    padding: 2rem 1rem;
+    max-width: 100%;
+  }
+}
