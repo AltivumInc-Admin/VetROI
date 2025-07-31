@@ -33,10 +33,6 @@ export const VideoIntro: React.FC<VideoIntroProps> = ({ onComplete }) => {
     setVideoEnded(true);
   };
 
-  const handleSkip = () => {
-    setVideoEnded(true);
-  };
-
   return (
     <AnimatePresence>
       {!videoEnded && (
@@ -80,17 +76,6 @@ export const VideoIntro: React.FC<VideoIntroProps> = ({ onComplete }) => {
               AI-Powered | Veteran-Focused
             </p>
           </motion.div>
-          
-          <motion.button
-            className="skip-button"
-            onClick={handleSkip}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            whileHover={{ opacity: 1 }}
-            transition={{ delay: 1.5, duration: 0.5 }}
-          >
-            Skip →
-          </motion.button>
         </motion.div>
       )}
     </AnimatePresence>

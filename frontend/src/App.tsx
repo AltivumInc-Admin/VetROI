@@ -70,20 +70,12 @@ function App() {
   const confirmationRef = useRef<HTMLDivElement>(null)
   const careerMatchesRef = useRef<HTMLDivElement>(null)
   
-  // Scroll-based progress tracking
+  // Scroll-based progress tracking - only track active section, not completion
   useScrollProgress({
     threshold: 0.6,
     onSectionComplete: (sectionId) => {
-      // Update section completion based on scroll
-      setFlowSections(prev => {
-        if (prev[sectionId as keyof FlowSection] && !prev[sectionId as keyof FlowSection].completed) {
-          return {
-            ...prev,
-            [sectionId]: { ...prev[sectionId as keyof FlowSection], completed: true }
-          }
-        }
-        return prev
-      })
+      // Don't auto-complete sections based on scroll
+      // Sections should only be completed through explicit user actions
     },
     onSectionActive: (sectionId) => {
       setCurrentSection(sectionId)
@@ -208,6 +200,22 @@ function App() {
     }))
     
     setCurrentSection('dd214')
+    
+    // Smooth scroll to DD214 section after state updates and DOM renders
+    setTimeout(() => {
+      const dd214Section = document.querySelector('[data-section="dd214"]')
+      if (dd214Section) {
+        // Use a more reliable scroll method
+        const rect = dd214Section.getBoundingClientRect()
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        const targetY = rect.top + scrollTop - 100 // 100px offset from top
+        
+        window.scrollTo({
+          top: targetY,
+          behavior: 'smooth'
+        })
+      }
+    }, 300) // Increased delay to ensure DOM is ready
   }
 
   const handleAdjust = () => {
@@ -432,11 +440,26 @@ function App() {
   const skipDD214Upload = () => {
     setFlowSections(prev => ({
       ...prev,
-      dd214: { completed: true, collapsed: true, visible: true, skipped: true },
+      dd214: { completed: true, collapsed: false, visible: true, skipped: true },
       careers: { ...prev.careers, visible: true }
     }))
     
     setCurrentSection('careers')
+    
+    // Smooth scroll to careers section
+    setTimeout(() => {
+      const careersSection = document.querySelector('[data-section="careers"]')
+      if (careersSection) {
+        const rect = careersSection.getBoundingClientRect()
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+        const targetY = rect.top + scrollTop - 100 // 100px offset from top
+        
+        window.scrollTo({
+          top: targetY,
+          behavior: 'smooth'
+        })
+      }
+    }, 300)
   }
   
   // Handle section navigation from progress indicator

@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: space-between;
   min-height: 100vh;
-  padding: 2rem;
+  padding: 1.5rem;
   padding-bottom: 0;
   max-width: 1200px;
   margin: 0 auto;
@@ -81,20 +81,21 @@
 
 /* Welcome Title */
 .welcome-title {
-  font-size: 3.5rem;
+  font-size: 3rem;
   font-weight: 200;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
+  margin-top: -1rem;
   text-align: center;
   letter-spacing: -0.02em;
 }
 
 .welcome-subtitle {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   color: #9CA3AF;
   text-align: center;
-  max-width: 800px;
-  line-height: 1.8;
-  margin-bottom: 3rem;
+  max-width: 700px;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
   font-weight: 300;
 }
 
@@ -105,7 +106,7 @@
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
-  padding: 2.5rem;
+  padding: 2rem;
   max-width: 500px;
   width: 100%;
   box-shadow: 
@@ -123,34 +124,35 @@
 }
 
 .glassmorphic-card h2 {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 300;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   text-align: center;
 }
 
 .card-description {
   color: #9CA3AF;
   text-align: center;
-  margin-bottom: 2rem;
-  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
 }
 
 /* Buttons */
 .button-group {
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .primary-button,
 .secondary-button,
 .tertiary-button {
   flex: 1;
-  padding: 1rem 2rem;
+  padding: 0.875rem 1.5rem;
   border: none;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -196,7 +198,7 @@
 /* Divider */
 .divider {
   text-align: center;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   position: relative;
 }
 
@@ -224,16 +226,17 @@
 .free-features-note {
   text-align: center;
   color: #6A6D73;
-  font-size: 0.875rem;
-  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  margin-top: 1rem;
   font-style: italic;
+  line-height: 1.4;
 }
 
 /* Footer */
 .welcome-footer {
   position: relative;
   width: 100%;
-  padding: 1.5rem;
+  padding: 1rem;
   margin-top: auto;
   text-align: center;
   background: linear-gradient(to top, rgba(10, 14, 26, 0.95) 0%, transparent 100%);

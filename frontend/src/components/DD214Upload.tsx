@@ -47,7 +47,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   const [showAgreement, setShowAgreement] = useState(false)
   const [hasAcceptedAgreement, setHasAcceptedAgreement] = useState(false)
   const [showEngagementModal, setShowEngagementModal] = useState(false)
-  const [showJudgeInfo, setShowJudgeInfo] = useState(false)
   const { isAuthenticated, user, checkAuth, signOutUser, sessionExpired, clearSessionExpired, loading } = useAuth()
 
   // Check authentication status on mount
@@ -249,7 +248,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   }
 
   return (
-    <div className="dd214-upload-container">
+    <div className="dd214-upload-container" style={{ background: 'transparent', padding: 0 }}>
       <AuthModal 
         isOpen={showAuthModal}
         onClose={() => {
@@ -271,26 +270,64 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         processingTime={180} // 3 minutes
       />
       
-      <h3>Upload Your DD214</h3>
-      <p className="upload-description">
+      <h3 style={{
+        fontSize: '1.75rem',
+        fontWeight: '300',
+        color: 'rgba(255, 255, 255, 0.95)',
+        marginBottom: '1rem',
+        textAlign: 'center'
+      }}>Upload Your DD214</h3>
+      <p style={{
+        fontSize: '1rem',
+        color: 'rgba(255, 255, 255, 0.7)',
+        lineHeight: '1.6',
+        marginBottom: '2rem',
+        textAlign: 'center',
+        maxWidth: '600px',
+        margin: '0 auto 2rem'
+      }}>
         Your military service record unlocks AI-powered insights including personalized resume bullets, 
         interview strategies, and career recommendations tailored to your unique experience
       </p>
       
-      <div className="trust-indicators">
-        <div className="trust-item">
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '2rem',
+        marginBottom: '2rem',
+        flexWrap: 'wrap'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '0.875rem'
+        }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
           </svg>
           <span>Encrypted Upload</span>
         </div>
-        <div className="trust-item">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '0.875rem'
+        }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
           </svg>
           <span>PII Automatically Redacted</span>
         </div>
-        <div className="trust-item">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          color: 'rgba(255, 255, 255, 0.6)',
+          fontSize: '0.875rem'
+        }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
           </svg>
@@ -300,14 +337,27 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
       
       {/* Authentication Status Display */}
       {loading ? (
-        <div className="auth-status">
-          <div className="auth-status-info">
-            <span>Checking authentication...</span>
-          </div>
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '2rem'
+        }}>
+          <span style={{ color: 'rgba(255, 255, 255, 0.6)' }}>Checking authentication...</span>
         </div>
       ) : isAuthenticated && user ? (
-        <div className="auth-status">
-          <div className="auth-status-info">
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          marginBottom: '2rem',
+          flexWrap: 'wrap'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            color: 'rgba(255, 255, 255, 0.7)'
+          }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
             </svg>
@@ -332,27 +382,70 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               })()}
             </span>
           </div>
-          <div className="auth-actions">
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
               onClick={handleSignOut}
-              className="sign-out-button"
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                color: 'rgba(255, 255, 255, 0.7)',
+                padding: '0.25rem 0.75rem',
+                borderRadius: '4px',
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)'
+                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
+                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'
+              }}
             >
               Sign Out
             </button>
             <button
               onClick={() => checkAuth()}
-              className="refresh-button"
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '4px',
+                padding: '0.25rem 0.5rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
               title="Refresh session"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)'
+              }}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(255, 255, 255, 0.7)">
                 <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
               </svg>
             </button>
           </div>
         </div>
       ) : sessionExpired ? (
-        <div className="auth-status session-expired">
-          <div className="auth-status-info">
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '2rem'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            color: '#ff9800',
+            marginBottom: '1rem'
+          }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="#ff9800">
               <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
             </svg>
@@ -363,7 +456,15 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
               handleSignOut()
               setShowAuthModal(true)
             }}
-            className="sign-in-button"
+            style={{
+              background: '#00d4ff',
+              color: '#0a0e1a',
+              border: 'none',
+              borderRadius: '6px',
+              padding: '0.5rem 1.5rem',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
           >
             Sign In Again
           </button>
@@ -374,14 +475,14 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         <>
           {!isAuthenticated && (
             <div style={{
-              background: 'rgba(255, 193, 7, 0.1)',
-              border: '1px solid rgba(255, 193, 7, 0.3)',
-              borderRadius: '8px',
-              padding: '1rem',
-              marginBottom: '1rem',
-              textAlign: 'center'
+              textAlign: 'center',
+              marginBottom: '2rem'
             }}>
-              <p style={{ color: '#ffc107', marginBottom: '0.5rem' }}>
+              <p style={{ 
+                color: '#ffc107', 
+                marginBottom: '1rem',
+                fontSize: '0.875rem'
+              }}>
                 Authentication required to upload DD214
               </p>
               <button
@@ -393,7 +494,8 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
                   borderRadius: '6px',
                   padding: '0.5rem 1.5rem',
                   cursor: 'pointer',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  fontSize: '0.875rem'
                 }}
               >
                 Sign In / Create Account
@@ -403,6 +505,16 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
           <div 
             {...getRootProps()} 
             className={`dropzone ${isDragActive ? 'active' : ''} ${!isAuthenticated ? 'unauthenticated' : ''}`}
+            style={{
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '2px dashed rgba(255, 255, 255, 0.2)',
+              borderRadius: '12px',
+              padding: '3rem 2rem',
+              textAlign: 'center',
+              transition: 'all 0.3s ease',
+              cursor: 'pointer',
+              marginBottom: '2rem'
+            }}
           >
             <input {...getInputProps()} />
             <div className="dropzone-content">
@@ -437,31 +549,6 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
                 <p className="upload-formats">Supports PDF, JPG, PNG (max 10MB)</p>
               </>
             )}
-            </div>
-          </div>
-          
-          <div className="process-steps-preview">
-            <h4>What happens next:</h4>
-            <div className="steps-grid">
-              <div className="step-preview">
-                <div className="step-number">1</div>
-                <span>Secure Upload</span>
-              </div>
-              <div className="step-arrow">→</div>
-              <div className="step-preview">
-                <div className="step-number">2</div>
-                <span>PII Redaction</span>
-              </div>
-              <div className="step-arrow">→</div>
-              <div className="step-preview">
-                <div className="step-number">3</div>
-                <span>AI Analysis</span>
-              </div>
-              <div className="step-arrow">→</div>
-              <div className="step-preview">
-                <div className="step-number">4</div>
-                <span>Career Insights</span>
-              </div>
             </div>
           </div>
         </>
@@ -526,26 +613,141 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
         </div>
       )}
 
-      <div className="judges-download-section" style={{
-        marginTop: '2rem',
-        marginBottom: '2rem',
-        padding: '1.5rem',
-        background: 'rgba(0, 212, 255, 0.05)',
-        border: '1px solid rgba(0, 212, 255, 0.2)',
-        borderRadius: '10px',
-        textAlign: 'center',
-        position: 'relative',
-        zIndex: 1
-      }}>
-        <p style={{
-          color: '#00d4ff',
-          fontSize: '0.875rem',
-          marginBottom: '1rem',
-          fontWeight: '500',
-          letterSpacing: '0.5px'
+      {/* What happens next - shown when idle or error */}
+      {(uploadState.status === 'idle' || uploadState.status === 'error') && (
+        <div className="process-steps-preview" style={{
+          marginTop: '2rem',
+          padding: '0',
+          background: 'transparent',
+          border: 'none'
         }}>
-          AWS Lambda Hackathon Judges
-        </p>
+          <h4 style={{
+            color: 'rgba(255, 255, 255, 0.8)',
+            fontSize: '1rem',
+            fontWeight: '500',
+            marginBottom: '1rem',
+            textAlign: 'center'
+          }}>What happens next:</h4>
+          <div className="steps-grid" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            opacity: '0.8'
+          }}>
+            <div className="step-preview" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <div className="step-number" style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.8)'
+              }}>1</div>
+              <span style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.6)'
+              }}>Secure Upload</span>
+            </div>
+            <div className="step-arrow" style={{
+              color: 'rgba(255, 255, 255, 0.3)',
+              fontSize: '1rem'
+            }}>→</div>
+            <div className="step-preview" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <div className="step-number" style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.8)'
+              }}>2</div>
+              <span style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.6)'
+              }}>PII Redaction</span>
+            </div>
+            <div className="step-arrow" style={{
+              color: 'rgba(255, 255, 255, 0.3)',
+              fontSize: '1rem'
+            }}>→</div>
+            <div className="step-preview" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <div className="step-number" style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.8)'
+              }}>3</div>
+              <span style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.6)'
+              }}>AI Analysis</span>
+            </div>
+            <div className="step-arrow" style={{
+              color: 'rgba(255, 255, 255, 0.3)',
+              fontSize: '1rem'
+            }}>→</div>
+            <div className="step-preview" style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <div className="step-number" style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.8)'
+              }}>4</div>
+              <span style={{
+                fontSize: '0.75rem',
+                color: 'rgba(255, 255, 255, 0.6)'
+              }}>Career Insights</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Discrete sample download link */}
+      <div style={{
+        marginTop: '3rem',
+        textAlign: 'center'
+      }}>
         <a
           href="/DD214 PDF_SSN-Redacted_by_AdobeAcrobat.pdf"
           download="DD214_Sample_Redacted.pdf"
@@ -553,243 +755,27 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.5rem',
-            background: 'linear-gradient(135deg, #00d4ff 0%, #0099cc 100%)',
-            color: '#0a0e1a',
-            padding: '0.75rem 1.5rem',
-            borderRadius: '8px',
+            color: 'rgba(255, 255, 255, 0.5)',
+            fontSize: '0.75rem',
             textDecoration: 'none',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            transition: 'all 0.3s ease',
-            boxShadow: '0 4px 15px rgba(0, 212, 255, 0.3)'
+            transition: 'all 0.2s ease',
+            opacity: 0.7
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 212, 255, 0.4)'
+            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)'
+            e.currentTarget.style.opacity = '1'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)'
-            e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 212, 255, 0.3)'
+            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)'
+            e.currentTarget.style.opacity = '0.7'
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
           </svg>
-          Download DD214
+          Download Sample DD214
         </a>
       </div>
-
-      {/* Demo link for judges */}
-      <div 
-        className="demo-section-glow"
-        style={{ 
-          marginTop: '2rem', 
-          textAlign: 'center', 
-          position: 'relative',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          background: 'rgba(0, 212, 255, 0.05)',
-          border: '2px solid rgba(0, 212, 255, 0.3)',
-          animation: 'pulseGlow 2s ease-in-out infinite'
-        }}
-      >
-        <style>{`
-          @keyframes pulseGlow {
-            0% {
-              box-shadow: 0 0 20px rgba(0, 212, 255, 0.4),
-                          0 0 40px rgba(0, 212, 255, 0.2),
-                          inset 0 0 20px rgba(0, 212, 255, 0.1);
-            }
-            50% {
-              box-shadow: 0 0 30px rgba(0, 212, 255, 0.6),
-                          0 0 60px rgba(0, 212, 255, 0.3),
-                          inset 0 0 30px rgba(0, 212, 255, 0.15);
-            }
-            100% {
-              box-shadow: 0 0 20px rgba(0, 212, 255, 0.4),
-                          0 0 40px rgba(0, 212, 255, 0.2),
-                          inset 0 0 20px rgba(0, 212, 255, 0.1);
-            }
-          }
-          
-          @keyframes intensePulse {
-            0% {
-              box-shadow: 0 0 25px rgba(0, 212, 255, 0.8),
-                          0 0 50px rgba(0, 212, 255, 0.4),
-                          inset 0 0 15px rgba(0, 212, 255, 0.3);
-              transform: scale(1);
-            }
-            50% {
-              box-shadow: 0 0 35px rgba(0, 212, 255, 1),
-                          0 0 70px rgba(0, 212, 255, 0.6),
-                          inset 0 0 20px rgba(0, 212, 255, 0.4);
-              transform: scale(1.1);
-            }
-            100% {
-              box-shadow: 0 0 25px rgba(0, 212, 255, 0.8),
-                          0 0 50px rgba(0, 212, 255, 0.4),
-                          inset 0 0 15px rgba(0, 212, 255, 0.3);
-              transform: scale(1);
-            }
-          }
-        `}</style>
-        <p style={{ 
-          fontSize: '0.875rem', 
-          color: '#00d4ff', 
-          marginBottom: '0.5rem',
-          fontStyle: 'italic',
-          fontWeight: '500',
-          textShadow: '0 0 10px rgba(0, 212, 255, 0.5)'
-        }}>
-          Please click the glowing info icon first
-        </p>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-          <button
-            onClick={() => setShowJudgeInfo(true)}
-            style={{
-              background: 'rgba(0, 212, 255, 0.2)',
-              border: '2px solid rgba(0, 212, 255, 0.6)',
-              borderRadius: '50%',
-              width: '24px',
-              height: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              fontSize: '0.875rem',
-              color: '#00d4ff',
-              fontWeight: 'bold',
-              animation: 'intensePulse 1.5s ease-in-out infinite',
-              transition: 'all 0.2s',
-              boxShadow: '0 0 25px rgba(0, 212, 255, 0.8), 0 0 50px rgba(0, 212, 255, 0.4)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.4)'
-              e.currentTarget.style.transform = 'scale(1.2)'
-              e.currentTarget.style.boxShadow = '0 0 40px rgba(0, 212, 255, 1), 0 0 80px rgba(0, 212, 255, 0.6)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(0, 212, 255, 0.2)'
-              e.currentTarget.style.transform = 'scale(1)'
-              e.currentTarget.style.boxShadow = '0 0 25px rgba(0, 212, 255, 0.8), 0 0 50px rgba(0, 212, 255, 0.4)'
-            }}
-            aria-label="Information about demo mode"
-          >
-            i
-          </button>
-          <button
-            onClick={() => navigate('/demo')}
-            style={{ 
-              background: 'none',
-              border: 'none',
-              color: '#00d4ff', 
-              fontSize: '0.95rem', 
-              textDecoration: 'none',
-              transition: 'all 0.2s',
-              cursor: 'pointer',
-              padding: '0.5rem 1rem',
-              fontWeight: '600',
-              textShadow: '0 0 15px rgba(0, 212, 255, 0.8)',
-              letterSpacing: '0.5px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.textShadow = '0 0 25px rgba(0, 212, 255, 1), 0 0 40px rgba(0, 212, 255, 0.6)'
-              e.currentTarget.style.transform = 'scale(1.05)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.textShadow = '0 0 15px rgba(0, 212, 255, 0.8)'
-              e.currentTarget.style.transform = 'scale(1)'
-            }}
-          >
-            For Judges: View Demo Report →
-          </button>
-        </div>
-      </div>
-
-      {/* Judge Info Modal */}
-      {showJudgeInfo && (
-        <div 
-          className="auth-modal-overlay" 
-          onClick={() => setShowJudgeInfo(false)}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(5px)',
-            zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2rem'
-          }}
-        >
-          <div 
-            className="info-modal"
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: '#0f1420',
-              border: '1px solid rgba(0, 212, 255, 0.3)',
-              borderRadius: '20px',
-              padding: '2rem',
-              maxWidth: '600px',
-              width: '90%',
-              maxHeight: '80vh',
-              overflow: 'auto',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
-            }}
-          >
-            <h3 style={{ 
-              color: '#00d4ff', 
-              marginBottom: '1.5rem',
-              fontSize: '1.5rem',
-              fontWeight: '300'
-            }}>
-              Important Information for Judges
-            </h3>
-            
-            <div style={{ 
-              color: '#9CA3AF', 
-              lineHeight: '1.8',
-              fontSize: '1rem'
-            }}>
-              <p style={{ marginBottom: '1rem' }}>
-                We respectfully request that you download the available DD214 and process it through the Step Function workflow. This takes approximately 3 minutes and ensures that you experience the full potential of the software as designed.
-              </p>
-              
-              <p style={{ marginBottom: '1rem' }}>
-                However, if you encounter technical issues with the download, if the Step Function is temporarily unavailable, if time constraints are a factor, or if you've already completed a successful run and simply wish to review the end result, you may instead view a pre-generated report here.
-              </p>
-              
-              <p style={{ marginBottom: '1.5rem' }}>
-                This sample was produced using a real, official DD214 and accurately reflects the output generated by the full processing pipeline.
-              </p>
-            </div>
-            
-            <button
-              onClick={() => setShowJudgeInfo(false)}
-              style={{
-                background: 'linear-gradient(135deg, #00d4ff 0%, #0099cc 100%)',
-                color: '#0a0e1a',
-                border: 'none',
-                padding: '0.75rem 2rem',
-                borderRadius: '10px',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                width: '100%',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-            >
-              Understood
-            </button>
-          </div>
-        </div>
-      )}
 
     </div>
   )
