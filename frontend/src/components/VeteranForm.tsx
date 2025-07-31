@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { VeteranRequest, Branch, Education, US_STATES } from '../types'
+import { useScrollFade } from '../hooks/useScrollFade'
+import '../styles/VeteranForm.css'
 
 interface VeteranFormProps {
   onSubmit: (data: VeteranRequest) => void
@@ -25,6 +27,7 @@ const EDUCATION_LEVELS: { value: Education; label: string }[] = [
 ]
 
 export default function VeteranForm({ onSubmit, loading, initialData }: VeteranFormProps) {
+  const { elementRef, opacity } = useScrollFade(0.7)
   const [formData, setFormData] = useState<VeteranRequest>(
     initialData || {
       branch: 'army',
@@ -52,8 +55,13 @@ export default function VeteranForm({ onSubmit, loading, initialData }: VeteranF
   }
 
   return (
-    <form onSubmit={handleSubmit} className="veteran-form">
-      <h2>Tell Us About Your Military Service</h2>
+    <form 
+      ref={elementRef}
+      onSubmit={handleSubmit} 
+      className="veteran-form"
+      style={{ opacity, transition: 'opacity 0.3s ease' }}
+    >
+      <h2>Tell Me About Your Military Service</h2>
       
       <div className="form-group">
         <label htmlFor="branch">Branch of Service</label>
