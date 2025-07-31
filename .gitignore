@@ -92,6 +92,8 @@ logs/
 # OS
 Thumbs.db
 desktop.ini
+._*
+._.DS_Store
 
 # Secrets
 secrets.json

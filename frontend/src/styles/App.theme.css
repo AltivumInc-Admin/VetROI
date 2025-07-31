@@ -29,6 +29,37 @@
 .app-main {
   background-color: transparent;
   color: var(--vr-text-primary);
+  position: relative;
+}
+
+/* Animated gradient background */
+.app-main::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(59, 130, 246, 0.15), transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(139, 92, 246, 0.1), transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.05), transparent 70%);
+  opacity: 0.3;
+  z-index: 0;
+  animation: gradientShift 20s ease infinite;
+  pointer-events: none;
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  33% {
+    transform: scale(1.1) rotate(120deg);
+  }
+  66% {
+    transform: scale(0.9) rotate(240deg);
+  }
 }
 
 /* Footer Theme */
