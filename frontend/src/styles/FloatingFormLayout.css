@@ -1,0 +1,274 @@
+/* Floating Form Layout - Clean Z-Index Management */
+
+/* Reset all unnecessary z-indexes and backgrounds */
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.App {
+  background: #0a0e1a !important;
+  animation: pageEnter 0.6s ease-out;
+}
+
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.app-main {
+  background: transparent !important;
+  z-index: auto !important;
+}
+
+.vertical-flow-container {
+  background: transparent !important;
+}
+
+.flow-content {
+  background: transparent !important;
+}
+
+.container {
+  background: transparent !important;
+}
+
+/* Make section wrapper transparent to show particles */
+.section-wrapper {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.section-wrapper[data-section="profile"] {
+  position: relative;
+  min-height: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure particles are visible and fixed */
+#tsparticles-form {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: -1 !important;
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+
+/* Floating question text effect */
+.veteran-form h2 {
+  font-size: 2.5rem !important;
+  font-weight: 200 !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  text-align: center !important;
+  margin-bottom: 3rem !important;
+  letter-spacing: 0.05em !important;
+  animation: floatIn 1.5s cubic-bezier(0.23, 1, 0.32, 1) !important;
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translateZ(-500px) scale(0.5);
+    filter: blur(20px);
+  }
+  50% {
+    opacity: 0.5;
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateZ(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Clean form layout - Full width like welcome page */
+.veteran-form {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 4rem 2rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Adjust form position when sidebar is minimized */
+.sidebar-minimized .veteran-form {
+  padding-left: 4rem !important;
+  padding-right: 4rem !important;
+}
+
+/* Form groups with subtle floating effect */
+.form-group {
+  margin-bottom: 2rem !important;
+  opacity: 0;
+  animation: slideInFromBottom 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  width: 100% !important;
+  max-width: 500px !important;
+  transform: translateY(60px);
+}
+
+.form-group:nth-child(2) { animation-delay: 0.4s; }
+.form-group:nth-child(3) { animation-delay: 0.5s; }
+.form-group:nth-child(4) { animation-delay: 0.6s; }
+.form-group:nth-child(5) { animation-delay: 0.7s; }
+.form-group:nth-child(6) { animation-delay: 0.8s; }
+.form-group:nth-child(7) { animation-delay: 0.9s; }
+.submit-button { 
+  opacity: 0;
+  animation: slideInFromBottom 0.8s cubic-bezier(0.23, 1, 0.32, 1) 1s forwards;
+}
+
+@keyframes slideInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Clean, minimal labels */
+.form-group label {
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  letter-spacing: 0.02em !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Floating inputs - more transparent */
+.form-group input[type="text"],
+.form-group select {
+  background: rgba(0, 0, 0, 0.05) !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+  padding: 0.75rem 0 !important;
+  font-size: 1.125rem !important;
+  color: white !important;
+  transition: all 0.3s ease !important;
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+  background: rgba(0, 0, 0, 0.1) !important;
+  border-bottom-color: #3b82f6 !important;
+  box-shadow: 0 4px 20px -5px rgba(59, 130, 246, 0.4) !important;
+}
+
+/* Submit button floating effect */
+.submit-button {
+  background: rgba(59, 130, 246, 0.1) !important;
+  border: 2px solid rgba(59, 130, 246, 0.5) !important;
+  color: white !important;
+  padding: 1.25rem 3rem !important;
+  font-size: 1.125rem !important;
+  letter-spacing: 0.1em !important;
+  transition: all 0.3s ease !important;
+  position: relative !important;
+  overflow: visible !important;
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
+}
+
+/* Center the form container */
+.section-body {
+  overflow-y: visible !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.veteran-form {
+  height: auto !important;
+  overflow: visible !important;
+}
+
+/* Hide all loading spinners */
+.loading-spinner,
+.spinner,
+[class*="spin"],
+[class*="loading"] {
+  display: none !important;
+}
+
+/* Remove section header completely */
+.section-header {
+  display: none !important;
+}
+
+.submit-button:hover {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border-color: #3b82f6 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.7) !important;
+}
+
+.submit-button::before {
+  display: none !important;
+}
+
+/* Hide the main app header */
+.app-header {
+  display: none !important;
+}
+
+/* Hide the main app footer completely */
+.app-footer {
+  display: none !important;
+}
+
+/* Progress indicator stays visible */
+.progress-indicator {
+  z-index: 100 !important;
+}
+
+/* Remove all section borders and boxes */
+.section-header {
+  background: transparent !important;
+  border: none !important;
+}
+
+.section-body {
+  background: transparent !important;
+}
+
+/* Checkbox styling to match */
+.checkbox-container input[type="checkbox"] {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 2px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.checkbox-container input[type="checkbox"]:checked {
+  background: rgba(59, 130, 246, 0.3) !important;
+  border-color: #3b82f6 !important;
+}
