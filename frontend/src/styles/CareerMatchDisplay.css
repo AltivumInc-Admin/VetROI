@@ -67,20 +67,16 @@
 
 .career-cards-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(380px, 1fr) minmax(500px, 1.5fr);
   gap: 2rem;
   margin-top: 1rem;
+  align-items: start;
 }
 
 .career-column {
   min-height: 250px;
   display: flex;
   flex-direction: column;
-}
-
-/* Make careers of interest column wider to accommodate 2-column grid */
-.careers-of-interest {
-  flex: 1.5; /* Make it 1.5x wider than available careers column */
 }
 
 .career-column h3 {
@@ -234,6 +230,9 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
+  .career-cards-container {
+    grid-template-columns: 1fr 1fr;
+  }
   /* Switch to two columns at medium screens */
   .available-careers .career-cards-grid {
     grid-template-columns: repeat(2, 1fr);
