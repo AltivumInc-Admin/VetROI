@@ -60,20 +60,6 @@ const WelcomePage: React.FC = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <div className="welcome-main">
-          <motion.div 
-            className="logo-section"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-          >
-            <div className="vetroi-logo">
-              <span className="logo-vet">VET</span>
-              <span className="logo-roi">ROI</span>
-              <span className="logo-tm">™</span>
-            </div>
-            <p className="tagline">Veteran Return on Investment</p>
-          </motion.div>
-
           <motion.h1 
             className="welcome-title"
             initial={{ opacity: 0 }}
@@ -149,7 +135,6 @@ const WelcomePage: React.FC = () => {
           <div className="footer-content">
             <span>© 2025 Altivum Inc.</span>
             <span>VetROI™ is a trademark of Altivum Inc.</span>
-            <span>Built for AWS Lambda Hackathon 2025</span>
           </div>
           
           <div className="onet-attribution">

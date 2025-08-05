@@ -2,43 +2,43 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 1rem 1rem;
   animation: fadeInUp 0.6s ease-out;
 }
 
 .career-match-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .career-match-header h2 {
-  font-size: 2.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   background: linear-gradient(135deg, #ffffff 0%, #00d4ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .veteran-title {
   text-align: center;
-  margin-bottom: 2rem;
-  padding: 1rem 0;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
 }
 
 .veteran-title .highlight {
-  font-size: 1.75rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #00d4ff;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   display: inline-block;
-  padding: 0.5rem 2rem;
+  padding: 0.375rem 1.25rem;
   border: 2px solid #00d4ff;
-  border-radius: 8px;
+  border-radius: 6px;
   background: rgba(0, 212, 255, 0.05);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
 }
 
 @media (max-width: 768px) {
@@ -50,10 +50,10 @@
 }
 
 .thank-you-message {
-  font-size: 1.125rem;
-  line-height: 1.8;
+  font-size: 0.95rem;
+  line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
-  max-width: 800px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
@@ -67,30 +67,31 @@
 
 .career-cards-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  margin-top: 2rem;
+  grid-template-columns: minmax(380px, 1fr) minmax(500px, 1.5fr);
+  gap: 2rem;
+  margin-top: 1rem;
+  align-items: start;
 }
 
 .career-column {
-  min-height: 400px;
+  min-height: 250px;
   display: flex;
   flex-direction: column;
 }
 
 .career-column h3 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #ffffff;
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .career-cards-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 /* Rolodex replaces grid for Available Careers */
@@ -98,9 +99,11 @@
   display: none; /* Grid no longer used for rolodex */
 }
 
-/* Keep single column for Careers of Interest */
+/* Two column grid for Careers of Interest */
 .careers-of-interest .career-cards-grid {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  max-width: 100%;
 }
 
 /* Empty state for Careers of Interest */
@@ -109,8 +112,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
-  padding: 2rem;
+  min-height: 180px;
+  padding: 1.25rem;
   background: rgba(13, 17, 33, 0.5);
   border: 1px dashed rgba(0, 212, 255, 0.2);
   border-radius: 12px;
@@ -118,12 +121,12 @@
 }
 
 .empty-state .quote {
-  font-size: 1.125rem;
+  font-size: 0.95rem;
   font-style: italic;
   color: rgba(255, 255, 255, 0.8);
-  line-height: 1.8;
-  margin-bottom: 2rem;
-  max-width: 500px;
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  max-width: 450px;
 }
 
 .empty-state .instruction {
@@ -227,6 +230,9 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
+  .career-cards-container {
+    grid-template-columns: 1fr 1fr;
+  }
   /* Switch to two columns at medium screens */
   .available-careers .career-cards-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -420,12 +426,12 @@
   margin: 0;
 }
 
-/* Floating Detailed Analysis Button */
+/* Floating Detailed Analysis Button - positioned below content */
 .analysis-button-floating {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 1000;
+  position: relative;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
   transition: all 0.3s ease;
 }
 
@@ -433,21 +439,21 @@
   background: linear-gradient(135deg, #00d4ff, #0099cc);
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 50px;
+  padding: 0.5rem 1.25rem;
+  border-radius: 25px;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3),
-              0 0 40px rgba(0, 212, 255, 0.2);
-  display: flex;
+  box-shadow: 0 2px 10px rgba(0, 212, 255, 0.2),
+              0 0 20px rgba(0, 212, 255, 0.1);
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
 .detailed-analysis-button:hover:not(:disabled) {
@@ -483,9 +489,9 @@
 
 .selected-count {
   background: rgba(255, 255, 255, 0.2);
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 15px;
+  font-size: 0.7rem;
 }
 
 @media (max-width: 768px) {
@@ -505,24 +511,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
-  padding: 2rem 0;
+  gap: 1rem;
+  padding: 1rem 0;
 }
 
 .rolodex-viewport {
   position: relative;
-  width: min(400px, 90vw);
-  height: clamp(250px, 40vh, 300px);
+  width: min(340px, 90vw);
+  height: clamp(180px, 25vh, 200px);
   perspective: 1000px;
   display: flex;
   align-items: center;
   justify-content: center;
+  user-select: none; /* Prevent text selection during drag */
+  -webkit-user-select: none;
+  touch-action: pan-y; /* Allow vertical scroll but handle horizontal swipes */
 }
 
 .rolodex-card {
   position: absolute;
-  width: min(350px, 85vw);
-  height: clamp(200px, 35vh, 250px);
+  width: min(300px, 85vw);
+  height: clamp(160px, 22vh, 180px);
   transition: all 0.4s ease;
   transform-style: preserve-3d;
 }
@@ -591,12 +600,12 @@
 .rolodex-controls {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
 .rolodex-button {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: rgba(0, 212, 255, 0.1);
   border: 2px solid rgba(0, 212, 255, 0.3);
@@ -617,10 +626,10 @@
 }
 
 .rolodex-counter {
-  font-size: 1.125rem;
+  font-size: 0.875rem;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
-  min-width: 80px;
+  min-width: 60px;
   text-align: center;
 }
 

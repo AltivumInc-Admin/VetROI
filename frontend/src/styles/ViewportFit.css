@@ -1,0 +1,256 @@
+/* Viewport Fit - Ensure everything fits on screen */
+
+/* Make app scrollable with min full viewport height */
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Container inside flow-content */
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Header is now hidden - content moved to sidebar */
+
+/* Main content should grow naturally */
+.app-main {
+  flex: 1;
+  display: flex;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Vertical flow container allows natural scrolling */
+.vertical-flow-container {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding-left: 320px;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  transition: padding-left 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* When sidebar is minimized, center the content */
+.sidebar-minimized .vertical-flow-container {
+  padding-left: 80px;
+}
+
+.flow-content {
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Compact section wrapper */
+.section-wrapper {
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 5;
+  min-height: 0;
+}
+
+.section-wrapper[data-section="profile"] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.section-header {
+  padding: 0.25rem 1rem;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 1.25rem !important;
+}
+
+.section-body {
+  padding: 0.5rem 0 0 0; /* Small top padding for spinning circle */
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Compact form styling */
+.veteran-form {
+  padding: 0;
+  margin: 0;
+  max-width: none;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.veteran-form h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.veteran-form h2::after {
+  display: none; /* Remove decorative line to save space */
+}
+
+.form-group {
+  margin-bottom: 0.75rem;
+}
+
+.form-group:last-of-type {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  font-size: 0.813rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+}
+
+.submit-button {
+  padding: 0.75rem 2rem;
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  flex-shrink: 0;
+}
+
+/* Compact footer */
+.app-footer {
+  flex-shrink: 0;
+  padding: 0.25rem;
+  font-size: 0.75rem;
+  position: relative;
+  z-index: 20;
+  background: #000000;
+  margin-top: 0; /* Remove any margin */
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.25rem;
+}
+
+.onet-attribution {
+  padding-top: 0.25rem;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+}
+
+.onet-attribution p {
+  margin: 0;
+}
+
+/* Progress indicator adjustments */
+.progress-indicator--left {
+  top: 0;
+  bottom: 0;
+  height: 100vh;
+  z-index: 100 !important; /* Ensure it's above everything */
+}
+
+.progress-content {
+  padding: 1.5rem;
+}
+
+.progress-header {
+  margin-bottom: 2rem;
+}
+
+.progress-header h3 {
+  font-size: 0.75rem;
+}
+
+.progress-stats {
+  font-size: 1.5rem;
+}
+
+.progress-section {
+  padding: 0.875rem 0;
+}
+
+.section-indicator {
+  width: 32px;
+  height: 32px;
+}
+
+.section-label {
+  font-size: 0.875rem;
+}
+
+/* Remove navigation buttons on viewport fit */
+.navigation-buttons {
+  display: none;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0.75rem 1rem;
+    margin-top: 60px;
+  }
+  
+  .app-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .vertical-flow-container {
+    padding-left: 0;
+    padding-top: 0;
+  }
+  
+  .flow-content {
+    padding: 1rem;
+  }
+  
+  .veteran-form {
+    padding: 1.5rem;
+  }
+  
+  .veteran-form h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .app-footer {
+    padding: 0.75rem;
+  }
+}

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { SalaryGraph } from './SalaryGraph'
 import { LocationQuotient } from './LocationQuotient'
 import { EducationBadge } from './EducationBadge'
+import { CareerDetailModal } from './CareerDetailModal'
 import '../styles/CareerDetailCard.css'
 
 interface CareerDetailCardProps {
@@ -15,7 +16,7 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
   userState = 'CA',
   relocationState 
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   
   if (!socData) {
     return <div className="career-detail-card loading">Loading career data...</div>
@@ -40,8 +41,9 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
   const relocationLocationData = relocationState ? getLocationQuotient(relocationState) : null
 
   return (
-    <div className="career-detail-wrapper">
-      <div className={`career-detail-card ${isExpanded ? 'expanded' : ''}`}>
+    <>
+      <div className="career-detail-wrapper">
+        <div className="career-detail-card">
       {/* Header Section */}
       <div className="card-header">
         <div className="title-section">
@@ -308,10 +310,20 @@ export const CareerDetailCard: React.FC<CareerDetailCardProps> = ({
       {/* Expand/Collapse Button - Outside the card div */}
       <button 
         className="expand-button"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => setIsModalOpen(true)}
       >
-        {isExpanded ? 'Show Less' : 'Show More'}
+        Show More
       </button>
     </div>
+
+    {/* Career Detail Modal */}
+    <CareerDetailModal
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      socData={socData}
+      userState={userState}
+      relocationState={relocationState}
+    />
+  </>
   )
 }

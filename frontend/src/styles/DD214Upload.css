@@ -1,18 +1,12 @@
 .dd214-upload-container {
-  background: rgba(13, 17, 33, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  border-radius: 16px;
-  padding: 2.5rem;
   max-width: 700px;
   margin: 0 auto;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .dd214-upload-container h3 {
-  font-size: 1.5rem;
-  color: #00d4ff;
+  font-size: 1.75rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.95);
   margin: 0 0 1rem 0;
   text-align: center;
 }
@@ -27,27 +21,24 @@
 
 /* Trust Indicators */
 .trust-indicators {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .trust-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem;
-  background: rgba(0, 212, 255, 0.05);
-  border: 1px solid rgba(0, 212, 255, 0.1);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .trust-item svg {
   flex-shrink: 0;
-  color: #00d4ff;
+  color: currentColor;
 }
 
 /* Dropzone Styles */

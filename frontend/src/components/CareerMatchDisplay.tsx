@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { CareerMatchCard } from './CareerMatchCard'
 import '../styles/CareerMatchDisplay.css'
 
@@ -86,6 +86,104 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
     setCurrentPage((prev) => (prev + 1) % totalCards)
   }
   
+  // Touch/swipe handling
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState<number | null>(null)
+  
+  // Minimum swipe distance (in px)
+  const minSwipeDistance = 50
+  
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+  
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+  
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+    
+    if (isLeftSwipe) {
+      goToNext()
+    } else if (isRightSwipe) {
+      goToPrevious()
+    }
+  }
+  
+  // Mouse drag handling
+  const onMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true)
+    setDragStart(e.clientX)
+  }
+  
+  const onMouseUp = (e: React.MouseEvent) => {
+    if (!isDragging || !dragStart) return
+    
+    const distance = dragStart - e.clientX
+    const isLeftDrag = distance > minSwipeDistance
+    const isRightDrag = distance < -minSwipeDistance
+    
+    if (isLeftDrag) {
+      goToNext()
+    } else if (isRightDrag) {
+      goToPrevious()
+    }
+    
+    setIsDragging(false)
+    setDragStart(null)
+  }
+  
+  const onMouseLeave = () => {
+    setIsDragging(false)
+    setDragStart(null)
+  }
+  
+  // Throttle scroll to prevent too sensitive scrolling
+  const [isScrolling, setIsScrolling] = useState(false)
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  
+  // Horizontal scroll wheel handling (for Mac trackpads)
+  const onWheel = (e: React.WheelEvent) => {
+    // Prevent default vertical scroll
+    e.preventDefault()
+    
+    // If already scrolling, ignore this event
+    if (isScrolling) return
+    
+    // Check if it's a horizontal scroll (Mac trackpad)
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      // Only trigger if scroll delta is significant enough
+      const scrollThreshold = 30 // Adjust this value to change sensitivity
+      
+      if (Math.abs(e.deltaX) > scrollThreshold) {
+        setIsScrolling(true)
+        
+        if (e.deltaX > 0) {
+          goToNext() // Scroll right = next card
+        } else if (e.deltaX < 0) {
+          goToPrevious() // Scroll left = previous card
+        }
+        
+        // Reset scrolling flag after a delay
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current)
+        }
+        
+        scrollTimeoutRef.current = setTimeout(() => {
+          setIsScrolling(false)
+        }, 300) // 300ms cooldown between scrolls
+      }
+    }
+  }
+  
   return (
     <div className="career-match-container">
       <div className="career-match-header">
@@ -94,8 +192,6 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
           <span className="highlight">{mosTitle}</span>
         </div>
         <p className="thank-you-message">
-          First I'd be remiss if I didn't thank you for your service.
-          <br /><br />
           Your military experience provides you with several options in the civilian sector. 
           Scroll through these options below and click on the SOC codes that spark your interest. 
           We'll explore these in greater detail soon.
@@ -153,7 +249,17 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
           <h3>Available Careers ({totalCards})</h3>
           {currentCareer && (
             <div className="rolodex-container">
-              <div className="rolodex-viewport">
+              <div 
+                className="rolodex-viewport"
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                onMouseLeave={onMouseLeave}
+                onWheel={onWheel}
+                style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+              >
                 {/* Previous card edge */}
                 <div className="rolodex-card-edge prev" onClick={goToPrevious} />
                 

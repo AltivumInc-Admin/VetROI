@@ -1,0 +1,64 @@
+/* Critical fixes for vertical flow layout */
+
+/* Ensure app header doesn't overlap with progress indicator on mobile */
+@media (max-width: 768px) {
+  .App {
+    padding-top: 0;
+  }
+  
+  .app-header {
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+  }
+}
+
+/* Fix form visibility */
+.veteran-form {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Ensure sections are visible */
+.section-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix container spacing on mobile */
+@media (max-width: 768px) {
+  .vertical-flow-container {
+    padding-top: 120px; /* Account for mobile progress bar */
+  }
+}
+
+/* Ensure content doesn't get hidden behind fixed elements */
+.flow-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Fix navigation buttons positioning */
+.navigation-buttons {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .navigation-buttons {
+    bottom: 1rem;
+    right: 1rem;
+  }
+  
+  .navigation-buttons button {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+}

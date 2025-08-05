@@ -23,6 +23,7 @@
     "aws-amplify": "^6.15.0",
     "axios": "^1.6.2",
     "framer-motion": "^12.18.1",
+    "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
     "react": "^18.2.0",
