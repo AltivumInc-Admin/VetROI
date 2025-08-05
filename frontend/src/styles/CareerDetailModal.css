@@ -1,0 +1,134 @@
+/* Modal Backdrop */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+  overscroll-behavior: contain;
+}
+
+/* Modal Container */
+.career-detail-modal {
+  position: fixed;
+  top: 15vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90vw, 1200px);
+  max-height: 80vh;
+  z-index: 10000;
+  animation: slideUp 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Close Button */
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10001;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+/* The card inside the modal - reuse all existing card styles */
+.career-detail-modal .career-detail-card {
+  max-height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 16px;
+  position: relative;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom scrollbar for modal */
+.career-detail-modal .career-detail-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.career-detail-modal .career-detail-card::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.career-detail-modal .career-detail-card::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 4px;
+}
+
+.career-detail-modal .career-detail-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Make sure expanded sections are visible in modal */
+.career-detail-modal .career-detail-card.in-modal::after {
+  display: none; /* Remove the gradient overlay */
+}
+
+.career-detail-modal .onet-data-group,
+.career-detail-modal .related-careers-section,
+.career-detail-modal .also-called-section {
+  display: block !important; /* Ensure all sections are visible */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .career-detail-modal {
+    width: 95vw;
+    max-height: 95vh;
+  }
+
+  .modal-close {
+    top: 10px;
+    right: 10px;
+    position: fixed;
+  }
+
+  .career-detail-modal .career-detail-card {
+    max-height: 95vh;
+  }
+}
