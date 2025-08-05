@@ -266,6 +266,21 @@ function App() {
       }))
       
       setCurrentSection('analysis')
+      
+      // Smooth scroll to analysis section after state updates
+      setTimeout(() => {
+        const analysisSection = document.querySelector('[data-section="analysis"]')
+        if (analysisSection) {
+          const rect = analysisSection.getBoundingClientRect()
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+          const targetY = rect.top + scrollTop - 100 // 100px offset from top
+          
+          window.scrollTo({
+            top: targetY,
+            behavior: 'smooth'
+          })
+        }
+      }, 300) // Delay to ensure DOM is ready
     }
 
     window.addEventListener('detailedAnalysis', handleDetailedAnalysis as EventListener)
@@ -718,6 +733,12 @@ function App() {
                 onMeetSentra={handleMeetSentra}
                 userState={profileData?.homeState || 'CA'}
                 relocationState={profileData?.relocate ? profileData?.relocateState : undefined}
+                veteranProfile={profileData && apiResponse ? {
+                  branch: profileData.branch,
+                  code: profileData.code,
+                  education: profileData.education,
+                  mosTitle: apiResponse.onet_careers?.match?.[0]?.title || profileData.code
+                } : undefined}
               />
             </SectionWrapper>
             
