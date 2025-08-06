@@ -1,0 +1,159 @@
+/* Mobile Navigation Bar Styles */
+
+/* Only apply on mobile devices */
+@media (max-width: 768px) {
+  .mobile-nav-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(13, 17, 33, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-nav-bar.scrolled {
+    background: rgba(13, 17, 33, 0.98);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Menu Button */
+  .nav-menu-button {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: all 0.2s ease;
+  }
+
+  .nav-menu-button:active {
+    transform: scale(0.95);
+  }
+
+  /* Hamburger Icon */
+  .hamburger-icon {
+    width: 24px;
+    height: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .hamburger-icon .line {
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-origin: center;
+  }
+
+  /* Animate to X when drawer is open */
+  .nav-menu-button.active .line-1 {
+    transform: translateY(9px) rotate(45deg);
+  }
+
+  .nav-menu-button.active .line-2 {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .nav-menu-button.active .line-3 {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  /* Navigation Title */
+  .nav-title {
+    flex: 1;
+    text-align: center;
+    padding: 0 1rem;
+  }
+
+  .nav-title h1 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0;
+    letter-spacing: -0.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Actions Area */
+  .nav-actions {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Add padding to body when nav is present */
+  body.has-mobile-nav {
+    padding-top: 60px;
+  }
+}
+
+/* Hide on desktop */
+@media (min-width: 769px) {
+  .mobile-nav-bar {
+    display: none !important;
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 374px) {
+  .mobile-nav-bar {
+    padding: 0 0.75rem;
+  }
+
+  .nav-title h1 {
+    font-size: 1rem;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .mobile-nav-bar {
+    height: 50px;
+  }
+
+  .nav-menu-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hamburger-icon {
+    width: 20px;
+    height: 16px;
+  }
+
+  .nav-title h1 {
+    font-size: 1rem;
+  }
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    .mobile-nav-bar {
+      -webkit-transform: translateZ(0);
+      position: fixed;
+    }
+  }
+}

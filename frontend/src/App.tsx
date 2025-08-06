@@ -11,7 +11,8 @@ import { SentraChat } from './components/SentraChat'
 import { SessionWarningModal } from './components/SessionWarningModal'
 import { VerticalFlowContainer } from './components/VerticalFlowContainer'
 import { ProgressIndicator } from './components/ProgressIndicator'
-import { MobileProgressIndicator } from './components/MobileProgressIndicator'
+import { MobileNavBar } from './components/MobileNavBar'
+import { MobileDrawer } from './components/MobileDrawer'
 import { SectionWrapper } from './components/SectionWrapper'
 // import { DebugApp } from './components/DebugApp'  // Unused - commented out to fix build
 import FormParticleBackground from './components/FormParticleBackground'
@@ -33,6 +34,7 @@ import './styles/MobileTouchTargets.css' // Phase 2 touch target optimization
 import './styles/MobileProgressIndicator.css' // Phase 3 mobile progress redesign
 import './styles/MobileEnhancements.css' // Phases 4 & 5 UX and performance
 import './styles/MobileCriticalFixes.css' // Fix progress text overflow & ONET panel
+import './styles/MobileFullHeight.css' // Full height section optimization
 
 // interface ChatSession {
 //   sessionId: string
@@ -63,6 +65,8 @@ function App() {
   const [showSessionWarning, setShowSessionWarning] = useState(false)
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
+  const [mobileSocData, setMobileSocData] = useState<any>({})
   
   // New vertical flow state
   const [flowSections, setFlowSections] = useState<FlowSection>({
@@ -93,11 +97,21 @@ function App() {
   // Detect mobile viewport
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768)
+      const mobile = window.innerWidth <= 768
+      setIsMobile(mobile)
+      if (mobile) {
+        document.body.classList.add('has-mobile-nav')
+      } else {
+        document.body.classList.remove('has-mobile-nav')
+        setIsMobileDrawerOpen(false) // Close drawer when switching to desktop
+      }
     }
     checkMobile()
     window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
+    return () => {
+      window.removeEventListener('resize', checkMobile)
+      document.body.classList.remove('has-mobile-nav')
+    }
   }, [])
 
   // Restore from sessionStorage on mount
@@ -312,6 +326,7 @@ function App() {
     const handleS3DataFetched = (event: CustomEvent) => {
       console.log('Caching S3 data:', event.detail)
       setCareerDataCache(event.detail)
+      setMobileSocData(event.detail) // Also update mobile SOC data
       // Save to sessionStorage
       sessionStorage.setItem('careerDataCache', JSON.stringify(event.detail))
     }
@@ -574,6 +589,29 @@ function App() {
         <p className="tagline">Career Intelligence Platform</p>
       </header>
       
+      {/* Mobile Navigation Bar */}
+      {isMobile && (
+        <MobileNavBar
+          currentSection={currentSection}
+          onMenuClick={() => setIsMobileDrawerOpen(!isMobileDrawerOpen)}
+          isDrawerOpen={isMobileDrawerOpen}
+        />
+      )}
+      
+      {/* Mobile Navigation Drawer */}
+      {isMobile && (
+        <MobileDrawer
+          isOpen={isMobileDrawerOpen}
+          onClose={() => setIsMobileDrawerOpen(false)}
+          sections={progressSections}
+          currentSection={currentSection}
+          onSectionClick={handleSectionClick}
+          onetData={apiResponse}
+          selectedSOCs={flowSections.careers.selections}
+          socData={mobileSocData}
+        />
+      )}
+      
       {/* Desktop Progress Indicator */}
       {!isMobile && (
         <ProgressIndicator
@@ -582,15 +620,6 @@ function App() {
           onSectionClick={handleSectionClick}
           position="left"
           onMinimizedChange={setIsSidebarMinimized}
-        />
-      )}
-      
-      {/* Mobile Progress Indicator */}
-      {isMobile && (
-        <MobileProgressIndicator
-          sections={progressSections}
-          currentSection={currentSection}
-          onSectionClick={handleSectionClick}
         />
       )}
       
@@ -813,7 +842,8 @@ function App() {
         </div>
       </footer>
       
-      {apiResponse && (
+      {/* Desktop Data Panel Only */}
+      {!isMobile && apiResponse && (
         <DataPanel 
           data={apiResponse}
           isOpen={isDataPanelOpen}

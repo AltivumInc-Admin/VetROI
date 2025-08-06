@@ -1,0 +1,407 @@
+/* Mobile Full Height Section Optimization */
+
+/* Only apply on mobile devices */
+@media (max-width: 768px) {
+  /* Reset and prepare mobile layout */
+  html, body {
+    height: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Adjust app container for mobile nav */
+  .App {
+    padding-top: 60px !important; /* Account for fixed nav bar */
+    min-height: 100vh;
+  }
+
+  /* Hide desktop progress indicators on mobile */
+  .progress-indicator--left,
+  .progress-indicator--top,
+  .mobile-progress-indicator {
+    display: none !important;
+  }
+
+  /* Hide ONET side panel tab on mobile (using drawer instead) */
+  .data-panel-tabs-container {
+    display: none !important;
+  }
+
+  /* Hide mobile trigger button (replaced by drawer) */
+  .data-panel-mobile-trigger {
+    display: none !important;
+  }
+
+  /* Main content adjustments */
+  .app-main {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Vertical flow container optimization */
+  .vertical-flow-container {
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+  }
+
+  /* Container within vertical flow */
+  .vertical-flow-container .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Each section takes full viewport height */
+  .section-wrapper {
+    min-height: calc(100vh - 60px) !important; /* Full height minus nav bar */
+    height: auto !important;
+    margin: 0 !important;
+    padding: 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    scroll-snap-align: start !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  /* Section header optimization */
+  .section-header {
+    flex-shrink: 0;
+    padding: 1rem 0 !important;
+    margin-bottom: 1rem !important;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .section-title {
+    font-size: 1.25rem !important;
+    margin: 0 !important;
+  }
+
+  /* Section content should be scrollable if needed */
+  .section-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Collapsed sections remain minimal */
+  .section-wrapper.collapsed {
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .section-wrapper.collapsed .section-content {
+    display: none !important;
+  }
+
+  /* Form optimizations for mobile sections */
+  .veteran-form {
+    padding: 0 !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .form-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 0 1rem 0 !important;
+  }
+
+  .form-actions {
+    flex-shrink: 0;
+    padding: 1rem 0 !important;
+    margin-top: auto !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Career cards optimization */
+  .career-match-display {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .career-cards-container {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 !important;
+  }
+
+  /* Detailed analysis view optimization */
+  .detailed-analysis-view {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .analysis-tabs {
+    flex-shrink: 0;
+    position: sticky !important;
+    top: 0 !important;
+    background: rgba(13, 17, 33, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    z-index: 10 !important;
+    padding: 0.5rem !important;
+    margin: 0 !important;
+  }
+
+  .analysis-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 1rem 0 !important;
+  }
+
+  /* DD214 Upload section optimization */
+  .dd214-upload-container {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+  }
+
+  /* Confirmation step optimization */
+  .confirmation-step {
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .mos-translation-card {
+    flex-shrink: 0;
+    margin-bottom: 1rem !important;
+  }
+
+  .profile-summary {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Sentra chat optimization */
+  .sentra-chat-container {
+    height: calc(100vh - 60px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .sentra-messages {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sentra-input-container {
+    flex-shrink: 0;
+    position: sticky !important;
+    bottom: 0 !important;
+    background: rgba(13, 17, 33, 0.98) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Remove extra margins and padding */
+  .flow-content {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Footer adjustments */
+  .app-footer {
+    margin-top: 0 !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  /* Navigation buttons positioning */
+  .navigation-buttons {
+    position: fixed !important;
+    bottom: 1rem !important;
+    right: 1rem !important;
+    z-index: 100 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+
+  .navigation-buttons button {
+    width: 48px !important;
+    height: 48px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    background: rgba(13, 17, 33, 0.9) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+
+  .navigation-buttons button span {
+    display: none !important; /* Hide text on mobile */
+  }
+
+  /* Smooth scrolling between sections */
+  .vertical-flow-container {
+    scroll-snap-type: y proximity !important;
+    scroll-behavior: smooth !important;
+  }
+
+  /* Ensure modals work properly */
+  .modal-backdrop {
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 9000 !important;
+  }
+
+  .modal-content {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    max-width: 90% !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Loading states */
+  .loading-spinner {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  /* Ensure data panel doesn't interfere on mobile */
+  .data-panel {
+    display: none !important;
+  }
+
+  /* Error messages positioning */
+  .error-message {
+    position: fixed !important;
+    top: 70px !important; /* Below nav bar */
+    left: 1rem !important;
+    right: 1rem !important;
+    z-index: 900 !important;
+  }
+
+  /* Session warning modal adjustments */
+  .session-warning-modal {
+    top: 60px !important; /* Account for nav bar */
+  }
+}
+
+/* Small mobile specific */
+@media (max-width: 374px) {
+  .section-wrapper {
+    padding: 0.75rem !important;
+  }
+
+  .section-title {
+    font-size: 1.125rem !important;
+  }
+
+  .navigation-buttons {
+    bottom: 0.5rem !important;
+    right: 0.5rem !important;
+  }
+
+  .navigation-buttons button {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Adjust for smaller height in landscape */
+  .App {
+    padding-top: 50px !important; /* Smaller nav in landscape */
+  }
+
+  .section-wrapper {
+    min-height: calc(100vh - 50px) !important;
+  }
+
+  .section-title {
+    font-size: 1.125rem !important;
+  }
+
+  .section-header {
+    padding: 0.5rem 0 !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* More compact spacing in landscape */
+  .form-group {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    /* iOS viewport height fix */
+    .section-wrapper {
+      min-height: calc(100vh - 60px) !important;
+      min-height: calc(-webkit-fill-available - 60px) !important;
+    }
+
+    /* iOS scroll optimization */
+    .section-content,
+    .form-content,
+    .career-cards-container,
+    .analysis-content {
+      -webkit-overflow-scrolling: touch !important;
+      -webkit-transform: translateZ(0) !important;
+    }
+  }
+}
+
+/* Android specific fixes */
+@media (max-width: 768px) {
+  /* Prevent keyboard resize issues */
+  .App.keyboard-visible {
+    padding-bottom: 0 !important;
+  }
+
+  .section-wrapper {
+    transition: none !important; /* Disable transitions during keyboard */
+  }
+}
+
+/* Hide desktop-only elements on mobile */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+/* Show mobile-only elements on mobile */
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block !important;
+  }
+}
+
+/* Desktop - ensure no changes */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+  
+  /* Ensure desktop layout is not affected */
+  .section-wrapper {
+    min-height: auto !important;
+  }
+}
