@@ -7,11 +7,11 @@ export const MobileComingSoon = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [showContent, setShowContent] = useState(false)
 
-  // Delay showing content for 3-5 seconds
+  // Delay showing content for better UX
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowContent(true)
-    }, 4000) // 4 seconds delay
+    }, 2000) // 2 seconds delay
 
     return () => clearTimeout(timer)
   }, [])
@@ -112,21 +112,6 @@ export const MobileComingSoon = () => {
               <p>We'll notify you as soon as the mobile app is available.</p>
             </div>
           )}
-
-          <div className="desktop-cta">
-            <p>Ready to start now?</p>
-            <a href="https://vetroi.altivum.ai" className="desktop-link">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                <line x1="8" y1="21" x2="16" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="21"></line>
-              </svg>
-              Open VetROI on Desktop
-            </a>
-            <p className="instruction">
-              Visit this page on your laptop or desktop computer for full access.
-            </p>
-          </div>
         </div>
 
         <footer className="coming-soon-footer">

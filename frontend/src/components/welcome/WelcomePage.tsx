@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import ParticleBackground from './ParticleBackground';
 import { AuthModal } from '../AuthModal';
 import { VideoIntro } from '../VideoIntro';
+import { MobileComingSoon } from '../MobileComingSoon';
 import { motion } from 'framer-motion';
 import './WelcomePage.css';
 
@@ -19,7 +20,15 @@ const WelcomePage: React.FC = () => {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const width = window.innerWidth;
+      const isPhone = width <= 768;
+      
+      // Check for bypass flag
+      const urlParams = new URLSearchParams(window.location.search);
+      const bypassMobile = urlParams.get('bypass-mobile') === 'true' || 
+                          localStorage.getItem('vetroi_bypass_mobile') === 'true';
+      
+      setIsMobile(isPhone && !bypassMobile);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -38,6 +47,11 @@ const WelcomePage: React.FC = () => {
     await checkAuth();
     navigate('/app');
   };
+
+  // Show mobile coming soon page immediately for mobile devices
+  if (isMobile) {
+    return <MobileComingSoon />;
+  }
 
   return (
     <>
