@@ -221,33 +221,7 @@
     z-index: 1 !important;
   }
 
-  /* Navigation buttons positioning */
-  .navigation-buttons {
-    position: fixed !important;
-    bottom: 1rem !important;
-    right: 1rem !important;
-    z-index: 100 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 0.5rem !important;
-  }
-
-  .navigation-buttons button {
-    width: 48px !important;
-    height: 48px !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 50% !important;
-    background: rgba(13, 17, 33, 0.9) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-  }
-
-  .navigation-buttons button span {
-    display: none !important; /* Hide text on mobile */
-  }
+  /* Navigation buttons removed - now in mobile drawer */
 
   /* Smooth scrolling between sections */
   .vertical-flow-container {

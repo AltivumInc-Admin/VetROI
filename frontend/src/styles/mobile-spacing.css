@@ -1,0 +1,206 @@
+/* Mobile Spacing System - Standardized spacing for mobile viewport */
+
+/* CSS Variables for consistent spacing */
+:root {
+  --mobile-nav-height: 60px;
+  --mobile-nav-height-landscape: 50px;
+  --mobile-edge-padding: 16px;
+  --mobile-section-padding: 20px;
+  --mobile-form-padding: 8px;
+  --mobile-card-padding: 12px;
+  --mobile-section-gap: 24px;
+  --mobile-form-group-gap: 16px;
+  --mobile-min-touch-target: 44px;
+  --mobile-safe-area-top: env(safe-area-inset-top);
+  --mobile-safe-area-bottom: env(safe-area-inset-bottom);
+  --mobile-safe-area-left: env(safe-area-inset-left);
+  --mobile-safe-area-right: env(safe-area-inset-right);
+}
+
+/* Mobile viewport detection */
+@media (max-width: 768px) {
+  /* Main app container spacing */
+  .app-container {
+    padding-top: calc(var(--mobile-nav-height) + var(--mobile-safe-area-top) + var(--mobile-edge-padding));
+    padding-bottom: calc(var(--mobile-edge-padding) + var(--mobile-safe-area-bottom));
+    padding-left: calc(var(--mobile-edge-padding) + var(--mobile-safe-area-left));
+    padding-right: calc(var(--mobile-edge-padding) + var(--mobile-safe-area-right));
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Main content area */
+  .app-main {
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Section wrapper spacing */
+  .section-wrapper {
+    padding: var(--mobile-section-padding);
+    margin-bottom: var(--mobile-section-gap);
+    border-radius: 12px;
+  }
+
+  /* Section headers */
+  .section-wrapper h2,
+  .section-header {
+    margin-bottom: var(--mobile-section-gap);
+    padding: 0 4px;
+  }
+
+  /* Form elements spacing */
+  .veteran-form,
+  .confirmation-form,
+  .dd214-upload-form {
+    padding: var(--mobile-form-padding);
+  }
+
+  .form-group {
+    margin-bottom: var(--mobile-form-group-gap);
+  }
+
+  /* Input fields and selects */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  select,
+  textarea {
+    width: calc(100% - (var(--mobile-form-padding) * 2));
+    padding: 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: var(--mobile-min-touch-target);
+    margin: 0 var(--mobile-form-padding);
+  }
+
+  /* Buttons */
+  button,
+  .btn,
+  .primary-btn,
+  .secondary-btn {
+    min-height: var(--mobile-min-touch-target);
+    min-width: var(--mobile-min-touch-target);
+    padding: 12px 20px;
+    margin: 8px var(--mobile-form-padding);
+    font-size: 16px;
+  }
+
+  /* Cards and panels */
+  .career-match-card,
+  .career-detail-card,
+  .comparison-card,
+  .insight-card {
+    padding: var(--mobile-card-padding);
+    margin: var(--mobile-form-padding);
+  }
+
+  /* Vertical flow container */
+  .vertical-flow-container {
+    padding: 0;
+    gap: 0;
+  }
+
+  /* Chat interface */
+  .sentra-chat {
+    padding: var(--mobile-edge-padding);
+    margin: 0;
+  }
+
+  /* Footer spacing */
+  .app-footer {
+    padding: var(--mobile-section-padding) var(--mobile-edge-padding);
+    margin-top: var(--mobile-section-gap);
+  }
+
+  /* Mobile drawer footer actions */
+  .drawer-footer {
+    padding: var(--mobile-edge-padding);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .footer-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .footer-action-btn {
+    flex: 1;
+    padding: 10px 16px;
+    min-height: 40px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    transition: all 0.2s ease;
+  }
+
+  .footer-action-btn:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .footer-action-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Remove conflicting navigation buttons on mobile */
+  .navigation-buttons {
+    display: none !important;
+  }
+
+  /* Progress indicator adjustments */
+  .progress-indicator {
+    display: none;
+  }
+
+  /* Data panel hidden on mobile */
+  .data-panel {
+    display: none;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .app-container {
+    padding-top: calc(var(--mobile-nav-height-landscape) + var(--mobile-safe-area-top) + 12px);
+  }
+
+  .section-wrapper {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 374px) {
+  :root {
+    --mobile-edge-padding: 12px;
+    --mobile-section-padding: 16px;
+  }
+
+  .footer-action-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}
+
+/* Touch-friendly hover states */
+@media (hover: none) and (pointer: coarse) {
+  button:hover,
+  .btn:hover {
+    transform: none;
+  }
+
+  button:active,
+  .btn:active {
+    transform: scale(0.98);
+  }
+}

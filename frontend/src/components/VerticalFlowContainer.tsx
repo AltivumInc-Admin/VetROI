@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef } from 'react'
+import { ReactNode, useEffect, useRef, Children, cloneElement, isValidElement } from 'react'
 import '../styles/VerticalFlowContainer.css'
 
 interface VerticalFlowContainerProps {
@@ -13,6 +13,7 @@ export const VerticalFlowContainer = ({
   onSectionChange 
 }: VerticalFlowContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const isMobile = window.innerWidth <= 768
   
   // Smooth scroll to section when current section changes
   useEffect(() => {
@@ -58,10 +59,21 @@ export const VerticalFlowContainer = ({
     return () => observer.disconnect()
   }, [onSectionChange])
   
+  // Add section numbers to children on mobile
+  const enhancedChildren = isMobile ? Children.map(children, (child, index) => {
+    if (isValidElement(child) && child.props['data-section']) {
+      return cloneElement(child as any, {
+        'data-section-number': index + 1,
+        'data-show-scroll-hint': index < Children.count(children) - 1
+      })
+    }
+    return child
+  }) : children
+
   return (
     <div className="vertical-flow-container" ref={containerRef}>
       <div className="flow-content">
-        {children}
+        {enhancedChildren}
       </div>
     </div>
   )

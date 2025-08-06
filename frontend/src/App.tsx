@@ -28,13 +28,12 @@ import './styles/DarkTheme.css'
 import './styles/VerticalFlowFixes.css'
 import './styles/ViewportFit.css'
 import './styles/FloatingFormLayout.css'
-import './styles/MobileProgressFix.css' // Critical mobile fixes
-import './styles/MobileLayoutFixes.css' // Phase 1 mobile layout fixes
-import './styles/MobileTouchTargets.css' // Phase 2 touch target optimization
-import './styles/MobileProgressIndicator.css' // Phase 3 mobile progress redesign
-import './styles/MobileEnhancements.css' // Phases 4 & 5 UX and performance
-import './styles/MobileCriticalFixes.css' // Fix progress text overflow & ONET panel
-import './styles/MobileFullHeight.css' // Full height section optimization
+// Consolidated mobile styles (replaces 7 separate files)
+import './styles/mobile-core.css' // Core mobile layout and components
+import './styles/mobile-spacing.css' // Standardized spacing system
+import './styles/mobile-scroll-snap.css' // Scroll snap for section demarcation
+import './styles/MobileNavBar.css' // Mobile navigation bar
+import './styles/MobileDrawer.css' // Mobile drawer navigation
 
 // interface ChatSession {
 //   sessionId: string
@@ -609,6 +608,9 @@ function App() {
           onetData={apiResponse}
           selectedSOCs={flowSections.careers.selections}
           socData={mobileSocData}
+          onRestart={flowSections.profile.completed ? handleRestart : undefined}
+          onSignOut={isAuthenticated ? handleSignOut : undefined}
+          isAuthenticated={isAuthenticated}
         />
       )}
       
@@ -852,8 +854,8 @@ function App() {
         />
       )}
       
-      {/* Navigation Buttons - Show after initial form submission */}
-      {flowSections.profile.completed && (
+      {/* Navigation Buttons - Desktop only */}
+      {!isMobile && flowSections.profile.completed && (
         <div className="navigation-buttons">
           <button 
             className="restart-button"

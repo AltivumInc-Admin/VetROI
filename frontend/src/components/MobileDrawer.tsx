@@ -18,6 +18,9 @@ interface MobileDrawerProps {
   onetData: any
   selectedSOCs: string[]
   socData: any
+  onRestart?: () => void
+  onSignOut?: () => void
+  isAuthenticated?: boolean
 }
 
 export const MobileDrawer = ({
@@ -28,7 +31,10 @@ export const MobileDrawer = ({
   onSectionClick,
   onetData,
   selectedSOCs,
-  socData
+  socData,
+  onRestart,
+  onSignOut,
+  isAuthenticated
 }: MobileDrawerProps) => {
   const [activeTab, setActiveTab] = useState<'progress' | 'onet'>('progress')
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
@@ -278,6 +284,39 @@ export const MobileDrawer = ({
         </div>
         
         <div className="drawer-footer">
+          <div className="footer-actions">
+            {onRestart && (
+              <button 
+                className="footer-action-btn restart-btn"
+                onClick={() => {
+                  onRestart()
+                  onClose()
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M1 4v6h6"></path>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                Start Over
+              </button>
+            )}
+            {isAuthenticated && onSignOut && (
+              <button 
+                className="footer-action-btn signout-btn"
+                onClick={() => {
+                  onSignOut()
+                  onClose()
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Sign Out
+              </button>
+            )}
+          </div>
           <span className="footer-text">© 2025 Altivum Inc.</span>
         </div>
       </div>

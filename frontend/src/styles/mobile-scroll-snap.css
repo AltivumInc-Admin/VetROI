@@ -1,0 +1,174 @@
+/* Mobile Scroll Snap - Clear section boundaries for mobile */
+
+@media (max-width: 768px) {
+  /* Enable scroll snap on the main container */
+  .vertical-flow-container {
+    scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    height: calc(100vh - var(--mobile-nav-height));
+    height: calc(100dvh - var(--mobile-nav-height));
+    position: relative;
+  }
+
+  /* Each section becomes a snap point */
+  .vertical-flow-container > [data-section],
+  .section-wrapper {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+    min-height: calc(100vh - var(--mobile-nav-height) - 40px);
+    min-height: calc(100dvh - var(--mobile-nav-height) - 40px);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* Visual section separator */
+  .section-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 20%;
+    right: 20%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.2) 80%,
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Last section doesn't need separator */
+  .section-wrapper:last-child::after {
+    display: none;
+  }
+
+  /* Section number indicator */
+  .section-wrapper::before {
+    content: attr(data-section-number);
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.6);
+    z-index: 2;
+  }
+
+  /* Adjust for forms to not be full height */
+  [data-section="profile"],
+  [data-section="confirmation"] {
+    min-height: auto;
+    scroll-snap-align: start;
+    padding-bottom: 40px;
+  }
+
+  /* DD214 upload section */
+  [data-section="dd214"] {
+    min-height: auto;
+    padding-bottom: 40px;
+  }
+
+  /* Career selection needs more space */
+  [data-section="careers"] {
+    min-height: calc(100vh - var(--mobile-nav-height));
+    min-height: calc(100dvh - var(--mobile-nav-height));
+  }
+
+  /* Analysis section */
+  [data-section="analysis"] {
+    min-height: auto;
+    max-height: none;
+  }
+
+  /* Sentra chat full height */
+  [data-section="sentra"] {
+    min-height: calc(100vh - var(--mobile-nav-height));
+    min-height: calc(100dvh - var(--mobile-nav-height));
+    scroll-snap-align: start;
+  }
+
+  /* Smooth fade between sections */
+  .vertical-flow-container > [data-section] {
+    position: relative;
+  }
+
+  .vertical-flow-container > [data-section]::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 11, 29, 0.9),
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* First section doesn't need top fade */
+  .vertical-flow-container > [data-section]:first-child::before {
+    display: none;
+  }
+
+  /* Scroll hint indicator */
+  @keyframes scrollHint {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(8px); opacity: 1; }
+  }
+
+  .section-wrapper[data-show-scroll-hint="true"]::after {
+    content: '⌄';
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.4);
+    animation: scrollHint 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  /* Disable scroll hint for last section */
+  .section-wrapper:last-child[data-show-scroll-hint="true"]::after {
+    display: none;
+  }
+}
+
+/* Improved scroll physics for iOS */
+@supports (-webkit-touch-callout: none) {
+  .vertical-flow-container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Landscape adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .vertical-flow-container > [data-section],
+  .section-wrapper {
+    min-height: calc(100vh - var(--mobile-nav-height-landscape) - 20px);
+    min-height: calc(100dvh - var(--mobile-nav-height-landscape) - 20px);
+  }
+
+  [data-section="sentra"],
+  [data-section="careers"] {
+    min-height: calc(100vh - var(--mobile-nav-height-landscape));
+    min-height: calc(100dvh - var(--mobile-nav-height-landscape));
+  }
+}
