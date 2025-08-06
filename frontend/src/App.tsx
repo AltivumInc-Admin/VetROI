@@ -102,7 +102,7 @@ function App() {
     const checkMobile = () => {
       const width = window.innerWidth
       const isPhone = width <= 768
-      const isTablet = width > 768 && width <= 1024
+      // const isTablet = width > 768 && width <= 1024  // Reserved for future tablet-specific handling
       
       // Check for bypass flag in URL or localStorage
       const urlParams = new URLSearchParams(window.location.search)
