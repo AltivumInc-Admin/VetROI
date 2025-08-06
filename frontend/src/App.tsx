@@ -11,6 +11,7 @@ import { SentraChat } from './components/SentraChat'
 import { SessionWarningModal } from './components/SessionWarningModal'
 import { VerticalFlowContainer } from './components/VerticalFlowContainer'
 import { ProgressIndicator } from './components/ProgressIndicator'
+import { MobileProgressIndicator } from './components/MobileProgressIndicator'
 import { SectionWrapper } from './components/SectionWrapper'
 // import { DebugApp } from './components/DebugApp'  // Unused - commented out to fix build
 import FormParticleBackground from './components/FormParticleBackground'
@@ -26,6 +27,11 @@ import './styles/DarkTheme.css'
 import './styles/VerticalFlowFixes.css'
 import './styles/ViewportFit.css'
 import './styles/FloatingFormLayout.css'
+import './styles/MobileProgressFix.css' // Critical mobile fixes
+import './styles/MobileLayoutFixes.css' // Phase 1 mobile layout fixes
+import './styles/MobileTouchTargets.css' // Phase 2 touch target optimization
+import './styles/MobileProgressIndicator.css' // Phase 3 mobile progress redesign
+import './styles/MobileEnhancements.css' // Phases 4 & 5 UX and performance
 
 // interface ChatSession {
 //   sessionId: string
@@ -55,6 +61,7 @@ function App() {
   const [careerDataCache, setCareerDataCache] = useState<any>({})
   const [showSessionWarning, setShowSessionWarning] = useState(false)
   const [isSidebarMinimized, setIsSidebarMinimized] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   
   // New vertical flow state
   const [flowSections, setFlowSections] = useState<FlowSection>({
@@ -81,6 +88,16 @@ function App() {
       setCurrentSection(sectionId)
     }
   })
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Restore from sessionStorage on mount
   useEffect(() => {
@@ -556,13 +573,25 @@ function App() {
         <p className="tagline">Career Intelligence Platform</p>
       </header>
       
-      <ProgressIndicator
-        sections={progressSections}
-        currentSection={currentSection}
-        onSectionClick={handleSectionClick}
-        position="left"
-        onMinimizedChange={setIsSidebarMinimized}
-      />
+      {/* Desktop Progress Indicator */}
+      {!isMobile && (
+        <ProgressIndicator
+          sections={progressSections}
+          currentSection={currentSection}
+          onSectionClick={handleSectionClick}
+          position="left"
+          onMinimizedChange={setIsSidebarMinimized}
+        />
+      )}
+      
+      {/* Mobile Progress Indicator */}
+      {isMobile && (
+        <MobileProgressIndicator
+          sections={progressSections}
+          currentSection={currentSection}
+          onSectionClick={handleSectionClick}
+        />
+      )}
       
       <main className="app-main">
         <VerticalFlowContainer 

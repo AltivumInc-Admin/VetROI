@@ -1,0 +1,458 @@
+/* MOBILE LAYOUT FIXES - PHASE 1 */
+/* Core structural fixes for mobile content flow and spacing */
+
+/* Safe area insets for notched devices (iPhone X+, etc.) */
+@supports (padding: env(safe-area-inset-top)) {
+  @media (max-width: 768px) {
+    .progress-indicator--top {
+      padding-top: env(safe-area-inset-top) !important;
+    }
+    
+    .app-footer {
+      padding-bottom: env(safe-area-inset-bottom) !important;
+    }
+  }
+}
+
+/* Mobile content flow improvements */
+@media (max-width: 768px) {
+  /* Root app container */
+  .App {
+    min-height: 100vh;
+    min-height: -webkit-fill-available; /* Better iOS handling */
+    overflow-x: hidden !important;
+    position: relative;
+  }
+  
+  /* Main content area */
+  .app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+    padding: 0;
+  }
+  
+  /* Vertical flow container mobile adjustments */
+  .vertical-flow-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* iOS momentum scrolling */
+    padding-top: 85px !important; /* Account for fixed progress header */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 20px !important;
+    min-height: 0;
+  }
+  
+  /* Flow content mobile optimization */
+  .flow-content {
+    flex: 1;
+    padding: 0 1rem !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    min-height: 0;
+  }
+  
+  /* Container inside flow-content */
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  
+  /* Section wrapper mobile spacing */
+  .section-wrapper {
+    margin-bottom: 2rem !important;
+    padding: 0 !important;
+    border-radius: 16px !important;
+    overflow: hidden !important;
+  }
+  
+  .section-wrapper:last-child {
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Section header mobile styling */
+  .section-header {
+    padding: 1rem !important;
+    background: rgba(13, 17, 33, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    position: sticky !important;
+    top: 85px !important; /* Stick below progress indicator */
+    z-index: 10 !important;
+  }
+  
+  .section-title {
+    font-size: 1.125rem !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Section body mobile padding */
+  .section-body {
+    padding: 1rem !important;
+    overflow-y: visible !important; /* Allow natural scrolling */
+    min-height: auto !important;
+  }
+  
+  /* Form mobile optimization */
+  .veteran-form {
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .veteran-form h2 {
+    font-size: 1.375rem !important;
+    line-height: 1.3 !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+  }
+  
+  /* Form groups mobile spacing */
+  .form-group {
+    margin-bottom: 1.25rem !important;
+  }
+  
+  .form-group label {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+    font-weight: 500 !important;
+  }
+  
+  /* Mobile input styling */
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="tel"],
+  .form-group input[type="password"],
+  .form-group select,
+  .form-group textarea {
+    width: 100% !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 16px !important; /* Prevent iOS zoom */
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    -webkit-appearance: none !important; /* Remove iOS defaults */
+  }
+  
+  /* Checkbox container mobile */
+  .checkbox-container {
+    padding: 0.75rem !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+  }
+  
+  .checkbox-container input[type="checkbox"] {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Submit button mobile */
+  .submit-button {
+    width: 100% !important;
+    padding: 1rem !important;
+    font-size: 1rem !important;
+    border-radius: 12px !important;
+    margin-top: 1.5rem !important;
+    min-height: 48px !important; /* Touch target */
+  }
+  
+  /* App header mobile (hidden on mobile as it's in progress indicator) */
+  .app-header {
+    display: none !important;
+  }
+  
+  /* Footer mobile optimization */
+  .app-footer {
+    padding: 1rem !important;
+    font-size: 0.7rem !important;
+    background: #000000 !important;
+    margin-top: auto !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  .footer-content {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    text-align: center !important;
+  }
+  
+  /* Data panel mobile positioning */
+  .data-panel {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 70vh !important;
+  }
+  
+  /* Navigation buttons mobile hide */
+  .navigation-buttons {
+    display: none !important;
+  }
+  
+  /* Confirmation step mobile */
+  .confirmation-container {
+    padding: 1rem !important;
+  }
+  
+  .confirmation-header h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .confirmation-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* DD214 upload mobile */
+  .dd214-upload-container {
+    padding: 0 !important;
+  }
+  
+  .dropzone {
+    padding: 2rem 1rem !important;
+    border-radius: 16px !important;
+  }
+  
+  .upload-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  /* Career match display mobile */
+  .career-match-container {
+    padding: 0 !important;
+  }
+  
+  .career-match-header {
+    padding: 1rem !important;
+    text-align: center !important;
+  }
+  
+  .career-match-header h2 {
+    font-size: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .thank-you-message {
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    margin-top: 1rem !important;
+  }
+  
+  /* Mobile tabs full width */
+  .mobile-tabs {
+    margin: 0 -1rem !important;
+    padding: 0 1rem !important;
+    background: rgba(13, 17, 33, 0.5) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    position: sticky !important;
+    top: 85px !important;
+    z-index: 5 !important;
+  }
+  
+  .tab-buttons {
+    display: flex !important;
+    gap: 0 !important;
+  }
+  
+  .tab-button {
+    flex: 1 !important;
+    padding: 1rem 0.5rem !important;
+    font-size: 0.875rem !important;
+    min-height: 48px !important;
+  }
+  
+  /* Career cards mobile */
+  .career-cards-container {
+    padding: 1rem 0 !important;
+  }
+  
+  .career-column h3 {
+    font-size: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .rolodex-container {
+    padding: 0 !important;
+  }
+  
+  .rolodex-viewport {
+    min-height: 400px !important;
+  }
+  
+  /* Detailed analysis mobile */
+  .detailed-analysis-container {
+    padding: 0 !important;
+  }
+  
+  .analysis-header {
+    padding: 1rem !important;
+  }
+  
+  .analysis-header h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  /* Sentra chat mobile */
+  .sentra-chat-container {
+    height: calc(100vh - 85px) !important; /* Full height minus progress bar */
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  .chat-messages {
+    flex: 1 !important;
+    padding: 1rem !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .chat-input-container {
+    padding: 1rem !important;
+    background: rgba(13, 17, 33, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  /* Modals mobile */
+  .modal-overlay {
+    padding: 1rem !important;
+  }
+  
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 90vh !important;
+    margin: 0 !important;
+    border-radius: 20px !important;
+  }
+  
+  /* Session warning modal mobile */
+  .session-warning-modal {
+    width: calc(100% - 2rem) !important;
+    margin: 1rem !important;
+  }
+}
+
+/* Landscape mobile specific */
+@media (max-width: 768px) and (orientation: landscape) {
+  .vertical-flow-container {
+    padding-top: 65px !important; /* Less padding in landscape */
+  }
+  
+  .section-header {
+    top: 65px !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .section-title {
+    font-size: 1rem !important;
+  }
+  
+  .veteran-form h2 {
+    font-size: 1.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem !important;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.75rem !important;
+  }
+  
+  .submit-button {
+    padding: 0.875rem !important;
+  }
+}
+
+/* Small mobile devices (< 375px width) */
+@media (max-width: 374px) {
+  .flow-content {
+    padding: 0 0.75rem !important;
+  }
+  
+  .section-header {
+    padding: 0.875rem !important;
+  }
+  
+  .section-body {
+    padding: 0.875rem !important;
+  }
+  
+  .veteran-form h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.75rem !important;
+    font-size: 16px !important;
+  }
+  
+  .tab-button {
+    font-size: 0.8125rem !important;
+    padding: 0.875rem 0.25rem !important;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    /* Prevent iOS rubber band scrolling on fixed elements */
+    .progress-indicator--top {
+      position: fixed !important;
+      transform: translateZ(0) !important; /* Hardware acceleration */
+    }
+    
+    /* Fix iOS input zoom */
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+    
+    /* iOS safe area adjustments */
+    .vertical-flow-container {
+      padding-bottom: calc(20px + env(safe-area-inset-bottom)) !important;
+    }
+  }
+}
+
+/* Android specific fixes */
+@media (max-width: 768px) {
+  /* Ensure proper scrolling on Android */
+  .vertical-flow-container {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior-y: contain !important;
+  }
+  
+  /* Android keyboard handling */
+  .has-keyboard-open .vertical-flow-container {
+    padding-bottom: 50vh !important; /* Make room for keyboard */
+  }
+}

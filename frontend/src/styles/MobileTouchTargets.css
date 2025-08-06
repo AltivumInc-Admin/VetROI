@@ -1,0 +1,419 @@
+/* MOBILE TOUCH TARGET OPTIMIZATION - PHASE 2 */
+/* Ensuring all interactive elements meet 44x44px minimum touch target size */
+
+@media (max-width: 768px) {
+  /* Universal touch target improvements */
+  button, 
+  a, 
+  input[type="checkbox"],
+  input[type="radio"],
+  .clickable,
+  [role="button"] {
+    position: relative;
+    min-height: 44px !important;
+    min-width: 44px !important;
+    touch-action: manipulation !important; /* Prevent double-tap zoom */
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  
+  /* Add invisible touch area expansion for small buttons */
+  button::before,
+  a.button::before,
+  .clickable::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    z-index: 1;
+  }
+  
+  /* Progress indicator touch targets */
+  .progress-section {
+    min-height: 48px !important;
+    min-width: 65px !important;
+    padding: 0.5rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+  }
+  
+  .progress-section:active {
+    transform: scale(0.95) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  .section-indicator {
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Minimize/expand button touch target */
+  .minimize-toggle {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Form elements touch targets */
+  .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="tel"],
+  .form-group input[type="password"],
+  .form-group input[type="number"],
+  .form-group select,
+  .form-group textarea {
+    min-height: 48px !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  /* Checkbox and radio button improvements */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 24px !important;
+    height: 24px !important;
+    cursor: pointer !important;
+  }
+  
+  /* Checkbox container touch area */
+  .checkbox-container {
+    min-height: 48px !important;
+    padding: 0.75rem !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .checkbox-container label {
+    cursor: pointer !important;
+    flex: 1 !important;
+    padding-left: 0.5rem !important;
+  }
+  
+  /* Submit buttons */
+  .submit-button,
+  .primary-button,
+  .secondary-button {
+    min-height: 48px !important;
+    padding: 0.875rem 1.5rem !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  
+  /* Career card navigation buttons */
+  .rolodex-button {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    font-size: 1.5rem !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(0, 212, 255, 0.1) !important;
+    border: 2px solid rgba(0, 212, 255, 0.3) !important;
+  }
+  
+  .rolodex-button:active {
+    transform: scale(0.9) !important;
+    background: rgba(0, 212, 255, 0.2) !important;
+  }
+  
+  /* Career match cards touch area */
+  .career-match-card {
+    min-height: 350px !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .career-match-card:active {
+    transform: scale(0.98) !important;
+  }
+  
+  /* Tab buttons */
+  .tab-button {
+    min-height: 48px !important;
+    padding: 1rem 0.75rem !important;
+    font-size: 0.9375rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .tab-button:active {
+    background: rgba(0, 212, 255, 0.1) !important;
+  }
+  
+  /* Modal close buttons */
+  .modal-close,
+  .close-button {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1.5rem !important;
+    border-radius: 50% !important;
+  }
+  
+  /* Detailed analysis view buttons */
+  .analysis-button,
+  .back-button,
+  .action-button {
+    min-height: 44px !important;
+    padding: 0.75rem 1.25rem !important;
+    font-size: 0.9375rem !important;
+    border-radius: 12px !important;
+  }
+  
+  /* Career detail view expand buttons */
+  .expand-button,
+  .collapse-button {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* DD214 upload area */
+  .dropzone {
+    min-height: 150px !important;
+    padding: 2rem !important;
+    cursor: pointer !important;
+  }
+  
+  .dropzone:active {
+    background: rgba(0, 212, 255, 0.05) !important;
+  }
+  
+  .upload-button {
+    min-height: 48px !important;
+    padding: 0.875rem 2rem !important;
+    font-size: 1rem !important;
+  }
+  
+  /* Data panel toggle */
+  .data-panel-toggle {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Sentra chat input */
+  .chat-input {
+    min-height: 48px !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 16px !important;
+  }
+  
+  .send-button {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Navigation dots/pagination */
+  .pagination-dot {
+    min-width: 44px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .pagination-dot::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  
+  /* Comparison view buttons */
+  .comparison-toggle {
+    min-height: 44px !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  /* Touch feedback states */
+  button:active,
+  a:active,
+  .clickable:active {
+    opacity: 0.7 !important;
+  }
+  
+  /* Focus states for accessibility */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid rgba(0, 212, 255, 0.5) !important;
+    outline-offset: 2px !important;
+  }
+  
+  /* Remove default tap highlight on iOS */
+  * {
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  
+  /* Improve text selection on mobile */
+  .selectable {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+  }
+  
+  /* Disable text selection on buttons */
+  button,
+  .button,
+  .tab-button,
+  .progress-section {
+    -webkit-user-select: none !important;
+    user-select: none !important;
+  }
+  
+  /* Link touch targets */
+  a {
+    display: inline-block !important;
+    min-height: 44px !important;
+    line-height: 44px !important;
+    padding: 0 0.5rem !important;
+  }
+  
+  /* Inline links in text */
+  p a,
+  .text-content a {
+    min-height: auto !important;
+    line-height: inherit !important;
+    padding: 0.25rem 0.5rem !important;
+    margin: -0.25rem -0.5rem !important;
+  }
+  
+  /* Session warning buttons */
+  .session-warning-modal button {
+    min-height: 44px !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* Auth modal buttons */
+  .auth-modal button {
+    min-height: 48px !important;
+    margin-bottom: 0.75rem !important;
+  }
+  
+  /* Career detail modal actions */
+  .modal-actions button {
+    min-height: 44px !important;
+    flex: 1 !important;
+  }
+  
+  /* Floating action buttons */
+  .fab {
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .fab:active {
+    transform: scale(0.9) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+/* Landscape mobile touch target adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Slightly smaller targets in landscape to fit more content */
+  button,
+  input,
+  select {
+    min-height: 40px !important;
+  }
+  
+  .submit-button {
+    min-height: 44px !important; /* Keep primary actions larger */
+  }
+  
+  .progress-section {
+    min-height: 40px !important;
+    min-width: 60px !important;
+  }
+  
+  .section-indicator {
+    width: 28px !important;
+    height: 28px !important;
+  }
+}
+
+/* Small devices extra padding for easier tapping */
+@media (max-width: 374px) {
+  button,
+  .clickable {
+    padding: 0.875rem !important;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 1rem !important;
+  }
+}
+
+/* iOS specific touch improvements */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    /* Improve touch responsiveness */
+    button,
+    a,
+    .clickable {
+      -webkit-touch-callout: none !important;
+      cursor: pointer !important;
+    }
+    
+    /* Fix iOS button styling */
+    button,
+    input[type="submit"],
+    input[type="button"] {
+      -webkit-appearance: none !important;
+      appearance: none !important;
+    }
+  }
+}
+
+/* Android specific touch improvements */
+@media (max-width: 768px) {
+  /* Ensure proper touch feedback on Android */
+  button,
+  .clickable {
+    will-change: transform !important;
+  }
+  
+  /* Improve scrolling performance */
+  .scrollable {
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-y: contain !important;
+  }
+}

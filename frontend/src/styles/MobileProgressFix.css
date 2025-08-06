@@ -1,0 +1,256 @@
+/* MOBILE PROGRESS INDICATOR CRITICAL FIXES */
+/* This file contains emergency hotfixes for mobile progress indicator blocking issues */
+
+/* Mobile-only styles - Desktop remains completely unchanged */
+@media (max-width: 768px) {
+  /* CRITICAL FIX: Constrain progress indicator height on mobile */
+  .progress-indicator--top {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-height: 80px !important; /* Prevent blocking content */
+    height: auto !important;
+    overflow: hidden !important;
+    z-index: 1000 !important;
+    background: rgba(13, 17, 33, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 0 0 16px 16px !important;
+    box-shadow: 
+      0 4px 24px rgba(0, 0, 0, 0.3),
+      0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+    transition: max-height 0.3s ease !important;
+  }
+  
+  /* Expanded state for progress indicator */
+  .progress-indicator--top.expanded {
+    max-height: 50vh !important; /* Allow expansion but limit to half screen */
+    overflow-y: auto !important;
+  }
+  
+  /* Compact mobile progress content */
+  .progress-indicator--top .progress-content {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  /* Ultra-compact header for mobile */
+  .progress-indicator--top .progress-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 0.5rem !important;
+    min-height: 32px !important;
+  }
+  
+  .progress-indicator--top .progress-header h3 {
+    font-size: 0.7rem !important;
+    font-weight: 400 !important;
+    opacity: 0.7 !important;
+    margin: 0 !important;
+  }
+  
+  .progress-indicator--top .progress-stats {
+    font-size: 1.2rem !important;
+    font-weight: 600 !important;
+  }
+  
+  /* Horizontal scrolling progress sections */
+  .progress-indicator--top .progress-sections {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.75rem !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    padding: 0.25rem 0 !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: x mandatory !important;
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE and Edge */
+  }
+  
+  .progress-indicator--top .progress-sections::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+  }
+  
+  /* Ultra-compact progress section items */
+  .progress-indicator--top .progress-section {
+    flex: 0 0 auto !important;
+    min-width: 60px !important;
+    max-width: 80px !important;
+    padding: 0.5rem 0.25rem !important;
+    scroll-snap-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  /* Smaller indicators on mobile */
+  .progress-indicator--top .section-indicator {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.75rem !important;
+  }
+  
+  /* Compact labels */
+  .progress-indicator--top .section-label {
+    font-size: 0.65rem !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* Add expand/collapse button for mobile */
+  .progress-indicator--top::after {
+    content: '⋮' !important;
+    position: absolute !important;
+    bottom: 4px !important;
+    right: 50% !important;
+    transform: translateX(50%) !important;
+    width: 30px !important;
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 1rem !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    cursor: pointer !important;
+    user-select: none !important;
+  }
+  
+  /* CRITICAL: Adjust main content padding to account for fixed header */
+  .vertical-flow-container {
+    padding-top: 90px !important; /* 80px for old progress indicator + 10px spacing */
+    padding-left: 0 !important;
+    transition: padding-top 0.3s ease !important;
+  }
+  
+  /* Adjust for new mobile progress indicator (60px collapsed) */
+  .mobile-progress-indicator.collapsed ~ main .vertical-flow-container,
+  .mobile-progress-indicator.collapsed + main .vertical-flow-container {
+    padding-top: 70px !important; /* 60px indicator + 10px spacing */
+  }
+  
+  /* When new mobile progress is expanded (40% screen height) */
+  .mobile-progress-indicator.expanded ~ main .vertical-flow-container,
+  .mobile-progress-indicator.expanded + main .vertical-flow-container {
+    padding-top: calc(40vh + 10px) !important;
+  }
+  
+  /* When old progress is expanded, add more padding */
+  .progress-indicator--top.expanded ~ .vertical-flow-container {
+    padding-top: calc(50vh + 10px) !important;
+  }
+  
+  /* Ensure app header is positioned correctly on mobile */
+  .app-header {
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 0 !important; /* Remove the 60px margin */
+  }
+  
+  /* Hide minimize toggle on mobile - we'll use expand/collapse instead */
+  .progress-indicator--top .minimize-toggle {
+    display: none !important;
+  }
+  
+  /* Mobile-optimized active states */
+  .progress-indicator--top .progress-section.active {
+    background: rgba(0, 212, 255, 0.15) !important;
+    border-radius: 8px !important;
+  }
+  
+  .progress-indicator--top .progress-section.active .section-indicator {
+    transform: scale(1.1) !important;
+  }
+  
+  /* Ensure footer stays at bottom */
+  .app-footer {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  /* Add visual scroll indicator for progress sections */
+  .progress-indicator--top .progress-sections::after {
+    content: '›' !important;
+    position: absolute !important;
+    right: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: linear-gradient(90deg, transparent, rgba(13, 17, 33, 0.98)) !important;
+    padding: 0 0.5rem 0 1rem !important;
+    font-size: 1.2rem !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Tablet adjustments (768px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .vertical-flow-container {
+    padding-left: 280px !important; /* Slightly smaller sidebar on tablet */
+  }
+  
+  .sidebar-minimized .vertical-flow-container {
+    padding-left: 80px !important;
+  }
+}
+
+/* Ensure proper stacking context */
+@media (max-width: 768px) {
+  .App {
+    position: relative !important;
+  }
+  
+  .app-main {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  /* Ensure modals and overlays still appear above progress indicator */
+  .auth-modal-overlay,
+  .modal-overlay,
+  .data-panel {
+    z-index: 2000 !important;
+  }
+}
+
+/* Add touch-friendly tap targets */
+@media (max-width: 768px) {
+  .progress-indicator--top .progress-section {
+    min-height: 44px !important; /* iOS minimum touch target */
+    touch-action: manipulation !important; /* Prevent double-tap zoom */
+  }
+  
+  /* Active state for touch feedback */
+  .progress-indicator--top .progress-section:active {
+    transform: scale(0.95) !important;
+    opacity: 0.8 !important;
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+  .progress-indicator--top {
+    max-height: 60px !important; /* Even more compact in landscape */
+  }
+  
+  .vertical-flow-container {
+    padding-top: 70px !important;
+  }
+  
+  .progress-indicator--top .section-indicator {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}

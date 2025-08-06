@@ -26,6 +26,7 @@ export const ProgressIndicator = ({
 }: ProgressIndicatorProps) => {
   const [isMinimized, setIsMinimized] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [isMobileExpanded, setIsMobileExpanded] = useState(false) // Mobile expand/collapse state
   
   useEffect(() => {
     const checkMobile = () => {
@@ -52,7 +53,10 @@ export const ProgressIndicator = ({
   const indicatorPosition = isMobile ? 'top' : position
   
   return (
-    <div className={`progress-indicator progress-indicator--${indicatorPosition} ${isMinimized ? 'minimized' : ''}`}>
+    <div 
+      className={`progress-indicator progress-indicator--${indicatorPosition} ${isMinimized ? 'minimized' : ''} ${isMobileExpanded ? 'expanded' : ''}`}
+      onClick={isMobile ? () => setIsMobileExpanded(!isMobileExpanded) : undefined}
+    >
       {indicatorPosition === 'left' && (
         <button 
           className="minimize-toggle"
