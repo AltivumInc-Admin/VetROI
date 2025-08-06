@@ -1,0 +1,356 @@
+/* Mobile Coming Soon Page Styles */
+
+.mobile-coming-soon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: linear-gradient(135deg, #0a0b1d 0%, #1a1d3a 100%);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  z-index: 10000;
+}
+
+/* Animated background */
+.coming-soon-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(99, 102, 241, 0.5);
+  border-radius: 50%;
+  animation: float 20s infinite linear;
+}
+
+.particle:nth-child(1) {
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+  animation-duration: 15s;
+}
+
+.particle:nth-child(2) {
+  top: 60%;
+  left: 80%;
+  animation-delay: 5s;
+  animation-duration: 20s;
+}
+
+.particle:nth-child(3) {
+  top: 80%;
+  left: 30%;
+  animation-delay: 10s;
+  animation-duration: 25s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Content */
+.coming-soon-content {
+  position: relative;
+  z-index: 1;
+  padding: 40px 20px;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Brand section */
+.brand-section {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.brand-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+}
+
+.brand-tagline {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 8px;
+  letter-spacing: 1px;
+}
+
+/* Message section */
+.message-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.device-icon {
+  margin-bottom: 24px;
+  color: #6366f1;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+}
+
+.message-section h2 {
+  font-size: 28px;
+  color: #fff;
+  margin: 0 0 16px 0;
+  font-weight: 600;
+}
+
+.main-message {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  max-width: 400px;
+}
+
+/* Feature preview */
+.feature-preview {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.feature-preview h3 {
+  font-size: 18px;
+  color: #fff;
+  margin: 0 0 16px 0;
+}
+
+.feature-preview ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+}
+
+.feature-preview li {
+  padding: 8px 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Notify form */
+.notify-form {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.notify-form h3 {
+  font-size: 18px;
+  color: #fff;
+  margin: 0 0 16px 0;
+}
+
+.notify-form .form-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.notify-form input {
+  flex: 1;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.notify-form input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.notify-form button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.notify-form button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.notify-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.privacy-note {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+/* Success message */
+.success-message {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.success-message svg {
+  color: #22c55e;
+  margin-bottom: 16px;
+}
+
+.success-message h3 {
+  font-size: 20px;
+  color: #fff;
+  margin: 0 0 8px 0;
+}
+
+.success-message p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+/* Desktop CTA */
+.desktop-cta {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.desktop-cta p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 16px 0;
+  font-size: 14px;
+}
+
+.desktop-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.desktop-link:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.instruction {
+  margin-top: 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Footer */
+.coming-soon-footer {
+  text-align: center;
+  padding-top: 40px;
+  margin-top: auto;
+}
+
+.coming-soon-footer p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+/* Tablet responsiveness */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .coming-soon-content {
+    max-width: 600px;
+    padding: 60px 40px;
+  }
+
+  .brand-title {
+    font-size: 42px;
+  }
+
+  .message-section h2 {
+    font-size: 32px;
+  }
+
+  .main-message {
+    font-size: 18px;
+  }
+}
+
+/* Hide on desktop */
+@media (min-width: 1025px) {
+  .mobile-coming-soon {
+    display: none;
+  }
+}

@@ -13,6 +13,7 @@ import { VerticalFlowContainer } from './components/VerticalFlowContainer'
 import { ProgressIndicator } from './components/ProgressIndicator'
 import { MobileNavBar } from './components/MobileNavBar'
 import { MobileDrawer } from './components/MobileDrawer'
+import { MobileComingSoon } from './components/MobileComingSoon'
 import { SectionWrapper } from './components/SectionWrapper'
 // import { DebugApp } from './components/DebugApp'  // Unused - commented out to fix build
 import FormParticleBackground from './components/FormParticleBackground'
@@ -28,12 +29,13 @@ import './styles/DarkTheme.css'
 import './styles/VerticalFlowFixes.css'
 import './styles/ViewportFit.css'
 import './styles/FloatingFormLayout.css'
-// Consolidated mobile styles (replaces 7 separate files)
-import './styles/mobile-core.css' // Core mobile layout and components
-import './styles/mobile-spacing.css' // Standardized spacing system
-import './styles/mobile-scroll-snap.css' // Scroll snap for section demarcation
-import './styles/MobileNavBar.css' // Mobile navigation bar
-import './styles/MobileDrawer.css' // Mobile drawer navigation
+// Mobile styles are now optional - only loaded if needed
+// Uncomment these when ready to support mobile properly:
+// import './styles/mobile-core.css'
+// import './styles/mobile-spacing.css'
+// import './styles/mobile-scroll-snap.css'
+// import './styles/MobileNavBar.css'
+// import './styles/MobileDrawer.css'
 
 // interface ChatSession {
 //   sessionId: string
@@ -93,12 +95,25 @@ function App() {
     }
   })
 
-  // Detect mobile viewport
+  // Detect mobile viewport and show coming soon for phones
+  const [showMobileComingSoon, setShowMobileComingSoon] = useState(false)
+  
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth <= 768
-      setIsMobile(mobile)
-      if (mobile) {
+      const width = window.innerWidth
+      const isPhone = width <= 768
+      const isTablet = width > 768 && width <= 1024
+      
+      // Check for bypass flag in URL or localStorage
+      const urlParams = new URLSearchParams(window.location.search)
+      const bypassMobile = urlParams.get('bypass-mobile') === 'true' || 
+                          localStorage.getItem('vetroi_bypass_mobile') === 'true'
+      
+      // Show coming soon only for phones (unless bypassed)
+      setShowMobileComingSoon(isPhone && !bypassMobile)
+      setIsMobile(isPhone)
+      
+      if (isPhone) {
         document.body.classList.add('has-mobile-nav')
       } else {
         document.body.classList.remove('has-mobile-nav')
@@ -579,6 +594,11 @@ function App() {
       accessible: flowSections.sentra.visible
     }
   ]
+
+  // Show coming soon page for mobile phones
+  if (showMobileComingSoon) {
+    return <MobileComingSoon />
+  }
 
   return (
     <div className={`App ${isSidebarMinimized ? 'sidebar-minimized' : ''}`}>
