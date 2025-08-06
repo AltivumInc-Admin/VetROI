@@ -21,8 +21,19 @@ export const DataPanel: React.FC<DataPanelProps> = ({
   const [expandedSOCs, setExpandedSOCs] = useState<string[]>([])
   const [socData, setSocData] = useState<SOCData>({})
   const [onetView, setOnetView] = useState<'mos' | 'soc'>('mos')
+  const [isMobile, setIsMobile] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
   const tabsRef = useRef<HTMLDivElement>(null)
+  
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
   
   // Listen for S3 data updates
   React.useEffect(() => {
@@ -70,14 +81,47 @@ export const DataPanel: React.FC<DataPanelProps> = ({
     return onetView === 'mos' ? 'MOS Data - O*NET API Response' : 'SOC Data - Career Details'
   }
 
+  // Add/remove body class for mobile panel open state
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      document.body.classList.add('data-panel-open')
+    } else {
+      document.body.classList.remove('data-panel-open')
+    }
+    return () => {
+      document.body.classList.remove('data-panel-open')
+    }
+  }, [isMobile, isOpen])
+
   return (
     <>
-      <div ref={tabsRef} className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
-        <div className="data-panel-tab" onClick={onToggle}>
-          <span className="tab-text">{getTabText()}</span>
-          <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
+      {/* Mobile trigger button */}
+      {isMobile && (
+        <button 
+          className="data-panel-mobile-trigger" 
+          onClick={onToggle}
+          aria-label="Open O*NET Data Panel"
+        />
+      )}
+      
+      {/* Mobile overlay */}
+      {isMobile && isOpen && (
+        <div 
+          className="data-panel-overlay visible" 
+          onClick={onToggle}
+          aria-hidden="true"
+        />
+      )}
+      
+      {/* Desktop side tab */}
+      {!isMobile && (
+        <div ref={tabsRef} className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
+          <div className="data-panel-tab" onClick={onToggle}>
+            <span className="tab-text">{getTabText()}</span>
+            <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
+          </div>
         </div>
-      </div>
+      )}
       
       <div ref={panelRef} className={`data-panel ${isOpen ? 'open' : ''}`}>
         <div className="data-panel-header">

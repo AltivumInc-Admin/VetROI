@@ -32,6 +32,7 @@ import './styles/MobileLayoutFixes.css' // Phase 1 mobile layout fixes
 import './styles/MobileTouchTargets.css' // Phase 2 touch target optimization
 import './styles/MobileProgressIndicator.css' // Phase 3 mobile progress redesign
 import './styles/MobileEnhancements.css' // Phases 4 & 5 UX and performance
+import './styles/MobileCriticalFixes.css' // Fix progress text overflow & ONET panel
 
 // interface ChatSession {
 //   sessionId: string

@@ -1,0 +1,355 @@
+/* CRITICAL MOBILE FIXES - Progress Indicator Text & ONET Panel */
+
+/* ===== FIX 1: PROGRESS INDICATOR CIRCLE TEXT OVERFLOW ===== */
+@media (max-width: 768px) {
+  /* Fix text overflow in progress indicator circles */
+  .progress-indicator--top .section-indicator {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    overflow: hidden !important; /* Prevent text overflow */
+    padding: 0 !important;
+  }
+  
+  /* Show only step number in circle, not text */
+  .progress-indicator--top .section-indicator .section-number {
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Hide any text that's not the number */
+  .progress-indicator--top .section-indicator span:not(.section-number) {
+    display: none !important;
+  }
+  
+  /* Current indicator text - show below circle instead */
+  .progress-indicator--top .current-indicator {
+    display: none !important; /* Hide the "Current" text completely on mobile */
+  }
+  
+  /* Ensure section labels appear below circles, not inside */
+  .progress-indicator--top .section-label {
+    position: relative !important;
+    margin-top: 0.25rem !important;
+    font-size: 0.65rem !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 60px !important;
+    text-align: center !important;
+  }
+  
+  /* Active section indicator styling */
+  .progress-indicator--top .progress-section.active .section-indicator {
+    background: rgba(0, 212, 255, 0.2) !important;
+    border: 2px solid rgba(0, 212, 255, 0.5) !important;
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.3) !important;
+  }
+  
+  .progress-indicator--top .progress-section.active .section-indicator .section-number {
+    color: #00d4ff !important;
+    font-weight: 700 !important;
+  }
+  
+  /* Completed section indicator */
+  .progress-indicator--top .progress-section.completed .section-indicator {
+    background: rgba(34, 197, 94, 0.2) !important;
+    border: 2px solid rgba(34, 197, 94, 0.5) !important;
+  }
+  
+  .progress-indicator--top .progress-section.completed .section-indicator::after {
+    content: '✓' !important;
+    position: absolute !important;
+    font-size: 1rem !important;
+    color: #22c55e !important;
+    font-weight: bold !important;
+  }
+  
+  .progress-indicator--top .progress-section.completed .section-indicator .section-number {
+    display: none !important; /* Hide number when showing checkmark */
+  }
+}
+
+/* ===== FIX 2: ONET DATA PANEL - MOBILE HAMBURGER STYLE ===== */
+@media (max-width: 768px) {
+  /* Hide the side tab completely on mobile */
+  .data-panel-tabs-container {
+    display: none !important;
+  }
+  
+  /* Add a floating hamburger button for ONET data */
+  .data-panel-mobile-trigger {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    background: rgba(13, 17, 33, 0.95) !important;
+    border: 2px solid rgba(0, 212, 255, 0.3) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 900 !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .data-panel-mobile-trigger:active {
+    transform: scale(0.95) !important;
+  }
+  
+  .data-panel-mobile-trigger::before {
+    content: 'O*NET' !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    color: #00d4ff !important;
+    letter-spacing: -0.5px !important;
+  }
+  
+  /* When panel is open, show as fullscreen overlay */
+  .data-panel.open {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    z-index: 9999 !important;
+    transform: translateX(0) !important;
+    animation: slideUp 0.3s ease !important;
+  }
+  
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Data panel mobile header */
+  .data-panel.open .data-panel-header {
+    position: sticky !important;
+    top: 0 !important;
+    background: rgba(13, 17, 33, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    padding: 1rem !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    z-index: 10 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  
+  .data-panel.open .data-panel-header h3 {
+    font-size: 1.125rem !important;
+    margin: 0 !important;
+  }
+  
+  .data-panel.open .close-btn {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 50% !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: pointer !important;
+  }
+  
+  /* Data panel content mobile optimization */
+  .data-panel.open .data-panel-content {
+    padding: 1rem !important;
+    height: calc(100% - 60px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* View toggle buttons mobile */
+  .data-panel.open .onet-view-toggle {
+    position: sticky !important;
+    top: 60px !important;
+    background: rgba(13, 17, 33, 0.95) !important;
+    padding: 0.75rem !important;
+    margin: -1rem -1rem 1rem -1rem !important;
+    display: flex !important;
+    gap: 0.5rem !important;
+    z-index: 5 !important;
+  }
+  
+  .data-panel.open .view-toggle-btn {
+    flex: 1 !important;
+    padding: 0.75rem !important;
+    font-size: 0.875rem !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .data-panel.open .view-toggle-btn.active {
+    background: rgba(0, 212, 255, 0.15) !important;
+    border-color: rgba(0, 212, 255, 0.3) !important;
+    color: #00d4ff !important;
+  }
+  
+  /* SOC sections mobile */
+  .data-panel.open .soc-section {
+    margin-bottom: 1rem !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+  }
+  
+  .data-panel.open .soc-header {
+    padding: 1rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+  
+  .data-panel.open .soc-title {
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+  }
+  
+  .data-panel.open .soc-code {
+    font-size: 0.75rem !important;
+    opacity: 0.6 !important;
+  }
+  
+  /* JSON viewer mobile */
+  .data-panel.open .json-viewer {
+    font-size: 0.75rem !important;
+    padding: 0.75rem !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 8px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Add overlay background when panel is open */
+  .data-panel-overlay {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(5px) !important;
+    -webkit-backdrop-filter: blur(5px) !important;
+    z-index: 9998 !important;
+  }
+  
+  .data-panel-overlay.visible {
+    display: block !important;
+  }
+  
+  /* Ensure panel is always on top when open */
+  body.data-panel-open {
+    overflow: hidden !important; /* Prevent body scroll when panel is open */
+  }
+}
+
+/* Desktop - ensure no changes */
+@media (min-width: 769px) {
+  /* Keep original side panel behavior on desktop */
+  .data-panel-mobile-trigger {
+    display: none !important;
+  }
+  
+  .data-panel-overlay {
+    display: none !important;
+  }
+  
+  .data-panel-tabs-container {
+    display: block !important; /* Ensure tab is visible on desktop */
+  }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 374px) {
+  .data-panel-mobile-trigger {
+    width: 48px !important;
+    height: 48px !important;
+    bottom: 15px !important;
+    right: 15px !important;
+  }
+  
+  .data-panel-mobile-trigger::before {
+    font-size: 0.625rem !important;
+  }
+  
+  .progress-indicator--top .section-indicator {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .progress-indicator--top .section-indicator .section-number {
+    font-size: 0.75rem !important;
+  }
+  
+  .progress-indicator--top .section-label {
+    font-size: 0.6rem !important;
+    max-width: 50px !important;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .data-panel-mobile-trigger {
+    bottom: 10px !important;
+    right: 10px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+  
+  .data-panel.open {
+    max-height: 100vh !important;
+  }
+  
+  .data-panel.open .data-panel-content {
+    height: calc(100vh - 50px) !important;
+  }
+}
+
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    .data-panel.open {
+      height: 100vh !important;
+      height: -webkit-fill-available !important;
+    }
+    
+    .data-panel-mobile-trigger {
+      -webkit-user-select: none !important;
+    }
+  }
+}
