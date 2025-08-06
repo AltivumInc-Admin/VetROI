@@ -1,14 +1,7 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 
-// Extend jsPDF type to include autoTable
-declare module 'jspdf' {
-  interface jsPDF {
-    lastAutoTable: {
-      finalY: number
-    }
-  }
-}
+// Type extension for jsPDF is already declared in pdfGenerator.ts
 
 export const generatePDF = async (insights: any) => {
   const pdf = new jsPDF({

@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import VeteranForm from './components/VeteranForm'
-import { ChatInterface } from './components/ChatInterface'
+// import { ChatInterface } from './components/ChatInterface'  // Unused - commented out to fix build
 import { ConfirmationStep } from './components/ConfirmationStep'
 import { CareerMatchDisplay } from './components/CareerMatchDisplay'
 import { DetailedAnalysisView } from './components/DetailedAnalysisView'
@@ -12,7 +12,7 @@ import { SessionWarningModal } from './components/SessionWarningModal'
 import { VerticalFlowContainer } from './components/VerticalFlowContainer'
 import { ProgressIndicator } from './components/ProgressIndicator'
 import { SectionWrapper } from './components/SectionWrapper'
-import { DebugApp } from './components/DebugApp'
+// import { DebugApp } from './components/DebugApp'  // Unused - commented out to fix build
 import FormParticleBackground from './components/FormParticleBackground'
 import { useAuth } from './contexts/AuthContext'
 import { useScrollProgress } from './hooks/useScrollProgress'
@@ -27,11 +27,11 @@ import './styles/VerticalFlowFixes.css'
 import './styles/ViewportFit.css'
 import './styles/FloatingFormLayout.css'
 
-interface ChatSession {
-  sessionId: string
-  veteranProfile: VeteranRequest
-  initialMessage: string
-}
+// interface ChatSession {
+//   sessionId: string
+//   veteranProfile: VeteranRequest
+//   initialMessage: string
+// }
 
 interface FlowSection {
   profile: { completed: boolean; collapsed: boolean; data: VeteranRequest | null }
@@ -45,7 +45,7 @@ interface FlowSection {
 function App() {
   const navigate = useNavigate()
   const { sessionWarning, sessionExpired, isAuthenticated, signOutUser } = useAuth()
-  const [chatSession, setChatSession] = useState<ChatSession | null>(null)
+  // const [chatSession, setChatSession] = useState<ChatSession | null>(null)  // Unused - commented out to fix build
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [profileData, setProfileData] = useState<VeteranRequest | null>(null)
@@ -67,13 +67,13 @@ function App() {
   })
   
   const [currentSection, setCurrentSection] = useState<string>('profile')
-  const confirmationRef = useRef<HTMLDivElement>(null)
-  const careerMatchesRef = useRef<HTMLDivElement>(null)
+  // const confirmationRef = useRef<HTMLDivElement>(null)  // Unused - commented out to fix build
+  // const careerMatchesRef = useRef<HTMLDivElement>(null)  // Unused - commented out to fix build
   
   // Scroll-based progress tracking - only track active section, not completion
   useScrollProgress({
     threshold: 0.6,
-    onSectionComplete: (sectionId) => {
+    onSectionComplete: (_sectionId) => {
       // Don't auto-complete sections based on scroll
       // Sections should only be completed through explicit user actions
     },
@@ -390,7 +390,7 @@ function App() {
 
   const handleRestart = () => {
     // Reset all state to initial values
-    setChatSession(null)
+    // setChatSession(null)  // Commented out - chatSession is unused
     setLoading(false)
     setError(null)
     setProfileData(null)
@@ -498,7 +498,7 @@ function App() {
   const toggleSectionCollapse = (section: keyof FlowSection) => {
     setFlowSections(prev => ({
       ...prev,
-      [section]: { ...prev[section], collapsed: !prev[section].collapsed }
+      [section]: { ...prev[section], collapsed: !(prev[section] as any).collapsed }
     }))
   }
   

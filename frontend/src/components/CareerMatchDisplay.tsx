@@ -148,7 +148,7 @@ export const CareerMatchDisplay: React.FC<CareerMatchDisplayProps> = ({
   
   // Throttle scroll to prevent too sensitive scrolling
   const [isScrolling, setIsScrolling] = useState(false)
-  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   
   // Horizontal scroll wheel handling (for Mac trackpads)
   const onWheel = (e: React.WheelEvent) => {

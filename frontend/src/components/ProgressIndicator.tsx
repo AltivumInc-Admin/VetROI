@@ -19,7 +19,7 @@ interface ProgressIndicatorProps {
 
 export const ProgressIndicator = ({ 
   sections, 
-  currentSection, 
+  // currentSection,  // Unused - commented out to fix build
   onSectionClick,
   position = 'left',
   onMinimizedChange

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'  // Unused - commented out to fix build
 import { getDD214PresignedUrl, uploadDD214ToS3, getDD214Status } from '../api'
 import { useAuth } from '../contexts/AuthContext'
 import { AuthModal } from './AuthModal'
@@ -31,7 +31,7 @@ export const DD214Upload: React.FC<DD214UploadProps> = ({
   onUploadComplete,
   veteranId 
 }) => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()  // Unused - commented out to fix build
   const [uploadState, setUploadState] = useState<UploadState>({
     status: 'idle',
     progress: 0,

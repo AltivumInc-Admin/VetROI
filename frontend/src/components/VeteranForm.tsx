@@ -55,13 +55,12 @@ export default function VeteranForm({ onSubmit, loading, initialData }: VeteranF
   }
 
   return (
-    <form 
-      ref={elementRef}
-      onSubmit={handleSubmit} 
-      className="veteran-form"
-      style={{ opacity, transition: 'opacity 0.3s ease' }}
-    >
-      <h2>Tell Me About Your Military Service</h2>
+    <div ref={elementRef} style={{ opacity, transition: 'opacity 0.3s ease' }}>
+      <form 
+        onSubmit={handleSubmit} 
+        className="veteran-form"
+      >
+        <h2>Tell Me About Your Military Service</h2>
       
       <div className="form-group">
         <label htmlFor="branch">Branch of Service</label>
@@ -165,6 +164,7 @@ export default function VeteranForm({ onSubmit, loading, initialData }: VeteranF
       <button type="submit" disabled={loading} className="submit-button">
         {loading ? 'Getting Recommendations...' : 'Get Career Recommendations'}
       </button>
-    </form>
+      </form>
+    </div>
   )
 }

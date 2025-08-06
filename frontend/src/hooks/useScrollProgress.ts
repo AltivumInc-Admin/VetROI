@@ -15,7 +15,7 @@ export const useScrollProgress = ({
   const checkSectionVisibility = useCallback(() => {
     const sections = document.querySelectorAll('[data-section]')
     const windowHeight = window.innerHeight
-    const scrollY = window.scrollY
+    // const scrollY = window.scrollY  // Unused - commented out to fix build
     
     sections.forEach((section) => {
       const sectionId = section.getAttribute('data-section')
