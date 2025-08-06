@@ -1,10 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '../styles/MobileComingSoon.css'
 
 export const MobileComingSoon = () => {
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showContent, setShowContent] = useState(false)
+
+  // Delay showing content for 3-5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowContent(true)
+    }, 4000) // 4 seconds delay
+
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,6 +32,16 @@ export const MobileComingSoon = () => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (!showContent) {
+    return (
+      <div className="mobile-coming-soon loading">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -55,10 +75,10 @@ export const MobileComingSoon = () => {
           <div className="feature-preview">
             <h3>iOS App in Development</h3>
             <ul>
-              <li>📱 Native iOS experience</li>
-              <li>🔒 Secure DD214 processing</li>
-              <li>💼 Real-time career matching</li>
-              <li>📊 Full analytics on the go</li>
+              <li>Native iOS experience</li>
+              <li>Secure DD214 processing</li>
+              <li>Real-time career matching</li>
+              <li>Full analytics on the go</li>
             </ul>
           </div>
 

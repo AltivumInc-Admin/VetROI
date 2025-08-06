@@ -9,10 +9,36 @@
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  background: linear-gradient(135deg, #0a0b1d 0%, #1a1d3a 100%);
+  background: #111827;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   z-index: 10000;
+}
+
+/* Loading state */
+.mobile-coming-soon.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Animated background */
@@ -28,9 +54,9 @@
 
 .particle {
   position: absolute;
-  width: 4px;
-  height: 4px;
-  background: rgba(99, 102, 241, 0.5);
+  width: 2px;
+  height: 2px;
+  background: rgba(99, 102, 241, 0.3);
   border-radius: 50%;
   animation: float 20s infinite linear;
 }
@@ -97,8 +123,7 @@
   font-weight: 700;
   color: #fff;
   margin: 0;
-  letter-spacing: 2px;
-  text-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+  letter-spacing: 1px;
 }
 
 .brand-tagline {
@@ -151,9 +176,9 @@
 
 /* Feature preview */
 .feature-preview {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  border-radius: 8px;
   padding: 24px;
   margin-bottom: 32px;
   width: 100%;
@@ -184,9 +209,9 @@
 
 /* Notify form */
 .notify-form {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  border-radius: 8px;
   padding: 24px;
   margin-bottom: 32px;
   width: 100%;
@@ -208,9 +233,9 @@
 .notify-form input {
   flex: 1;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  background: rgba(31, 41, 55, 0.5);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  border-radius: 6px;
   color: #fff;
   font-size: 16px;
 }
@@ -278,8 +303,9 @@
 /* Desktop CTA */
 .desktop-cta {
   padding: 24px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(55, 65, 81, 0.5);
+  border-radius: 8px;
   width: 100%;
   max-width: 400px;
 }
@@ -295,18 +321,19 @@
   align-items: center;
   gap: 8px;
   padding: 14px 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
+  background: #4f46e5;
+  border: 1px solid #4f46e5;
+  border-radius: 6px;
   color: #fff;
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .desktop-link:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
+  background: #6366f1;
+  border-color: #6366f1;
+  transform: translateY(-1px);
 }
 
 .instruction {
