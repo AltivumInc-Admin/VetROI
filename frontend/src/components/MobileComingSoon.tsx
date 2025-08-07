@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react'
 import '../styles/MobileComingSoon.css'
 
 export const MobileComingSoon = () => {
-  const [email, setEmail] = useState('')
-  const [isSubscribed, setIsSubscribed] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [showContent, setShowContent] = useState(false)
 
   // Delay showing content for better UX
@@ -16,22 +13,12 @@ export const MobileComingSoon = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
-
-    setIsLoading(true)
-    
-    // Store email for launch notification
-    try {
-      // TODO: Connect to your email service (Mailchimp, SendGrid, etc.)
-      localStorage.setItem('vetroi_mobile_waitlist', email)
-      setIsSubscribed(true)
-    } catch (error) {
-      console.error('Subscription error:', error)
-    } finally {
-      setIsLoading(false)
-    }
+  const handleNotifyClick = () => {
+    // Placeholder for future notification signup
+    // Will be replaced with actual link when ready
+    console.log('Notification signup clicked')
+    // You can add the link here when ready:
+    // window.location.href = 'your-notification-signup-url'
   }
 
   if (!showContent) {
@@ -123,39 +110,16 @@ export const MobileComingSoon = () => {
             </div>
           </div>
 
-          {!isSubscribed ? (
-            <div className="notification-section">
-              <form className="email-form" onSubmit={handleSubscribe}>
-                <div className="input-group">
-                  <input
-                    type="email"
-                    className="email-input"
-                    placeholder="Enter email for launch notification"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
-                  <button type="submit" className="submit-btn" disabled={isLoading}>
-                    <span>{isLoading ? 'Processing' : 'Notify Me'}</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                  </button>
-                </div>
-              </form>
-            </div>
-          ) : (
-            <div className="success-notification">
-              <div className="success-icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-              </div>
-              <p>Launch notification confirmed</p>
-            </div>
-          )}
+          <div className="notification-section">
+            <p className="notification-text">Click below to be notified when VetROI™ launches on mobile</p>
+            <button className="notify-button" onClick={handleNotifyClick}>
+              <span>Get Notified</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="footer-mark">
