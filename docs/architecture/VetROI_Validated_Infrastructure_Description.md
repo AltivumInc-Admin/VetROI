@@ -5,7 +5,7 @@
 ---
 
 ## Overview
-VetROI is a serverless application built for the AWS Lambda Hackathon 2025 that helps veterans translate their military experience into civilian career opportunities. The application uses 9 Lambda functions orchestrated through API Gateway and Step Functions.
+VetROI is a production-grade serverless application that helps veterans translate their military experience into civilian career opportunities. The application uses 9 Lambda functions orchestrated through API Gateway and Step Functions.
 
 ---
 

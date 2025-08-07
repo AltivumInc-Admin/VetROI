@@ -236,4 +236,4 @@ docs/
 
 ---
 
-Last Updated: June 2025 | AWS Lambda Hackathon Submission
+Last Updated: June 2025 | Production-Grade Serverless Platform

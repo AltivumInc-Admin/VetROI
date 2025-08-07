@@ -5,7 +5,7 @@
 1. Remove unnecessary files while preserving production code
 2. Reduce repository size for faster cloning
 3. Organize remaining files logically
-4. Ensure hackathon submission is clean and professional
+4. Ensure production deployment is clean and professional
 5. Maintain all working functionality
 
 ---
@@ -221,7 +221,7 @@ du -sh */ | sort -hr | head -20
 ### 8.1 Recommended Final Structure
 ```
 VetROI/
-├── README.md                    # Hackathon submission
+├── README.md                    # Production documentation
 ├── DEVELOPMENT.md                    # Development docs
 ├── LICENSE
 ├── .gitignore
@@ -275,7 +275,7 @@ du -sh .
 git count-objects -vH
 
 # Commit
-git commit -m "Pre-hackathon cleanup: Remove build artifacts and temporary files"
+git commit -m "Production cleanup: Remove build artifacts and temporary files"
 ```
 
 ---

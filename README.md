@@ -1,5 +1,4 @@
 # VetROI™ - Veteran Return on Investment
-## AWS Lambda Hackathon 2025 Submission
 
 > **Transforming military service records into civilian career success using serverless AI**
 

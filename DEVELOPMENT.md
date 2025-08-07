@@ -2,10 +2,10 @@
 
 ## Project Vision & Strategy
 
-**VetROI™** (Veteran Return on Investment) is the flagship SaaS product of Altivum Inc., designed to revolutionize how military veterans transition to civilian careers. This is not a hackathon project—it's a production application strategically launching through the AWS Lambda Hackathon 2025 for market validation and visibility.
+**VetROI™** (Veteran Return on Investment) is the flagship SaaS product of Altivum Inc., designed to revolutionize how military veterans transition to civilian careers. This is a production-grade application that transforms military service records into civilian career opportunities.
 
 ### Business Strategy
-- **Market Validation**: AWS hackathon placement serves as proof of concept and market demand
+- **Market Validation**: Production deployment serves as proof of concept and market demand
 - **Strategic Launch**: Using competition for credibility, visibility, and potential funding
 - **Real Impact**: Addressing the critical need of 200,000+ veterans transitioning annually
 - **Revenue Model**: Freemium SaaS with premium features for career coaching and enterprise partnerships

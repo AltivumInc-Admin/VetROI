@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate VetROI AWS Architecture Diagram for Hackathon Submission"""
+"""Generate VetROI AWS Architecture Diagram"""
 
 from diagrams import Diagram, Cluster, Edge
 from diagrams.aws.compute import Lambda, LambdaFunction
@@ -23,7 +23,7 @@ storage_color = "#569A31"
 ml_color = "#8C4FFF"
 api_color = "#FF4B00"
 
-with Diagram("VetROI - AWS Lambda Hackathon Architecture", 
+with Diagram("VetROI - Serverless Architecture", 
              filename="vetroi_architecture", 
              show=False,
              direction="TB",

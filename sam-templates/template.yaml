@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: VetROI™ - AWS Lambda Hackathon Application by Altivum Inc.
+Description: VetROI™ - Serverless Veteran Career Intelligence Platform by Altivum Inc.
 
 Globals:
   Function:

@@ -848,7 +848,7 @@ function App() {
         <div className="footer-content">
           <span>© 2025 Altivum Inc.</span>
           <span>VetROI™ is a trademark of Altivum Inc.</span>
-          <span>Built for AWS Lambda Hackathon 2025</span>
+          <span>Production-Grade Serverless Platform</span>
         </div>
         
         <div className="onet-attribution">
