@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereal Orb Guide Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #151933 50%, #0a0e27 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            position: relative;
+        }
+
+        /* Underwater-like ambient particles */
+        .ambient-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .ambient-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: radial-gradient(circle, rgba(147, 197, 253, 0.8) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float-up 20s infinite linear;
+        }
+
+        @keyframes float-up {
+            from {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            to {
+                transform: translateY(-100px) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        /* Main orb container */
+        .orb-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* The ethereal orb */
+        .orb {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            pointer-events: auto;
+            opacity: 0;
+            transform: scale(0);
+            z-index: 10000;
+            transition: none;
+        }
+
+        .orb-core {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(200, 220, 255, 0.7) 30%, 
+                rgba(147, 197, 253, 0.5) 60%, 
+                transparent 100%
+            );
+            border-radius: 50%;
+            animation: gentle-pulse 3s ease-in-out infinite;
+            box-shadow: 
+                0 0 20px rgba(147, 197, 253, 0.5),
+                0 0 40px rgba(147, 197, 253, 0.3);
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
+        /* Subtle glow layers */
+        .orb-glow {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, 
+                rgba(147, 197, 253, 0.2) 0%, 
+                rgba(147, 197, 253, 0.1) 30%, 
+                transparent 70%
+            );
+            border-radius: 50%;
+            filter: blur(3px);
+            animation: soft-rotate 8s linear infinite;
+        }
+
+        @keyframes soft-rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .orb-outer-glow {
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            top: -100%;
+            left: -100%;
+            background: radial-gradient(circle, 
+                rgba(59, 130, 246, 0.1) 0%, 
+                transparent 50%
+            );
+            border-radius: 50%;
+            filter: blur(8px);
+            animation: gentle-pulse 3s ease-in-out infinite;
+            animation-delay: -1.5s;
+        }
+
+        /* Trail particles */
+        .trail-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, 
+                rgba(147, 197, 253, 0.6) 0%, 
+                transparent 70%
+            );
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Demo content sections */
+        .demo-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            color: #e2e8f0;
+        }
+
+        .demo-card h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #93c5fd;
+        }
+
+        .demo-card p {
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        /* Text box that follows orb */
+        .orb-textbox {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(147, 197, 253, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #e2e8f0;
+            font-size: 14px;
+            min-width: 200px;
+            max-width: 280px;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .orb-textbox::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 16px;
+            height: 16px;
+            background: rgba(15, 23, 42, 0.95);
+            border-left: 1px solid rgba(147, 197, 253, 0.3);
+            border-top: 1px solid rgba(147, 197, 253, 0.3);
+            transform: rotate(45deg);
+        }
+
+        /* Final resting position indicator */
+        .final-position {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border: 2px dashed rgba(147, 197, 253, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .final-position.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient particles for underwater effect -->
+    <div class="ambient-particles" id="ambientParticles"></div>
+
+    <!-- Debug info -->
+    <div style="position: fixed; top: 10px; left: 10px; color: white; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; z-index: 9999; font-size: 12px;">
+        <div id="debugInfo">Initializing orb...</div>
+    </div>
+
+    <!-- Demo content sections -->
+    <div class="demo-section">
+        <div class="demo-card" data-waypoint="1">
+            <h2>Welcome to VetROI</h2>
+            <p>Your intelligent guide is about to take you on a journey through our platform. Watch as it demonstrates the power of AI-assisted prompt engineering.</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <div class="demo-card" data-waypoint="2">
+            <h2>Data-Driven Insights</h2>
+            <p>Our system analyzes your input in real-time, crafting the perfect prompt based on your specific needs and context.</p>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <div class="demo-card" data-waypoint="3">
+            <h2>Seamless Integration</h2>
+            <p>Connect with any LLM of your choice. Our intelligent orb assistant ensures your prompts are optimized for maximum effectiveness.</p>
+        </div>
+    </div>
+
+    <!-- Orb container -->
+    <div class="orb-container">
+        <div class="orb" id="guidingOrb">
+            <div class="orb-outer-glow"></div>
+            <div class="orb-glow"></div>
+            <div class="orb-core"></div>
+        </div>
+        <div class="orb-textbox" id="orbTextbox"></div>
+    </div>
+
+    <!-- Final position indicator -->
+    <div class="final-position" id="finalPosition">
+        <div style="color: rgba(147, 197, 253, 0.4); font-size: 12px;">Home</div>
+    </div>
+
+    <script>
+        class EtherealOrb {
+            constructor() {
+                this.debugInfo = document.getElementById('debugInfo');
+                this.orb = document.getElementById('guidingOrb');
+                this.textbox = document.getElementById('orbTextbox');
+                this.finalPosition = document.getElementById('finalPosition');
+                this.container = document.querySelector('.orb-container');
+                
+                this.currentX = window.innerWidth / 2;
+                this.currentY = window.innerHeight / 2;
+                this.targetX = this.currentX;
+                this.targetY = this.currentY;
+                this.velocity = { x: 0, y: 0 };
+                
+                this.waypoints = [];
+                this.currentWaypointIndex = 0;
+                this.isMoving = false;
+                this.hasCompletedTour = false;
+                
+                this.trailParticles = [];
+                this.maxTrailParticles = 20;
+                
+                this.messages = [
+                    "Let me show you around...",
+                    "Here we analyze your data in real-time",
+                    "Your prompts evolve as you provide information",
+                    "I'll be here to help you craft the perfect prompt"
+                ];
+                
+                this.updateDebug('Orb initialized');
+                this.init();
+            }
+
+            updateDebug(message) {
+                if (this.debugInfo) {
+                    this.debugInfo.textContent = message + ` | Pos: ${Math.round(this.currentX)}, ${Math.round(this.currentY)}`;
+                }
+            }
+
+            init() {
+                // Create ambient particles
+                this.createAmbientParticles();
+                
+                // Setup waypoints from demo cards
+                this.setupWaypoints();
+                
+                // Start the orb spawn animation
+                setTimeout(() => this.spawn(), 500);
+                
+                // Start animation loop
+                this.animate();
+                
+                // Add subtle floating motion
+                this.addFloatingMotion();
+            }
+
+            createAmbientParticles() {
+                const particleContainer = document.getElementById('ambientParticles');
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'ambient-particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 20 + 's';
+                    particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                    particleContainer.appendChild(particle);
+                }
+            }
+
+            setupWaypoints() {
+                const cards = document.querySelectorAll('[data-waypoint]');
+                cards.forEach((card, index) => {
+                    const rect = card.getBoundingClientRect();
+                    this.waypoints.push({
+                        x: rect.left + rect.width / 2,
+                        y: rect.top - 50,
+                        message: this.messages[index] || "Exploring...",
+                        pauseDuration: 3000
+                    });
+                });
+                
+                // Add final position as last waypoint
+                this.waypoints.push({
+                    x: window.innerWidth - 60,
+                    y: window.innerHeight - 60,
+                    message: this.messages[this.messages.length - 1],
+                    pauseDuration: 0,
+                    isFinal: true
+                });
+            }
+
+            spawn() {
+                this.updateDebug('Spawning orb...');
+                
+                // Set initial position at center of viewport
+                this.currentX = window.innerWidth / 2;
+                this.currentY = window.innerHeight / 2;
+                this.targetX = this.currentX;
+                this.targetY = this.currentY;
+                
+                // Position orb at center
+                this.orb.style.left = this.currentX + 'px';
+                this.orb.style.top = this.currentY + 'px';
+                
+                // Spawn animation
+                setTimeout(() => {
+                    this.orb.style.opacity = '1';
+                    this.orb.style.transform = 'scale(1)';
+                    this.orb.style.transition = 'opacity 1.5s ease, transform 1.5s ease';
+                    this.updateDebug('Orb visible, starting tour in 1s...');
+                }, 100);
+                
+                // Start the tour after spawn
+                setTimeout(() => {
+                    this.orb.style.transition = 'none';
+                    this.updateDebug('Starting tour...');
+                    this.startTour();
+                }, 2500);
+            }
+
+            startTour() {
+                this.moveToNextWaypoint();
+            }
+
+            moveToNextWaypoint() {
+                if (this.currentWaypointIndex >= this.waypoints.length) {
+                    this.hasCompletedTour = true;
+                    this.finalPosition.classList.add('visible');
+                    return;
+                }
+
+                const waypoint = this.waypoints[this.currentWaypointIndex];
+                this.targetX = waypoint.x;
+                this.targetY = waypoint.y;
+                this.isMoving = true;
+
+                // Show message when arriving at waypoint
+                const checkArrival = setInterval(() => {
+                    const distance = Math.hypot(
+                        this.targetX - this.currentX,
+                        this.targetY - this.currentY
+                    );
+
+                    if (distance < 5) {
+                        clearInterval(checkArrival);
+                        this.isMoving = false;
+                        
+                        // Show textbox with message
+                        if (!waypoint.isFinal) {
+                            this.showMessage(waypoint.message);
+                        }
+
+                        // Move to next waypoint after pause
+                        setTimeout(() => {
+                            this.hideMessage();
+                            this.currentWaypointIndex++;
+                            this.moveToNextWaypoint();
+                        }, waypoint.pauseDuration);
+                    }
+                }, 50);
+            }
+
+            showMessage(text) {
+                this.textbox.textContent = text;
+                this.textbox.style.opacity = '1';
+                this.textbox.style.transform = 'translateY(0)';
+                this.textbox.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            }
+
+            hideMessage() {
+                this.textbox.style.opacity = '0';
+                this.textbox.style.transform = 'translateY(10px)';
+            }
+
+            addFloatingMotion() {
+                // Add subtle floating motion when idle
+                setInterval(() => {
+                    if (!this.isMoving && this.hasCompletedTour) {
+                        const time = Date.now() * 0.001;
+                        const floatX = Math.sin(time) * 10;
+                        const floatY = Math.cos(time * 0.7) * 10;
+                        
+                        this.targetX = (window.innerWidth - 60) + floatX;
+                        this.targetY = (window.innerHeight - 60) + floatY;
+                    }
+                }, 50);
+            }
+
+            createTrailParticle() {
+                if (this.trailParticles.length > this.maxTrailParticles) {
+                    const oldParticle = this.trailParticles.shift();
+                    if (oldParticle && oldParticle.parentNode) {
+                        oldParticle.remove();
+                    }
+                }
+
+                const particle = document.createElement('div');
+                particle.className = 'trail-particle';
+                particle.style.left = this.currentX + 'px';
+                particle.style.top = this.currentY + 'px';
+                particle.style.opacity = '0.6';
+                
+                this.container.appendChild(particle);
+                this.trailParticles.push(particle);
+
+                // Fade out animation
+                let opacity = 0.6;
+                const fadeOut = setInterval(() => {
+                    opacity -= 0.02;
+                    if (opacity <= 0) {
+                        clearInterval(fadeOut);
+                        if (particle.parentNode) {
+                            particle.remove();
+                        }
+                        const index = this.trailParticles.indexOf(particle);
+                        if (index > -1) {
+                            this.trailParticles.splice(index, 1);
+                        }
+                    } else {
+                        particle.style.opacity = opacity;
+                    }
+                }, 50);
+            }
+
+            animate() {
+                // Smooth movement with easing
+                const easing = 0.05;
+                const dx = this.targetX - this.currentX;
+                const dy = this.targetY - this.currentY;
+                
+                this.velocity.x = dx * easing;
+                this.velocity.y = dy * easing;
+                
+                this.currentX += this.velocity.x;
+                this.currentY += this.velocity.y;
+                
+                // Update orb position
+                this.orb.style.left = this.currentX + 'px';
+                this.orb.style.top = this.currentY + 'px';
+                
+                // Update textbox position
+                this.textbox.style.left = (this.currentX + 30) + 'px';
+                this.textbox.style.top = (this.currentY + 30) + 'px';
+                
+                // Create trail effect when moving fast enough
+                const speed = Math.hypot(this.velocity.x, this.velocity.y);
+                if (speed > 0.5 && this.isMoving) {
+                    this.createTrailParticle();
+                }
+                
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize the orb when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            new EtherealOrb();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Recalculate waypoints on resize
+            // You might want to implement this for responsive behavior
+        });
+    </script>
+</body>
+</html>

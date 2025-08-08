@@ -1,0 +1,287 @@
+/* Sentra Guide Container */
+.sentra-guide-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100000;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Dark Overlay */
+.sentra-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, rgba(10, 14, 39, 0.95) 0%, rgba(10, 14, 39, 0.98) 100%);
+  backdrop-filter: blur(4px);
+  pointer-events: auto;
+}
+
+/* Sentra Orb */
+.sentra-orb {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 100001;
+}
+
+.sentra-orb-core {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, 
+    rgba(255, 255, 255, 1) 0%, 
+    rgba(147, 197, 253, 0.9) 25%, 
+    rgba(59, 130, 246, 0.7) 50%, 
+    rgba(37, 99, 235, 0.4) 75%, 
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: sentra-pulse 2.5s ease-in-out infinite;
+  box-shadow: 
+    0 0 30px rgba(147, 197, 253, 0.8),
+    0 0 60px rgba(59, 130, 246, 0.5),
+    0 0 90px rgba(37, 99, 235, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.sentra-orb-glow {
+  position: absolute;
+  width: 250%;
+  height: 250%;
+  top: -75%;
+  left: -75%;
+  background: radial-gradient(circle, 
+    rgba(147, 197, 253, 0.4) 0%, 
+    rgba(59, 130, 246, 0.2) 30%, 
+    transparent 70%
+  );
+  border-radius: 50%;
+  filter: blur(5px);
+  animation: sentra-rotate 6s linear infinite;
+}
+
+.sentra-orb-outer-glow {
+  position: absolute;
+  width: 400%;
+  height: 400%;
+  top: -150%;
+  left: -150%;
+  background: radial-gradient(circle, 
+    rgba(59, 130, 246, 0.2) 0%, 
+    rgba(37, 99, 235, 0.1) 30%,
+    transparent 60%
+  );
+  border-radius: 50%;
+  filter: blur(10px);
+  animation: sentra-pulse 2.5s ease-in-out infinite;
+  animation-delay: -1.25s;
+}
+
+@keyframes sentra-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+}
+
+@keyframes sentra-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Trail Particles */
+.sentra-trail-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, 
+    rgba(147, 197, 253, 0.8) 0%, 
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  filter: blur(1px);
+}
+
+/* Message Window */
+.sentra-message-window {
+  position: absolute;
+  min-width: 320px;
+  max-width: 420px;
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.98) 0%, 
+    rgba(30, 41, 59, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(147, 197, 253, 0.2);
+  border-radius: 16px;
+  padding: 0;
+  pointer-events: auto;
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.4),
+    0 0 80px rgba(59, 130, 246, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+
+.sentra-message-window::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(147, 197, 253, 0.5) 50%, 
+    transparent 100%
+  );
+}
+
+.sentra-message-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(147, 197, 253, 0.1);
+}
+
+.sentra-avatar {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.sentra-avatar-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, 
+    rgba(59, 130, 246, 0.6) 0%, 
+    transparent 70%
+  );
+  filter: blur(8px);
+  animation: sentra-pulse 2s ease-in-out infinite;
+}
+
+.sentra-avatar-letter {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+
+.sentra-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.5px;
+}
+
+.sentra-message-content {
+  padding: 20px;
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
+}
+
+.sentra-message-progress {
+  padding: 16px 20px;
+  background: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid rgba(147, 197, 253, 0.1);
+}
+
+.sentra-progress-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.sentra-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(147, 197, 253, 0.2);
+  transition: all 0.3s ease;
+}
+
+.sentra-progress-dot.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* Skip Button */
+.sentra-skip-button {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  padding: 10px 20px;
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(147, 197, 253, 0.3);
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+  z-index: 100002;
+}
+
+.sentra-skip-button:hover {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: rgba(147, 197, 253, 0.5);
+  color: #e2e8f0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sentra-message-window {
+    min-width: 280px;
+    max-width: calc(100vw - 40px);
+  }
+  
+  .sentra-message-content {
+    font-size: 14px;
+    padding: 16px;
+  }
+  
+  .sentra-skip-button {
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}

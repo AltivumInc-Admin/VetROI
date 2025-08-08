@@ -8,6 +8,7 @@ import { DetailedAnalysisView } from './components/DetailedAnalysisView'
 import { DataPanel } from './components/DataPanel'
 import { DD214Upload } from './components/DD214Upload'
 import { SentraChat } from './components/SentraChat'
+import { SentraGuide } from './components/SentraGuide'
 import { SessionWarningModal } from './components/SessionWarningModal'
 import { VerticalFlowContainer } from './components/VerticalFlowContainer'
 import { ProgressIndicator } from './components/ProgressIndicator'
@@ -68,6 +69,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(false)
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
   const [mobileSocData, setMobileSocData] = useState<any>({})
+  const [showSentraGuide, setShowSentraGuide] = useState(false)
   
   // New vertical flow state
   const [flowSections, setFlowSections] = useState<FlowSection>({
@@ -127,6 +129,19 @@ function App() {
       document.body.classList.remove('has-mobile-nav')
     }
   }, [])
+
+  // Check if first-time user and show Sentra guide
+  useEffect(() => {
+    const hasSeenGuide = localStorage.getItem('sentraGuideCompleted')
+    const skipGuide = new URLSearchParams(window.location.search).get('skipGuide') === 'true'
+    
+    if (!hasSeenGuide && !skipGuide && !isMobile) {
+      // Delay slightly to ensure page is fully loaded
+      setTimeout(() => {
+        setShowSentraGuide(true)
+      }, 1000)
+    }
+  }, [isMobile])
 
   // Restore from sessionStorage on mount
   useEffect(() => {
@@ -603,6 +618,15 @@ function App() {
   return (
     <div className={`App ${isSidebarMinimized ? 'sidebar-minimized' : ''}`}>
       <FormParticleBackground />
+      
+      {/* Sentra Guide for first-time users */}
+      {showSentraGuide && (
+        <SentraGuide 
+          onComplete={() => setShowSentraGuide(false)}
+          onSkip={() => setShowSentraGuide(false)}
+        />
+      )}
+      
       <header className="app-header">
         <h1>VetROI™</h1>
         <p className="tagline">Career Intelligence Platform</p>
