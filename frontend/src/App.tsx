@@ -894,10 +894,10 @@ function App() {
         </div>
       </footer>
       
-      {/* Desktop Data Panel Only */}
-      {!isMobile && apiResponse && (
+      {/* Desktop Data Panel - Always Available */}
+      {!isMobile && (
         <DataPanel 
-          data={apiResponse}
+          data={apiResponse || {}}
           isOpen={isDataPanelOpen}
           onToggle={() => setIsDataPanelOpen(!isDataPanelOpen)}
           selectedSOCs={flowSections.careers.selections}

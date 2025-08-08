@@ -116,7 +116,7 @@ export const DataPanel: React.FC<DataPanelProps> = ({
       {/* Desktop side tab */}
       {!isMobile && (
         <div ref={tabsRef} className={`data-panel-tabs-container ${isOpen ? 'open' : ''}`}>
-          <div className="data-panel-tab" onClick={onToggle}>
+          <div className="data-panel-tab" onClick={onToggle} data-testid="data-panel-toggle">
             <span className="tab-text">{getTabText()}</span>
             <span className="tab-icon">{isOpen ? '›' : '‹'}</span>
           </div>
@@ -149,7 +149,9 @@ export const DataPanel: React.FC<DataPanelProps> = ({
               </div>
               {onetView === 'mos' ? (
                 <pre className="json-display">
-                  {JSON.stringify(data, null, 2)}
+                  {data && Object.keys(data).length > 0 
+                    ? JSON.stringify(data, null, 2)
+                    : '// No data yet.\n// Complete the form and click "Get Career Recommendations"\n// to see your O*NET analysis data here.'}
                 </pre>
               ) : (
                 <div className="soc-list">
