@@ -134,9 +134,11 @@ function App() {
   // Check if first-time user and show Sentra guide
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem('sentraGuideCompleted')
-    const skipGuide = new URLSearchParams(window.location.search).get('skipGuide') === 'true'
+    const urlParams = new URLSearchParams(window.location.search)
+    const skipGuide = urlParams.get('skipGuide') === 'true'
+    const forceGuide = urlParams.get('forceGuide') === 'true'
     
-    if (!hasSeenGuide && !skipGuide && !isMobile) {
+    if (((!hasSeenGuide && !skipGuide) || forceGuide) && !isMobile) {
       // Delay slightly to ensure page is fully loaded
       setTimeout(() => {
         setShowSentraGuide(true)
