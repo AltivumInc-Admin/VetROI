@@ -9,6 +9,7 @@ import { DataPanel } from './components/DataPanel'
 import { DD214Upload } from './components/DD214Upload'
 import { SentraChat } from './components/SentraChat'
 import { SentraGuide } from './components/SentraGuide'
+import { CursorCoordinates } from './components/CursorCoordinates'
 import { SessionWarningModal } from './components/SessionWarningModal'
 import { VerticalFlowContainer } from './components/VerticalFlowContainer'
 import { ProgressIndicator } from './components/ProgressIndicator'
@@ -618,6 +619,9 @@ function App() {
   return (
     <div className={`App ${isSidebarMinimized ? 'sidebar-minimized' : ''}`}>
       <FormParticleBackground />
+      
+      {/* Cursor Coordinates Display */}
+      <CursorCoordinates />
       
       {/* Sentra Guide for first-time users */}
       {showSentraGuide && (
