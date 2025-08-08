@@ -42,36 +42,36 @@ export const SentraGuide: React.FC<SentraGuideProps> = ({ onComplete, onSkip }) 
       x: window.innerWidth * 0.3,
       y: 200,
       element: '[data-section="profile"]',
-      message: "First, you'll fill out your profile here. This helps me understand your military background and career goals.",
-      pauseDuration: 5000
+      message: "This is the primary client form where you'll input information that will help me acquire relevant data and metrics as well generate your master prompt to provide you with relevant information to help steer you in the right direction",
+      pauseDuration: 7000
     },
     {
-      x: window.innerWidth * 0.3,
+      x: window.innerWidth * 0.15,
       y: 400,
-      element: '[data-section="confirmation"]',
-      message: "After completing your profile, you'll confirm your information here before we proceed.",
-      pauseDuration: 5000
-    },
-    {
-      x: window.innerWidth * 0.3,
-      y: 500,
-      element: '[data-section="dd214"]',
-      message: "You can optionally upload your DD214 here for a comprehensive analysis of your military experience and benefits.",
+      element: '.progress-indicator',
+      message: "Here on the left you'll find the progress bar that details the depth of your career analysis.",
       pauseDuration: 5000
     },
     {
       x: window.innerWidth * 0.7,
-      y: 300,
+      y: 350,
+      element: '[data-testid="data-panel-toggle"]',
+      message: "Here you'll find the ONET data tab. When the information renders you'll notice it's structured in code. This is intentional. In efforts to be fully transparent, I make sure you can see the exact data that the US Department of Labor provides. What you see on your main page is precisely this information in a much more readable format.",
+      pauseDuration: 8000
+    },
+    {
+      x: window.innerWidth * 0.5,
+      y: 400,
       element: '[data-section="careers"]',
-      message: "Based on your profile, I'll show you personalized career matches with detailed insights and growth projections.",
+      message: "Based on your interests, I'll show you personalized career matches with detailed insights and growth projections.",
       pauseDuration: 5000
     },
     {
       x: window.innerWidth - 100,
       y: window.innerHeight - 100,
       element: '[data-section="sentra"]',
-      message: "I'll always be here if you need guidance. Just look for me in the Sentra chat section for personalized assistance.",
-      pauseDuration: 4000
+      message: "As we progress through the dive, I'll be here with you every step of the way to answer your questions, and to format your master prompt and ensuring you receive the most accurate and relevant information",
+      pauseDuration: 7000
     }
   ];
 
