@@ -9,6 +9,7 @@ interface Waypoint {
   message: string;
   pauseDuration: number;
   action?: () => void;
+  showSonar?: boolean;
 }
 
 interface SentraGuideProps {
@@ -22,45 +23,47 @@ export const SentraGuide: React.FC<SentraGuideProps> = ({ onComplete, onSkip }) 
   const [currentMessage, setCurrentMessage] = useState('');
   const [showSkipButton, setShowSkipButton] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
+  const [showSonarWave, setShowSonarWave] = useState(false);
   
   const orbRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameRef = useRef<number>();
   
-  const [orbPosition, setOrbPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  const [targetPosition, setTargetPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+  const [orbPosition, setOrbPosition] = useState({ x: 990, y: 400 });
+  const [targetPosition, setTargetPosition] = useState({ x: 990, y: 400 });
   const [trailParticles, setTrailParticles] = useState<Array<{ id: number; x: number; y: number; opacity: number }>>([]);
   
   const waypoints: Waypoint[] = [
     {
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
+      x: 990,
+      y: 400,
       message: "Hi, I'm Sentra, your state-of-the-art AI career counselor. I'm here to guide you on your career deep-dive. Let's start with the site layout.",
       pauseDuration: 6000
     },
     {
-      x: window.innerWidth * 0.3,
-      y: 200,
+      x: 990,
+      y: 400,
       element: '[data-section="profile"]',
       message: "This is the primary client form where you'll input information that will help me acquire relevant data and metrics as well generate your master prompt to provide you with relevant information to help steer you in the right direction",
-      pauseDuration: 7000
+      pauseDuration: 7000,
+      showSonar: true
     },
     {
-      x: window.innerWidth * 0.15,
-      y: 400,
+      x: 176,
+      y: 140,
       element: '.progress-indicator',
       message: "Here on the left you'll find the progress bar that details the depth of your career analysis.",
       pauseDuration: 5000
     },
     {
-      x: window.innerWidth * 0.7,
-      y: 350,
+      x: 1600,
+      y: 400,
       element: '[data-testid="data-panel-toggle"]',
       message: "Here you'll find the ONET data tab. When the information renders you'll notice it's structured in code. This is intentional. In efforts to be fully transparent, I make sure you can see the exact data that the US Department of Labor provides. What you see on your main page is precisely this information in a much more readable format.",
       pauseDuration: 8000
     },
     {
-      x: window.innerWidth * 0.5,
+      x: 990,
       y: 400,
       element: '[data-section="careers"]',
       message: "Based on your interests, I'll show you personalized career matches with detailed insights and growth projections.",
@@ -103,22 +106,23 @@ export const SentraGuide: React.FC<SentraGuideProps> = ({ onComplete, onSkip }) 
     const waypoint = waypoints[index];
     setCurrentStep(index);
     
-    // Update target position
+    // Use fixed coordinates, don't override with element position
     let targetX = waypoint.x;
     let targetY = waypoint.y;
     
-    // If element selector is provided, find the element and use its position
-    if (waypoint.element) {
-      const element = document.querySelector(waypoint.element);
-      if (element) {
-        const rect = element.getBoundingClientRect();
-        targetX = rect.left + rect.width / 2;
-        targetY = rect.top - 50; // Position above the element
-      }
-    }
-    
     setTargetPosition({ x: targetX, y: targetY });
     setCurrentMessage(waypoint.message);
+    
+    // Show sonar wave if specified
+    if (waypoint.showSonar) {
+      setTimeout(() => {
+        setShowSonarWave(true);
+        // Hide sonar wave after animation completes
+        setTimeout(() => {
+          setShowSonarWave(false);
+        }, 2000);
+      }, 1000); // Delay sonar wave slightly
+    }
     
     // After first step, start fading overlay
     if (index === 1) {
@@ -247,6 +251,19 @@ export const SentraGuide: React.FC<SentraGuideProps> = ({ onComplete, onSkip }) 
           <div className="sentra-orb-outer-glow" />
           <div className="sentra-orb-glow" />
           <div className="sentra-orb-core" />
+          
+          {/* Sonar Wave Effect */}
+          <AnimatePresence>
+            {showSonarWave && (
+              <motion.div
+                className="sentra-sonar-wave"
+                initial={{ scale: 0, opacity: 1 }}
+                animate={{ scale: 6, opacity: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 2, ease: "linear" }}
+              />
+            )}
+          </AnimatePresence>
         </motion.div>
         
         {/* Message Window */}
@@ -256,8 +273,12 @@ export const SentraGuide: React.FC<SentraGuideProps> = ({ onComplete, onSkip }) 
               key={currentStep}
               className="sentra-message-window"
               style={{
-                left: Math.min(orbPosition.x + 40, window.innerWidth - 360),
-                top: Math.min(orbPosition.y + 40, window.innerHeight - 200)
+                left: currentStep === waypoints.length - 1 
+                  ? Math.min(1575 - 420, orbPosition.x - 200) // Position for last slide
+                  : Math.min(orbPosition.x + 40, window.innerWidth - 420),
+                top: currentStep === waypoints.length - 1 
+                  ? Math.min(800 - 150, orbPosition.y - 100) // Position for last slide
+                  : Math.min(orbPosition.y + 40, window.innerHeight - 200)
               }}
               initial={{ opacity: 0, y: 10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
