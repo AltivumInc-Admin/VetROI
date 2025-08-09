@@ -115,12 +115,32 @@ Automatically appended request:
 
 ## 3. Implementation Architecture
 
-### Backend (AWS)
+### Backend Options
+
+#### Option A: AWS Bedrock
 - **LLM Service**: AWS Bedrock (Claude, Llama, or similar)
 - **API Gateway**: WebSocket for real-time chat
 - **Lambda Functions**: Message processing and context management
 - **DynamoDB**: Conversation history and session storage
 - **S3**: Large context data storage (O*NET datasets)
+
+#### Option B: IBM watsonx.ai (Recommended for Partnership)
+- **LLM Service**: IBM watsonx.ai foundation models
+  - Granite models for career counseling
+  - Llama models for conversational AI
+  - Custom fine-tuned models for veteran-specific context
+- **API Integration**: watsonx.ai REST APIs or SDK
+- **Advantages**:
+  - Enterprise-grade security and compliance
+  - Built-in governance and responsible AI features
+  - Model customization and fine-tuning capabilities
+  - Prompt engineering studio for optimization
+  - Integration with Watson Assistant for enhanced conversation management
+- **Infrastructure**:
+  - IBM Cloud Functions for serverless processing
+  - Cloudant/PostgreSQL for conversation storage
+  - IBM Cloud Object Storage for large datasets
+  - Watson Assistant for conversation orchestration
 
 ### Frontend Integration
 - **React Components**: 
@@ -203,7 +223,7 @@ Automatically appended request:
 
 ### Phase 1 (MVP)
 - [ ] Prompt builder UI component
-- [ ] Basic AWS Bedrock integration
+- [ ] Basic LLM integration (IBM watsonx.ai or AWS Bedrock)
 - [ ] Simple chat interface
 - [ ] Session management
 
@@ -212,12 +232,14 @@ Automatically appended request:
 - [ ] Conversation history
 - [ ] Context compression
 - [ ] Cost tracking
+- [ ] Watson Assistant integration (if using IBM)
 
 ### Phase 3
 - [ ] Premium tier features
 - [ ] Advanced analytics
 - [ ] Export capabilities
 - [ ] Mobile optimization
+- [ ] Custom model fine-tuning for veteran-specific language
 
 ---
 
