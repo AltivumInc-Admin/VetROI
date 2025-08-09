@@ -331,19 +331,12 @@ function App() {
       
       setCurrentSection('analysis')
       
-      // Smooth scroll to analysis section after state updates
+      // Scroll to specific position for centered view
       setTimeout(() => {
-        const analysisSection = document.querySelector('[data-section="analysis"]')
-        if (analysisSection) {
-          const rect = analysisSection.getBoundingClientRect()
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-          const targetY = rect.top + scrollTop - 100 // 100px offset from top
-          
-          window.scrollTo({
-            top: targetY,
-            behavior: 'smooth'
-          })
-        }
+        window.scrollTo({
+          top: 3630,
+          behavior: 'smooth'
+        })
       }, 300) // Delay to ensure DOM is ready
     }
 
@@ -515,6 +508,14 @@ function App() {
     }))
     
     setCurrentSection('careers')
+    
+    // Scroll to specific position for centered view
+    setTimeout(() => {
+      window.scrollTo({
+        top: 2686,
+        behavior: 'smooth'
+      })
+    }, 300)
   }
   
   const skipDD214Upload = () => {
@@ -526,19 +527,12 @@ function App() {
     
     setCurrentSection('careers')
     
-    // Smooth scroll to careers section
+    // Scroll to specific position for centered view
     setTimeout(() => {
-      const careersSection = document.querySelector('[data-section="careers"]')
-      if (careersSection) {
-        const rect = careersSection.getBoundingClientRect()
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-        const targetY = rect.top + scrollTop - 100 // 100px offset from top
-        
-        window.scrollTo({
-          top: targetY,
-          behavior: 'smooth'
-        })
-      }
+      window.scrollTo({
+        top: 2686,
+        behavior: 'smooth'
+      })
     }, 300)
   }
   
