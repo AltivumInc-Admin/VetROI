@@ -129,9 +129,9 @@ export const SentraOrb: React.FC<SentraOrbProps> = ({ isVisible }) => {
 
   return (
     <>
-      {/* Floating Orb */}
+      {/* Floating Orb Container */}
       <motion.div
-        className={`sentra-orb ${isOpen ? 'orb-active' : ''}`}
+        className="sentra-orb-container"
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ 
@@ -140,26 +140,34 @@ export const SentraOrb: React.FC<SentraOrbProps> = ({ isVisible }) => {
           damping: 20,
           delay: 0.5 
         }}
-        onClick={() => !isOpen && setIsOpen(true)}
-        whileHover={{ scale: isOpen ? 1 : 1.1 }}
-        whileTap={{ scale: 0.95 }}
       >
-        <div className="orb-inner">
-          <div className="orb-glow"></div>
-          <div className="orb-core">
-            {isOpen ? (
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-              </svg>
-            ) : (
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
-                <path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
-              </svg>
-            )}
+        {/* Main Sentra Orb */}
+        <div className={`sentra-orb ${isOpen ? 'orb-active' : ''}`}>
+          <div className="orb-inner">
+            <div className="orb-outer-glow"></div>
+            <div className="orb-glow"></div>
+            <div className="orb-core"></div>
           </div>
-          <div className="orb-pulse"></div>
         </div>
+        
+        {/* Chat Indicator Circle */}
+        <motion.div 
+          className="chat-indicator"
+          onClick={() => setIsOpen(!isOpen)}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          {isOpen ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+              <path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+            </svg>
+          )}
+        </motion.div>
       </motion.div>
 
       {/* Chat Window */}
