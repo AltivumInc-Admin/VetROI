@@ -1,7 +1,7 @@
 /* Corner HUD Display */
 .cursor-coords-hud {
   position: fixed;
-  bottom: 20px;
+  top: 20px;
   right: 20px;
   background: linear-gradient(135deg, 
     rgba(15, 23, 42, 0.8) 0%, 
@@ -148,7 +148,7 @@
 /* Copy confirmation */
 .cursor-coords-copied {
   position: fixed;
-  bottom: 80px;
+  top: 80px;
   right: 20px;
   background: linear-gradient(135deg, 
     rgba(16, 185, 129, 0.95) 0%, 
@@ -173,7 +173,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .cursor-coords-hud {
-    bottom: 70px; /* Above mobile nav if present */
+    top: 10px;
     right: 10px;
     padding: 8px 12px;
     font-size: 10px;

@@ -9,6 +9,7 @@ import { DataPanel } from './components/DataPanel'
 import { DD214Upload } from './components/DD214Upload'
 import { SentraChat } from './components/SentraChat'
 import { SentraGuide } from './components/SentraGuide'
+import { SentraOrb } from './components/SentraOrb'
 import { CursorCoordinates } from './components/CursorCoordinates'
 import { SessionWarningModal } from './components/SessionWarningModal'
 import { VerticalFlowContainer } from './components/VerticalFlowContainer'
@@ -71,6 +72,7 @@ function App() {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false)
   const [mobileSocData, setMobileSocData] = useState<any>({})
   const [showSentraGuide, setShowSentraGuide] = useState(false)
+  const [showSentraOrb, setShowSentraOrb] = useState(false)
   
   // New vertical flow state
   const [flowSections, setFlowSections] = useState<FlowSection>({
@@ -143,6 +145,9 @@ function App() {
       setTimeout(() => {
         setShowSentraGuide(true)
       }, 1000)
+    } else if (hasSeenGuide && !isMobile) {
+      // Show orb immediately for returning users
+      setShowSentraOrb(true)
     }
   }, [isMobile])
 
@@ -622,10 +627,27 @@ function App() {
       {/* Sentra Guide for first-time users */}
       {showSentraGuide && (
         <SentraGuide 
-          onComplete={() => setShowSentraGuide(false)}
-          onSkip={() => setShowSentraGuide(false)}
+          onComplete={() => {
+            setShowSentraGuide(false)
+            setShowSentraOrb(true)
+          }}
+          onSkip={() => {
+            setShowSentraGuide(false)
+            setShowSentraOrb(true)
+          }}
         />
       )}
+      
+      {/* Sentra Orb - Persistent AI Assistant */}
+      <SentraOrb 
+        isVisible={showSentraOrb && !isMobile}
+        context={{
+          profileData,
+          apiResponse,
+          currentSection,
+          flowSections
+        }}
+      />
       
       <header className="app-header">
         <h1>VetROI™</h1>
