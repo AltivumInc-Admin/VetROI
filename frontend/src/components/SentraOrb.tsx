@@ -14,7 +14,7 @@ interface SentraOrbProps {
   context?: any;
 }
 
-export const SentraOrb: React.FC<SentraOrbProps> = ({ isVisible, context }) => {
+export const SentraOrb: React.FC<SentraOrbProps> = ({ isVisible }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -26,7 +26,7 @@ export const SentraOrb: React.FC<SentraOrbProps> = ({ isVisible, context }) => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  // const [sessionId, setSessionId] = useState<string | null>(null); // Will be used when Watson is integrated
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -57,7 +57,7 @@ export const SentraOrb: React.FC<SentraOrbProps> = ({ isVisible, context }) => {
     try {
       // TODO: Replace with actual Watson API call
       const mockSessionId = `session-${Date.now()}`;
-      setSessionId(mockSessionId);
+      // setSessionId(mockSessionId); // Will be used when Watson is integrated
       console.log('Watson session initialized:', mockSessionId);
     } catch (error) {
       console.error('Failed to initialize Watson session:', error);
