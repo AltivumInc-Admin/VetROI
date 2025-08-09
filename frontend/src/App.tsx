@@ -757,7 +757,7 @@ function App() {
                     veteranId={profileData.code}
                     onUploadComplete={handleDD214UploadComplete}
                   />
-                  <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                  <div style={{ textAlign: 'center', marginTop: '0.5rem' }}>
                     <button 
                       onClick={skipDD214Upload}
                       style={{

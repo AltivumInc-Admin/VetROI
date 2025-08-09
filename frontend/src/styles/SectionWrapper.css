@@ -10,6 +10,11 @@
   position: relative;
 }
 
+/* Reduced spacing for DD214 section to fit in viewport */
+.section-wrapper[data-section="dd214"] {
+  margin-bottom: 2rem;
+}
+
 /* Smooth fade transitions for collapsed/expanded states */
 .section-wrapper.collapsed {
   opacity: 0.6;
